@@ -1,0 +1,133 @@
+.TextAnnotation {
+	height: 100%;
+
+	// position: absolute;
+	// z-index: 1000;
+	// right: 10px;
+	.TextList {
+		.TextListBtn {
+			width: 100%;
+			text-align: center;
+			margin: 20px 0;
+		}
+
+		ul {
+			color: white;
+			margin: 20px;
+			// height: 600px;
+			height: calc(100vh - 230px);
+            overflow: auto;
+            @include scrollbar(5px);
+			li {
+				position: relative;
+				padding: 10px 20px;
+				border-bottom: 1px dashed rgba(255, 255, 255, 0.205);
+
+				.Alert {
+					position: absolute;
+					top: 5px;
+					left: 70px;
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					color: white;
+					z-index: 10;
+
+					p {
+						background-color: #474747;
+						width: 90px;
+						height: 40px;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						margin: 0.5px;
+						font-size: 14px;
+						cursor: pointer;
+					}
+
+					.ative {
+						color: $theme-color;
+					}
+
+					p:nth-child(1) {
+						border-radius: 10px 10px 0 0;
+					}
+
+					p:nth-last-child(1) {
+						border-radius: 0 0 10px 10px;
+					}
+				}
+
+				span {
+					cursor: pointer;
+				}
+			}
+
+			li:nth-last-child(1) {
+				border-bottom: 0px;
+			}
+		}
+	}
+
+	.TextManipulation {
+		.TextWb {
+			margin: 10px 40px;
+			color: white;
+			display: flex;
+			align-items: center;
+			position: relative;
+
+			.ChromePicker {
+				position: absolute;
+				top: -250px;
+				z-index: 10;
+			}
+		}
+
+		.positionText {
+			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
+			margin-left: 60px;
+
+			.TextWb {
+				margin: 5px 0;
+				width: 50%;
+				span{
+					width: 50px;
+					text-align: right;
+				}
+				input{
+					width: 100px;
+				}
+			}
+		}
+	}
+
+	.TextAnnotationBtn {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 20px 0;
+
+		button {
+			padding: 5px 10px;
+			font-size: 14px;
+			margin: 0 10px;
+		}
+	}
+
+	.disableState {
+		color: rgba(255, 255, 255, 0.2) !important;
+
+		.colorArea {
+			border: 1px solid rgba(255, 255, 255, 0.1) !important;
+			background-color: rgba(255, 255, 255, 0.2) !important;
+		}
+
+		input {
+			border: 1px solid rgba(255, 255, 255, 0.2) !important;
+		}
+	}
+}

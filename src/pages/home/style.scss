@@ -1,0 +1,158 @@
+#Home_all {
+  width: 100%;
+  height: 100%;
+  background: #0c0c0c;
+  display: flex;
+  overflow: hidden;
+  // position: fixed;
+  @include scrollbar(5px);
+
+  .homRight {
+    width: 100%;
+    margin-left: 300px;
+    display: flex;
+    justify-content: space-between;
+
+    .home_content {
+      z-index: 1;
+      margin-top: 120px;
+    }
+
+    .map {
+      margin-top: 100px;
+      // position: absolute;
+      width: 100%;
+      height: calc(100vh - 110px);
+      // top: 100px;
+      // left: 300px;
+      background-color: white;
+    }
+
+    .mapright {
+      position: absolute;
+      right: 0px;
+      z-index: 100;
+      margin-top: 100px;
+      height: calc(100vh - 110px);
+      background-color: #282828;
+    }
+  }
+}
+
+#mapv3dContainer {
+  video {
+    height: 100%;
+  }
+}
+
+// 全局样式
+// 调色器区域
+.colorArea {
+  width: 50px;
+  height: 20px;
+  background-color: white;
+  border: 1px solid rgba(255, 255, 255, 0.418);
+  border-radius: 5px 5px 5px 5px;
+  user-select: none;
+  cursor: pointer;
+}
+
+.mask {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+//右边面板title样式
+.RightTitle {
+  display: flex;
+  color: white;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  user-select: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.493);
+}
+
+//黄色按钮
+.ConfirmButton {
+  background-color: #f09938;
+  border: 1px solid #f09938;
+  color: white;
+  padding: 7px 20px;
+  border-radius: 7px;
+  outline: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+// input输入框
+.inputAll,
+.sleAll {
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0);
+  border: 1px solid rgba(255, 255, 255, 0.418);
+  border-radius: 5px;
+  padding: 3px 5px;
+  font-size: 14px;
+  color: white;
+  outline-style: none;
+
+  option {
+    background-color: #343434;
+
+  }
+}
+
+// 收缩按钮样式
+.ContractionArea {
+  display: none;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  background-color: #343434;
+  padding: 2px 0;
+  z-index: 1;
+}
+
+.shrinkage {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+
+  p {
+    width: 76px;
+    height: 24px;
+    background: url("../../assets/images/shousuobtn.png") no-repeat center center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+}
+
+.TextWb {
+  margin: 10px 40px;
+  color: white;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+// 禁用颜色
+.disableState {
+  color: rgba(255, 255, 255, 0.2) !important;
+
+  .colorArea {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  input {
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  }
+}

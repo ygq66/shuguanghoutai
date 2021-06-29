@@ -1,0 +1,54 @@
+.initLocation {
+  height: 100%;
+  position: relative;
+
+  .initLocationContent {
+    .CustomPanel {
+      margin: 20px 40px;
+
+      div {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+
+        margin: 30px 0;
+
+        p {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 10px;
+
+          button {
+            font-size: 14px;
+            padding: 5px 10px;
+          }
+
+          span {
+            margin: 0;
+          }
+        }
+
+        span {
+          color: white !important;
+          margin-bottom: 10px;
+        }
+
+        textarea {
+          resize: none;
+          min-height: 60px;
+          line-height: 20px;
+          @include scrollbar(5px)
+        }
+      }
+
+    }
+
+    .initLocationSave {
+      width: 100%;
+      text-align: center;
+      margin: 0;
+    }
+  }
+}

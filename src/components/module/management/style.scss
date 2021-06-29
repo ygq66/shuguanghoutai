@@ -1,0 +1,149 @@
+.module_m {
+  height: 100%;
+  position: relative;
+
+  //   bottom: 20px;
+  //   right: 10px;
+  .customList {
+
+    .customBtn {
+      width: 100%;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .customData {
+      width: 300px;
+      max-height: calc(100vh - 250px);
+      overflow-y: scroll;
+      margin: 0 auto;
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      // grid-template-columns: repeat(2, 1fr);
+      // grid-gap: .5rem;
+
+      .DataItem {
+        width: 45%;
+        height: 180px;
+        border: 1px solid #cccc;
+        margin-top: 10px;
+
+        img {
+          display: inline-block;
+          width: 100%;
+          height: 150px;
+        }
+
+        span {
+          display: inline-block;
+          width: 100%;
+          height: 20px;
+          line-height: 20px;
+
+          text-align: center;
+          color: white;
+        }
+      }
+    }
+  }
+
+  .CustomPanel {
+    padding: 20px 40px;
+
+    div {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+
+      span {
+        display: inline-block;
+        width: 80px;
+        color: white;
+      }
+
+      p {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.418);
+        color: rgba(255, 255, 255, 0.418);
+        cursor: pointer;
+        user-select: none;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+
+        input {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .CustomPanelBtn {
+    width: 100%;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+
+    .ConfirmButton {
+      background-color: #f09938;
+      border: 1px solid #f09938;
+      color: white;
+      padding: 7px 20px;
+      border-radius: 7px;
+      outline: none;
+      user-select: none;
+      cursor: pointer;
+      margin-left: 20px;
+    }
+
+  }
+
+}
+
+.customData::-webkit-scrollbar {
+  width: 4px;
+  position: absolute;
+  height: 10px;
+}
+
+.customData::-webkit-scrollbar-track {
+  background: #282828;
+  border-radius: 5px;
+}
+
+.customData::-webkit-scrollbar-thumb {
+  background: $theme-color;
+  border-radius: 10px;
+}
+
+.customData::-webkit-scrollbar-thumb:hover {
+  background: $theme-color;
+}
+
+.bcustomData::-webkit-scrollbar-corner {
+  background: #179a16;
+}
+
+// input[type=checkbox]{
+//     border:0; width: 15px; height:15px;
+// }
+// input[type=checkbox]:checked{
+//     background: url("../../../assets/images/icon/fxk.png") no-repeat center center;
+//     border:0; width: 15px; height:15px;
+//     -webkit-appearance:none;/*去除默认样式*/
+// 	-webkit-appearance:none;
+// 	-moz-appearance:none;
+// 	-o-appearance:none;
+// 	-ms-appearance:none;
+// }

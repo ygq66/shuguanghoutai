@@ -1,0 +1,104 @@
+.PatrolPlan {
+    height: 100%;
+
+    .PatrolPlan_ul {
+        color: white;
+        margin: 20px;
+        height: 600px;
+        overflow: auto;
+        @include scrollbar(5px);
+
+        li {
+            position: relative;
+            padding: 10px 20px;
+
+            span {
+                cursor: pointer;
+            }
+
+            .Alert {
+                position: absolute;
+                top: 5px;
+                left: 70px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                color: white;
+                z-index: 10;
+
+                p {
+                    background-color: #474747;
+                    width: 90px;
+                    height: 40px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 0.5px;
+                    font-size: 14px;
+                    cursor: pointer;
+                }
+
+                .ative {
+                    color: $theme-color;
+                }
+
+                p:nth-child(1) {
+                    border-radius: 10px 10px 0 0;
+                }
+
+                p:nth-last-child(1) {
+                    border-radius: 0 0 10px 10px;
+                }
+            }
+
+            .active {
+                color: $theme-color;
+            }
+        }
+
+    }
+
+    .PatrolPlan_list_button {
+        width: 100%;
+        text-align: center;
+        margin: 30px 0;
+    }
+
+    .PatrolPlan_add {
+        margin-top: 30px;
+
+        .PatrolPlan_add_choose {
+            ul {
+                height: auto;
+                max-height: 230px;
+                font-size: 15px;
+
+                li {
+                    label {
+                        color: white;
+                    }
+                }
+            }
+        }
+
+        .PatrolPlan_add_button {
+            width: 100%;
+            text-align: center;
+            margin: 40px 0;
+
+            button {
+                padding: 5px 10px;
+                margin: 0 20px;
+                font-size: 14px;
+            }
+        }
+    }
+
+    .PatrolPlan_zs_list {
+        ul {
+            height: auto;
+            max-height: 300px;
+            font-size: 15px;
+        }
+    }
+}

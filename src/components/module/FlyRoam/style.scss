@@ -1,0 +1,178 @@
+.flyRoam {
+    height: 100%;
+    position: relative;
+
+    .flyRoamContent {
+        .flyRoamSave {
+            width: 160px;
+            margin-top: 20px;
+            margin-left: 120px;
+            text-align: center;
+
+            .ConfirmButton {
+                background-color: #f09938;
+                border: 1px solid #f09938;
+                color: white;
+                padding: 7px 20px;
+                border-radius: 7px;
+                outline: none;
+                user-select: none;
+                cursor: pointer;
+            }
+        }
+
+        .flyRoamItem {
+            margin-top: 40px;
+
+            .ItemWrap {
+                width: 300px;
+                height: 400px;
+                margin-left: 60px;
+
+                .ItemBody {
+                    position: relative;
+                    width: 300px;
+                    display: flex;
+                    height: 40px;
+                    line-height: 40px;
+                    justify-content: center;
+                    color: white;
+                    margin: 0 auto;
+                    margin-top: 20px;
+
+                    background-color: #3B3B3B;
+                    cursor: default;
+
+                    .Alert {
+                        position: absolute;
+                        top: 5px;
+                        left: 70px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        color: white;
+                        z-index: 10;
+
+                        p {
+                            background-color: #474747;
+                            width: 90px;
+                            height: 40px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            margin: 0.5px;
+                            font-size: 14px;
+                            cursor: pointer;
+                        }
+
+                        .ative {
+                            color: $theme-color;
+                        }
+
+                        p:nth-child(1) {
+                            border-radius: 10px 10px 0 0;
+                        }
+
+                        p:nth-last-child(1) {
+                            border-radius: 0 0 10px 10px;
+                        }
+                    }
+
+                    span:nth-child(1) {
+                        width: 10%;
+                        text-align: center;
+                    }
+
+                    span:nth-child(2) {
+                        width: 50%;
+                        // text-align: center;
+                    }
+
+                    span:nth-child(3) {
+                        width: 30%;
+                        text-align: center;
+                        position: relative;
+
+                        img {
+                            display: inline-block;
+                            width: 24px;
+                            height: 24px;
+                            position: absolute;
+                            top: 6px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .flyBottom {
+            position: absolute;
+            bottom: 200px;
+        }
+    }
+
+    .active {
+        border: 1px solid #f09938;
+        border-radius: 16px;
+    }
+}
+
+.CustomPanel {
+    padding: 20px 40px;
+
+    div {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+
+        span {
+            display: inline-block;
+            width: 80px;
+            color: white;
+        }
+
+        p {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.418);
+            color: rgba(255, 255, 255, 0.418);
+            cursor: pointer;
+            user-select: none;
+
+            img {
+                width: 100%;
+                height: 100%;
+            }
+
+            input {
+                display: none;
+            }
+        }
+    }
+}
+
+.CustomPanelBtn {
+    width: 100%;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+
+    .ConfirmButton {
+        background-color: #f09938;
+        border: 1px solid #f09938;
+        color: white;
+        padding: 7px 20px;
+        border-radius: 7px;
+        outline: none;
+        user-select: none;
+        cursor: pointer;
+        margin-left: 20px;
+    }
+
+}

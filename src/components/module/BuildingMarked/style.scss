@@ -1,0 +1,152 @@
+.BuildingMarked {
+    height: 100%;
+    position: relative;
+
+    .BuildingList {
+        .BuildingBtn {
+            width: 100%;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        ul {
+            color: white;
+            margin: 20px;
+            user-select: none;
+            height: calc(100vh - 180px);
+            overflow: auto;
+            @include scrollbar(5px);
+
+            li {
+                position: relative;
+
+                span {
+                    display: inline-block;
+                    width: 100%;
+                    border-bottom: 1px dashed rgba(255, 255, 255, 0.205);
+                    padding: 10px 20px;
+                    cursor: pointer;
+                }
+
+                .Alert {
+                    position: absolute;
+                    top: 5px;
+                    left: 70px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    color: white;
+                    z-index: 10;
+
+                    p {
+                        background-color: #474747;
+                        width: 90px;
+                        height: 40px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin: 0.5px;
+                        font-size: 14px;
+                        cursor: pointer;
+                    }
+
+                    .ative {
+                        color: $theme-color;
+                    }
+
+                    p:nth-child(1) {
+                        border-radius: 10px 10px 0 0;
+                    }
+
+                    p:nth-last-child(1) {
+                        border-radius: 0 0 10px 10px;
+                    }
+                }
+
+                ul {
+                    margin: 0;
+
+                    li {
+                        span {
+                            padding: 10px 35px;
+                        }
+                    }
+                }
+            }
+
+            li:nth-last-child(1) {
+                ul {
+                    li:nth-last-child(1) {
+                        span {
+                            border-bottom: 0px
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+    .BuildingManipulation {
+        .TextWbPosition {
+            margin: 10px 40px;
+            color: white;
+            position: relative;
+
+            .TextWb {
+                margin: 10px 0;
+                padding-left: 80px;
+            }
+
+            .Positionwb {
+                padding-left: 20px;
+
+                span {
+                    display: inline-block;
+                    width: 80px;
+                    flex-shrink: 0
+                }
+            }
+        }
+
+        .TextWb {
+            margin: 10px 40px;
+            color: white;
+            display: flex;
+            align-items: center;
+            position: relative;
+
+            .ChromePicker {
+                position: absolute;
+                top: -250px;
+                z-index: 10;
+            }
+
+            button {
+                background-color: rgba(255, 255, 255, 0);
+                border: 1px solid #ec9313;
+                font-size: 14px;
+                color: #ec9313;
+                padding: 5px 10px;
+                border-radius: 8px;
+                outline-style: none;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .BuildingAnnotationBtn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px 0;
+
+        button {
+            padding: 5px 10px;
+            font-size: 14px;
+            margin: 0 10px;
+        }
+    }
+
+}

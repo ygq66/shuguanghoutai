@@ -1,0 +1,121 @@
+.PerPosition {
+    height: 100%;
+    position: relative;
+}
+
+.CreateLayerbutton {
+    width: 110px;
+    height: 30px;
+    text-align: center;
+    color: white;
+    background-color: #F09938;
+    border: none;
+    display: block;
+    margin: 25px auto;
+    border-radius: 5px;
+    outline: none;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.Alert {
+    position: absolute;
+    top: 5px;
+    left: 70px;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+    z-index: 10;
+
+    p {
+        background-color: #474747;
+        width: 60px;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    p:hover {
+        background-color: #303030;
+    }
+
+    .ative {
+        color: $theme-color;
+    }
+
+    p:nth-child(1) {
+        border-radius: 10px 10px 0 0;
+    }
+
+    p:nth-last-child(1) {
+        border-radius: 0 0 10px 10px;
+    }
+}
+
+.Draw {
+    padding: 5px 10px;
+    text-align: center;
+    color: white;
+    background-color: #EA9214;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-left: 30px;
+}
+
+.Save {
+    padding: 5px 10px;
+    text-align: center;
+    color: white;
+    background-color: #EA9214;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.domtree2 {
+    position: relative;
+
+    ul {
+        color: white;
+        margin: 20px;
+        height: 600px;
+        overflow: auto;
+        @include scrollbar(5px);
+        li {
+            padding: 10px 20px;
+
+            span {
+                display: inline-block;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .active {
+        color: $theme-color;
+    }
+}
+
+.RoomName,
+.BedNumber {
+    margin: 0 40px 0 40px;
+}
+
+.ant-tree {
+    margin: 0 50px;
+}
+
+.ant-tree-node-content-wrapper:hover,
+.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    background-color: $theme-color !important;
+}
+
+.ant-tree,
+.ant-tree-show-line .ant-tree-switcher {
+    background: none !important;
+    color: white;
+}

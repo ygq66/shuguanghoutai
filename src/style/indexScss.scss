@@ -1,0 +1,82 @@
+//不被选中
+@mixin notSelect() {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+//主题色
+$theme-color:#f9ab2c!default;
+//灰色
+$gray-bg1:#282828;
+$gray-bg2:#1b1b1b;
+//删除色
+$delete:#e45c61;
+//滚动条
+@mixin scrollbar($width) {
+    &::-webkit-scrollbar{width:$width;height:5px;border-radius: 5px;}
+    &::-webkit-scrollbar-track{background-color: rgba(0,0,0,0.1);border-radius: 5px;height: 260px;}
+    &::-webkit-scrollbar-thumb{background: $theme-color;border-radius: 5px;}
+    &::-webkit-scrollbar-thumb:hover{background: rgba(77,156,227,0.6);}
+}
+//功能模块标题
+@mixin titleStyle(){
+    color:$theme-color;
+    height: 42px;
+    line-height: 42px;
+    background-color: $gray-bg2;
+    border-radius:8px 8px 0 0;
+    position: relative;
+    @include notSelect;
+    span{
+      margin-left: 55px;
+      font-size: 15px;
+      letter-spacing:1px;
+      &:after {
+        content:'';
+        position: absolute;
+        left:31px;
+        top: 16.5px;
+        width: 9px;
+        height: 9px;
+        background-color:$theme-color;
+        border-radius: 4px;
+      }
+    }
+}
+//保存按钮
+@mixin saveButton(){
+    @include notSelect;
+    margin: 0 auto;
+    text-align: center;
+    width: 90px;
+    height: 40px;
+    line-height: 40px;
+    background:$theme-color;
+    cursor: pointer;
+    border-radius: 5px;
+    letter-spacing:1px;
+    font-size:18px;
+    color:#fff;
+}
+/* ant design 加载中 */
+.ant-spin-container::after{
+  border-radius: 8px;
+}
+.ant-spin-nested-loading > div > .ant-spin .ant-spin-text {
+  text-shadow:none!important;
+  padding-top: 20px!important;
+}
+.ant-spin-nested-loading > div > .ant-spin {
+  top: 150px;
+}
+.ant-empty-description{
+  color:$theme-color;
+}
+/* ant design 按钮large */
+.ant-btn-lg{
+  border-radius: 5px;
+  letter-spacing: -1px;
+  padding: 6.4px 30px;
+  font-size: 17px;
+}

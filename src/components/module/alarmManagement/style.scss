@@ -1,0 +1,156 @@
+.floorConfiguration {
+    height: 100%;
+
+    .ConfigurationList {
+        .ImportBtn {
+            width: 100%;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .TreeList {
+            margin: 20px;
+
+            h2 {
+                color: white;
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+
+                img {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+
+            ul {
+
+                li {
+                    position: relative;
+                    margin: 10px 0;
+                    padding-left: 20px;
+                    cursor: default;
+
+                    .Alert {
+                        position: absolute;
+                        top: 5px;
+                        left: 70px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        color: white;
+                        z-index: 10;
+
+                        p {
+                            background-color: #474747;
+                            width: 90px;
+                            height: 40px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            margin: 0.5px;
+                            font-size: 14px;
+                            cursor: pointer;
+                        }
+
+                        .ative {
+                            color: $theme-color;
+                        }
+
+                        p:nth-child(1) {
+                            border-radius: 10px 10px 0 0;
+                        }
+
+                        p:nth-last-child(1) {
+                            border-radius: 0 0 10px 10px;
+                        }
+                    }
+
+                    ul {
+                        display: none;
+
+                        li:after {
+                            top: -8px;
+                            left: 6px;
+                            height: calc(100% + 16px);
+                        }
+
+                        li:nth-last-child(1):after {
+                            height: calc(100% + 16px);
+                        }
+
+                        li:before {
+                            width: 15px;
+                            left: 6px;
+                        }
+
+                        li {
+                            padding-left: 22px;
+                        }
+                    }
+                }
+
+                li:after {
+                    position: absolute;
+                    top: 8px;
+                    bottom: 0;
+                    left: 0;
+                    width: 1px;
+                    height: calc(100% + 10px);
+                    content: '';
+                    background-color: rgb(255, 255, 255);
+                }
+
+                li:nth-last-child(1):after {
+                    height: 100%;
+                }
+
+                li:before {
+                    position: absolute;
+                    top: 8px;
+                    left: 0px;
+                    width: 20px;
+                    height: 1px;
+                    margin: auto;
+                    content: '';
+                    background-color: rgb(255, 255, 255);
+                }
+            }
+
+        }
+    }
+
+    .floorEditor {
+        margin-top: 20px;
+
+        .TextWb {
+            margin: 10px 40px;
+            color: white;
+            display: flex;
+            align-items: center;
+            position: relative;
+
+            span {
+                width: 80px;
+                text-align: right;
+            }
+        }
+    }
+
+    .floorBtn {
+        width: 100%;
+        text-align: center;
+        margin: 30px 0;
+
+        button {
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+    }
+}
+
+.TreeList>ul {
+    overflow: auto;
+    height: 600px;
+    @include scrollbar(5px);
+}

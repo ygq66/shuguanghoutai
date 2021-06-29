@@ -1,0 +1,74 @@
+#Home_header{
+  @include notSelect;
+  z-index: 10;
+  // width: 1620px;
+  width: calc(100% - 200px);
+  min-width: 1020px;
+  height: 90px;
+  background-color:$gray-bg1;
+  position: fixed;
+  display: flex;
+  .header_middle{
+    padding: 19px 0;
+    flex: 1;
+    // width: 1317px;
+    .h_Fragment{
+      color:$theme-color;
+      margin-left: 30px;
+      display: flex;
+      height: 52px;
+      justify-content: space-between;
+      border-right: 1px solid #4c4c4c;
+      h1{
+        color:$theme-color;
+        font-size: 30px;
+        line-height: 52px;
+      }
+      .header_button{
+        padding: 9px 0;
+        ul{
+          display: flex;
+          .Active{
+            color:#fff;
+            background:$theme-color;
+          }
+          li{
+            font-size: 17px;
+            padding: 6px 14px;
+            border:1px solid $theme-color;
+            margin-right: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+  .header_right{
+    width: 286px;
+    padding: 13px 0;
+    display: flex;
+    align-items: center;
+    .userData{
+      margin:0 40px 0 29px;
+      cursor: pointer;
+      span{
+        font-size: 16px;
+        color:#fff;
+        vertical-align: middle;
+      }
+      .avatar{
+        width: 63px;
+        height: 63px;
+        border-radius: 50%;
+        margin-left: 10px;
+        vertical-align: middle;
+      }
+    }
+    .switch{
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+    }
+  }
+}

@@ -1,0 +1,236 @@
+.PatrolRoute {
+    height: 100%;
+
+    .PatrolRoute_list {
+        ul {
+            color: white;
+            margin: 20px;
+            height: 600px;
+            overflow: auto;
+            @include scrollbar(5px);
+
+            li {
+                position: relative;
+                padding: 10px 20px;
+                span {
+                    cursor: pointer;
+                }
+
+                .Alert {
+                    position: absolute;
+                    top: 5px;
+                    left: 70px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    color: white;
+                    z-index: 10;
+
+                    p {
+                        background-color: #474747;
+                        width: 90px;
+                        height: 40px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin: 0.5px;
+                        font-size: 14px;
+                        cursor: pointer;
+                    }
+
+                    .ative {
+                        color: $theme-color;
+                    }
+
+                    p:nth-child(1) {
+                        border-radius: 10px 10px 0 0;
+                    }
+
+                    p:nth-last-child(1) {
+                        border-radius: 0 0 10px 10px;
+                    }
+                }
+            }
+
+        }
+    }
+
+    .total-root {
+        padding: 20px 40px;
+    }
+
+    .PatrolRoute_list_button {
+        width: 100%;
+        text-align: center;
+        margin: 30px 0;
+    }
+
+    .PatrolRouteName {
+        span {
+            width: 50px;
+            text-align: center;
+            color: white;
+            border: "1px soild #C0C0C0";
+            background: none;
+        }
+
+        input {
+            width: "50px";
+            flex: "0";
+            text-align: "center";
+            background: none;
+        }
+
+    }
+
+    .DrawRoute_button {
+        width: 100%;
+        text-align: center;
+        margin: 30px 0;
+
+        button {
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+    }
+
+    .body-table {
+        width: 400px;
+        overflow: hidden;
+        margin: 0 auto;
+    }
+
+    .table-view {
+        width: 100%;
+        overflow: hidden;
+        background-color: #343434;
+        padding: 5px;
+    }
+
+    .table-mode {
+        width: calc(100% - 10px);
+        overflow: hidden;
+        border: 1px solid rgb(220, 220, 220);
+        border-radius: 7px;
+    }
+
+    .table-tds {
+        display: flex;
+        width: 100%;
+    }
+
+    .table-td-item {
+        flex: 1;
+        height: 25px;
+        line-height: 25px;
+        font-size: 13px;
+        text-align: center;
+        color: #EA9310;
+        font-weight: bold;
+        border-right: 1px solid rgb(150, 150, 150);
+    }
+
+    .table-td-item:nth-child(2) {
+        width: 140px;
+        flex: none;
+    }
+
+    .table-td-item:last-child {
+        border-right: 0px solid rgb(150, 150, 150);
+    }
+
+    .table-trs-lists {
+        width: 100%;
+    }
+
+    .table-trs {
+        display: flex;
+        color: white;
+    }
+
+    .table-tr-item {
+        flex: 1;
+        height: 25px;
+        line-height: 25px;
+        font-size: 12px;
+        text-align: center;
+        border-top: 1px solid rgb(150, 150, 150);
+        border-right: 1px solid rgb(150, 150, 150);
+
+        span {
+            margin: 0 5px;
+            cursor: pointer;
+        }
+    }
+
+    .table-tr-item-camera-list {
+        width: 298px;
+    }
+
+    .table-tr-item-camera {
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+    .table-tr-item-camera-item {
+        width: 140px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 25px;
+        line-height: 25px;
+        font-size: 12px;
+        text-align: center;
+        border-top: 1px solid rgb(150, 150, 150);
+        border-right: 1px solid rgb(150, 150, 150);
+
+        span {
+            margin: 0 5px;
+        }
+    }
+
+    .table-tr-item:last-child {
+        width: 79px;
+        flex: none;
+        border-right: 0px solid rgb(150, 150, 150);
+    }
+
+    .tr-color {
+        color: rgb(150, 150, 150);
+    }
+
+    .tr-color-btn {
+        color: white;
+        cursor: pointer;
+    }
+
+    .tr-color-btn-active {
+        color: $theme-color;
+        cursor: pointer;
+    }
+
+    .table-btn {
+        width: 100%;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .table-btn>div {
+        width: 44px;
+        height: 24px;
+        text-align: center;
+        line-height: 24px;
+        font-size: 12px;
+        color: white;
+        background-color: #EA9214;
+        border-radius: 5px;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    // .table-btn>div:last-child {
+    //     margin-left: 30px;
+    // }
+}

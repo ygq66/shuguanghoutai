@@ -1,0 +1,81 @@
+#BasicConfiguration{
+  width: 1606px;
+  height: 789px;
+  .bc_title{
+    h1{
+      @include titleStyle();
+    }
+  }
+  .bc_content{
+    background:$gray-bg1;
+    color:#fff;
+    font-size: 20px;
+    height: 747px;
+    border-radius:0 0 8px 8px;
+    padding: 60px 0 0 167px;
+    ul{
+      li{
+        &:nth-of-type(1){
+          margin-bottom:40px;
+        }
+        width: 100%;
+        display: flex;
+        margin-bottom: 50px;
+        line-height: 34px;
+        .c_title{
+          margin-right: 20px;
+          width: 90px;
+        }
+        .form_input{
+          width: 350px;
+          height: 34px;
+          background: transparent;
+          border: 1.7px solid $theme-color;
+          border-radius: 5px;
+          color: #969696;
+          padding: 0 10px;
+          font-size: 15px;
+        }
+        .dlyx_check{
+          margin-top: -1px;
+          .ant-checkbox-inner{
+            width: 22px;
+            height: 22px;
+          }
+          .ant-checkbox-inner::after{
+            top: 44%;
+            left: 21%;
+            width: 8px;
+            height: 14px;
+            border-width:3px;
+          }
+        }
+        .avatar-uploader{
+          .ant-upload-select-picture-card{
+            background: $gray-bg1;
+            width: 128px;
+            border: 1px solid $theme-color;
+            border-radius: 5px;
+            .logo_title{
+              color:$theme-color;
+              margin-top: 10px;
+            }
+            .logo_icon{
+              color:$theme-color;
+              font-size: 30px;
+              margin-top: 5px;
+            }
+            img{
+              max-width: 126px;
+              height: 100%;
+              border-radius: 5px;
+            }
+          }
+        }
+      }
+    }
+    .save_button{
+      margin-left: 108px;
+    }
+  }
+}
