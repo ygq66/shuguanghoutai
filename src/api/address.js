@@ -1,6 +1,10 @@
 import $ from 'jquery';
 // import globalData from "../../config.json"
 var ApiUrl;
+var MapUrl;
+var projectId;
+var token;
+
 $.ajax({
     url: "./config.json",
     type: "get",
@@ -12,6 +16,13 @@ $.ajax({
         // let protocol = document.location.protocol;
         // const interfaceIp = `${protocol}//${projectAddrass}/api`;
         ApiUrl = response.Url;
+        MapUrl = response.map_url;
+        projectId = response.projectId;
+        token = response.token;
     }
 })
-export default ApiUrl;
+
+export var configData1 = ApiUrl
+export var configData2 = MapUrl
+export var configData3 = projectId
+export var configData4 = token

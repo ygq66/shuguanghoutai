@@ -1,4 +1,5 @@
-import ApiUrl from './address'
+import { configData1 as ApiUrl } from './address';
+
 // 接口集合
 const constant = {
   //登录

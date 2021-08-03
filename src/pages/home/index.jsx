@@ -9,6 +9,8 @@ import { createMap, Model } from '../../map3D/map3d';
 import { useDispatch, useMappedState } from 'redux-react-hook';
 import { getFigureLabel, getBuildLabel } from "../../api/mainApi";
 import { Redirect } from 'react-router';
+import { configData2 as MapUrl, configData3 as projectId, configData4 as token } from '../../api/address';
+
 const Home = () => {
   const isLogin = sessionStorage.getItem("isLogin");
 
@@ -31,9 +33,9 @@ const Home = () => {
           if (result.data.length > 0) {
             createMap.createMap({
               id: "mapv3dContainer",
-              url: "http://" + result.data[0].map_database_url,
-              projectId: "5nbmjsdljf785208",
-              token: "rt2d645ty3eadaed32268mdta6"
+              url: MapUrl,
+              projectId: projectId,
+              token: token
             })
             setTimeout(function () {
               message.success("地图加载成功");
