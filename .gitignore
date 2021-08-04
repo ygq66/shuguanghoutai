@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # unpacked plugin folders
 plugins/**/*
 
@@ -11,7 +10,6 @@ db/sql
 # AssetBundler plugin: generated bundles
 javascripts/bundles
 stylesheets/bundles
-=======
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -35,4 +33,6 @@ stylesheets/bundles
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
->>>>>>> 8d77dac... 项目搭建
+.idea/
+package-json.lock
+yarn.lock
