@@ -231,12 +231,27 @@ class UserManagement extends Component {
             message.error("请补全内容");
         }
     }
+    // 选择模型
     selsctChange(e) {
+        const {modelObj} = this.state
+        const videoType = e.target.value
+        const typeName =  $(e.currentTarget).find("option:selected").text()
+        const modelName = $(e.currentTarget).find("option:selected").attr("model")
         this.setState({
-            videoType: e.target.value,
-            typeName: $(e.currentTarget).find("option:selected").text(),
-            modelName: $(e.currentTarget).find("option:selected").attr("model")
+            videoType,
+            typeName,
+            modelName,
         })
+        let modelCopy = JSON.parse(JSON.stringify(modelObj))
+        modelCopy.model_name = modelName
+        modelCopy.type_name = typeName
+        modelCopy.type_id = videoType
+
+        // 修改地图上实际的模型 @2021/08/04
+        Model.modify({
+            ...modelCopy,
+            filename: modelCopy.model_name
+        });
     }
     nameChange(e) {
         this.setState({
@@ -779,9 +794,17 @@ class UserManagement extends Component {
         })
     }
     onMouseLeave() {
+        console.log(this.state.onMouse, this.state.Focus)
         this.setState({
             onMouse: false,
             // Focus:false
+        })
+    }
+    // 所属组织失去焦点，关掉下拉树形菜单
+    handleOrganizationInputBlur = () => {
+        console.log('失去焦点了')
+        this.setState({
+            Focus: false
         })
     }
     /**
@@ -922,10 +945,25 @@ class UserManagement extends Component {
                                 <option key={item.id} value={item.id} model={item.model_name}>{item.type_name}</option>
                             ))}
                         </select></div>
-                        <div className="Operation_div"><span>所属组织：</span> <input className="sleAll" maxLength="0" onFocus={() => this.inputOnFocus()} defaultValue={selectname} />
-                            {(Focus || onMouse) && <div className="option_thisdix" style={checkbox ? { top: "49.5%" } : { top: "55%" }} onMouseEnter={() => this.onMouthin()} onMouseLeave={() => this.onMouseLeave()}>
-                                {this.generateMenu2(this.AnalyticFormat(selectTree))}
-                            </div>}
+                        <div className="Operation_div">
+                            <span>所属组织：</span>
+                            <input
+                              className="sleAll"
+                              maxLength="0"
+                              onFocus={() => this.inputOnFocus()}
+                              defaultValue={selectname}
+                              onBlur={this.handleOrganizationInputBlur}
+                            />
+                            {(Focus || onMouse) &&
+                                <div
+                                  className="option_thisdix"
+                                  style={checkbox ? { top: "49.5%" } : { top: "55%" }}
+                                  onMouseEnter={() => this.onMouthin()}
+                                  onMouseLeave={() => this.onMouseLeave()}
+                                >
+                                    {this.generateMenu2(this.AnalyticFormat(selectTree))}
+                                </div>
+                            }
                         </div>
                         <div className="Operation_div2"><span style={{ width: "68px" }}>室内：</span><Checkbox checked={checkbox} onChange={(e) => this.handlecheck(e)} /></div>
                         <div className="Operation">

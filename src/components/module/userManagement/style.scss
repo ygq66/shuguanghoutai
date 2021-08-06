@@ -16,7 +16,10 @@
 
         ul {
             display: flex;
-            flex-wrap: wrap;
+            //flex-wrap: wrap;
+            justify-content: flex-start;
+            width: 100%;
+            padding-right: 18px;
 
             li {
                 display: flex;
@@ -24,8 +27,8 @@
                 align-items: center;
                 justify-content: center;
                 color: #f2a10a;
-                padding: 5px 0;
-                width: 32%;
+                padding: 5px 4px;
+                width: 40%;
                 margin-bottom: 10px;
                 cursor: pointer;
                 user-select: none;

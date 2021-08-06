@@ -31,11 +31,15 @@ export const createMap = {
                 let buildObj = JSON.parse(res);
                 (function loopBuild(index) {
                     Build.getFloor(buildObj[index].id, msg2 => {
-                        allBuildModelObj[buildObj[index].id] = JSON.parse(msg2);
-                        if (++index < buildObj.length) {
-                            loopBuild(index);
-                        } else {
-                            console.log(allBuildModelObj, "所有建筑楼层数据")
+                        // console.log(buildObj, index)
+                        // 处理一下index越界的可能
+                        if (index < buildObj.length) {
+                            allBuildModelObj[buildObj[index].id] = JSON.parse(msg2);
+                            if (++index < buildObj.length) {
+                                loopBuild(index);
+                            } else {
+                                console.log(allBuildModelObj, "所有建筑楼层数据")
+                            }
                         }
                     })
                 }(0))
@@ -349,7 +353,6 @@ export const Model = {
         selObj = null;
     },
     removeGid(gid) {
-        console.log(gid, "gid")
         view3d.OverLayerRemoveObjectById(gid);
     },
     // 显示隐藏模型
@@ -445,7 +448,6 @@ export const Build = {
     },
     // 楼层显示隐藏
     showFloor(buildingName, floorName, floor) {
-        console.log(buildingName, floorName, floor)
 
         let floorNum = Number(floorName.substring(floorName.length-2))>=10?Number(floorName.substring(floorName.length-2)):Number(floorName.slice(-1))
         var FLOOR=floorName.substr(0,1);
@@ -455,14 +457,16 @@ export const Build = {
         }
 
         view3d.SetBuildingVisible(buildingName, floorName === "all" ? true : false);
-        console.log("数组",floor);
+        // floor undefined 的报错处理。
+        if (!floor) {
+            return
+        }
         floor.forEach(item => {
             let FNum = Number(item.substring(1));
             var ItmFloor=item.substr(0,1);
             if(ItmFloor==="B"){
                 FNum=-FNum
             }
-            console.log(FNum,floorNum,buildingName,item)
             if (FNum > floorNum) {
                 view3d.SetFloorVisible(buildingName, item, false);
             } else {
