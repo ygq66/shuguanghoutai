@@ -93,7 +93,7 @@ class UserManagement extends Component {
     }
     xChange(e) {
         // eslint-disable-next-line
-        const { modelObj, yValue, zValue, pitchValue, yawValue, rollValue } = this.state
+        const { modelObj, yValue, zValue, pitchValue, yawValue, rollValue,modelName } = this.state
         const location = {
             "x": e.target.value,
             "y": yValue,
@@ -104,6 +104,7 @@ class UserManagement extends Component {
         }
         let model = { ...modelObj };
         model.location = location;
+        model.filename = modelName
         Model.modify(model);
         this.setState({
             xValue: e.target.value
@@ -111,7 +112,7 @@ class UserManagement extends Component {
     }
     yChange(e) {
         // eslint-disable-next-line
-        const { modelObj, xValue, zValue, pitchValue, yawValue, rollValue } = this.state
+        const { modelObj, xValue, zValue, pitchValue, yawValue, rollValue, modelName } = this.state
         const location = {
             "x": xValue,
             "y": e.target.value,
@@ -122,6 +123,7 @@ class UserManagement extends Component {
         }
         let model = { ...modelObj };
         model.location = location;
+        model.filename = modelName
         Model.modify(model);
         this.setState({
             yValue: e.target.value
@@ -129,7 +131,7 @@ class UserManagement extends Component {
     }
     zChange(e) {
         // eslint-disable-next-line
-        const { modelObj, xValue, yValue, pitchValue, yawValue, rollValue } = this.state;
+        const { modelObj, xValue, yValue, pitchValue, yawValue, rollValue, modelName } = this.state;
         const location = {
             "x": xValue,
             "y": yValue,
@@ -140,6 +142,7 @@ class UserManagement extends Component {
         }
         let model = { ...modelObj };
         model.location = location;
+        model.filename = modelName
         Model.modify(model);
         this.setState({
             zValue: e.target.value
@@ -147,7 +150,7 @@ class UserManagement extends Component {
     }
     yawChange(e) {
         // eslint-disable-next-line
-        const { modelObj, xValue, yValue, pitchValue, zValue, rollValue } = this.state
+        const { modelObj, xValue, yValue, pitchValue, zValue, rollValue,modelName } = this.state
         const location = {
             "x": xValue,
             "y": yValue,
@@ -158,6 +161,7 @@ class UserManagement extends Component {
         }
         let model = { ...modelObj };
         model.location = location;
+        model.filename = modelName
         Model.modify(model);
         this.setState({
             yawValue: e.target.value
@@ -823,7 +827,6 @@ class UserManagement extends Component {
     }
     // 所属组织失去焦点，关掉下拉树形菜单
     handleOrganizationInputBlur = () => {
-        console.log('失去焦点了')
         this.setState({
             Focus: false
         })

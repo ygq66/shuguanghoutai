@@ -38,7 +38,7 @@ export const createMap = {
                             if (++index < buildObj.length) {
                                 loopBuild(index);
                             } else {
-                                console.log(allBuildModelObj, "所有建筑楼层数据")
+                                // console.log(allBuildModelObj, "所有建筑楼层数据")
                             }
                         }
                     })
