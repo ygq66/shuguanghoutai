@@ -557,6 +557,7 @@ class UserManagement extends Component {
 
     // 右键修改树形菜单的叶子节点
     gridaddXinxi = (ev, menuObj) => {
+        console.log('修改的叶子节点：', menuObj)
         const { modelList } = this.state;
         Model.removeGid(this.state.polygonId);
         createMap.FlyToPosition(menuObj.center)
@@ -605,17 +606,21 @@ class UserManagement extends Component {
 
             // 所选组织，为当前叶子节点的根节点
             selectname: treeRootNode.region_name
+        }, () => {
+            if (menuObj.indoor) {
+                this.GetMapBulid()
+
+                setTimeout(() => {
+                    $("#buildId").val(menuObj.build_id)
+                    $("#floorId").val(menuObj.floor_id)
+                }, 200)
+
+                setTimeout(() => {
+                    UserManagement.this.GetMapFloor(menuObj.build_id)
+                }, 100);
+            }
         })
-        if (menuObj.indoor) {
-            this.GetMapBulid()
-            setTimeout(() => {
-                UserManagement.this.GetMapFloor(menuObj.build_id);
-            }, 100);
-            setTimeout(() => {
-                $("#buildId").val(menuObj.build_id);
-                $("#floorId").val(menuObj.floor_id);
-            }, 500);
-        }
+
         this.closeBtn();
     }
     //树结构生成
@@ -910,7 +915,8 @@ class UserManagement extends Component {
             floor.push(floor_id);
         })
         let build_id = $("#buildId").find("option:selected").val();
-        let floor_id = $("#floorId").find("option:selected").val();
+        // let floor_id = $("#floorId").find("option:selected").val();
+        let floor_id = $("#floorId").val()
         floor_id = floor_id.split("#")[1];
         Build.showFloor(build_id, floor_id, floor);
     }
@@ -991,14 +997,18 @@ class UserManagement extends Component {
                         </div>
                         <div className="Operation_div2"><span style={{ width: "68px" }}>室内：</span><Checkbox checked={checkbox} onChange={(e) => this.handlecheck(e)} /></div>
                         <div className="Operation">
-                            {checkbox && <div className="Operation_div"><span>楼：</span>
-                                <select className="Operation_sle" id="buildId" onChange={(e) => this.GetMapFloor(e.target.value)}>
-                                    {buildList.map(item => {
-                                        return (
-                                            <option key={item.build_id} value={item.build_id}>{item.build_name}</option>
-                                        )
-                                    })}
-                                </select></div>}
+                            {checkbox &&
+                                <div className="Operation_div">
+                                    <span>楼：</span>
+                                    <select className="Operation_sle" id="buildId" onChange={(e) => this.GetMapFloor(e.target.value)}>
+                                        {buildList.map(item => {
+                                            return (
+                                                <option key={item.build_id} value={item.build_id}>{item.build_name}</option>
+                                            )
+                                        })}
+                                    </select>
+                                </div>
+                            }
                             {checkbox && <div className="Operation_div"><span>层：</span> <select id="floorId" className="Operation_sle" onChange={() => this.showFloor()}>
                                 {floorList.map(item => {
                                     return (
