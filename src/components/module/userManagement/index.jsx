@@ -910,9 +910,11 @@ class UserManagement extends Component {
       // console.log(menuObj)
       vdom.push(
         <li key={menuObj.id} className="addAlertq" id={'addAlertq' + menuObj.id}>
-          <h2 onClick={(e) => this.onMenuClicked2(e, menuObj)} title={menuObj.region_name}><img
-            src={menuObj.node_type === "details" ? require("../../../assets/images/details.png").default : menuObj.node_type === "group" ? require("../../../assets/images/wenjianjia.png").default : require("../../../assets/images/wgtp.png").default}
-            alt=""></img>
+          <h2 onClick={(e) => this.onMenuClicked2(e, menuObj)} title={menuObj.region_name}>
+            <img
+              src={menuObj.node_type === "details" ? require("../../../assets/images/details.png").default : menuObj.node_type === "group" ? require("../../../assets/images/wenjianjia.png").default : require("../../../assets/images/wgtp.png").default}
+              alt=""
+            />
             {menuObj.region_name}
           </h2>
           {this.generateMenu2(menuObj.children)}
@@ -967,7 +969,6 @@ class UserManagement extends Component {
   }
 
   onMouseLeave() {
-    console.log(this.state.onMouse, this.state.Focus)
     this.setState({
       onMouse: false
       // Focus:false
@@ -1159,22 +1160,29 @@ class UserManagement extends Component {
         </div>
         <div className="ContractionArea">
           <div className="shrinkage">
-            <p onClick={(e) => this.shrinkageBtn(e)}><img src={require("../../../assets/images/shousuojt.png").default}
-                                                          alt=""/></p>
+            <p onClick={(e) => this.shrinkageBtn(e)}>
+              <img src={require("../../../assets/images/shousuojt.png").default} alt=""/>
+            </p>
           </div>
           <div className="EquipmentOperation">
             <p>{title}</p>
-            <div className="Operation_div"><span>名称：</span><input type="text" value={name}
-                                                                  onChange={(e) => this.nameChange(e)}/></div>
-            <div className="Operation_div"><span>编码：</span><input type="text" value={code}
-                                                                  onChange={(e) => this.codeChange(e)}/></div>
-            <div className="Operation_div"><span>模型：</span> <select className="sleAll" value={videoType}
-                                                                    onChange={(e) => this.selsctChange(e)}>
-              <option value="0">请选择</option>
-              {videoList.length > 0 && videoList.map((item) => (
-                <option key={item.id} value={item.id} model={item.model_name}>{item.type_name}</option>
-              ))}
-            </select></div>
+            <div className="Operation_div">
+              <span>名称：</span>
+              <input type="text" value={name} onChange={(e) => this.nameChange(e)}/>
+            </div>
+            <div className="Operation_div">
+              <span>编码：</span>
+              <input type="text" value={code} onChange={(e) => this.codeChange(e)}/>
+            </div>
+            <div className="Operation_div">
+              <span>模型：</span>
+              <select className="sleAll" value={videoType} onChange={(e) => this.selsctChange(e)}>
+                <option value="0">请选择</option>
+                {videoList.length > 0 && videoList.map((item) => (
+                  <option key={item.id} value={item.id} model={item.model_name}>{item.type_name}</option>
+                ))}
+              </select>
+            </div>
             <div className="Operation_div">
               <span>所属组织：</span>
               <input
@@ -1195,8 +1203,9 @@ class UserManagement extends Component {
               </div>
               }
             </div>
-            <div className="Operation_div2"><span style={{width: "68px"}}>室内：</span><Checkbox checked={checkbox}
-                                                                                              onChange={(e) => this.handlecheck(e)}/>
+            <div className="Operation_div2">
+              <span style={{width: "68px"}}>室内：</span>
+              <Checkbox checked={checkbox} onChange={(e) => this.handlecheck(e)}/>
             </div>
             <div className="Operation">
               {checkbox &&
