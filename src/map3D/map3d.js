@@ -150,6 +150,21 @@ export const createMap = {
         view3d.FindObjectById(gid, res => {
             callback(res)
         });
+    },
+
+    // 设置对象的显示/隐藏
+    updateObjectVisible(gid, visible) {
+        view3d.UpdateObjectVisible(gid, visible)
+    },
+
+    getObjectsVisible(callback) {
+        view3d.GetObjectsVisible(res => {
+            callback && callback(res)
+        })
+    },
+
+    setObjectsVisible(objects) {
+        view3d.SetObjectsVisible(objects)
     }
 }
 //模型标注类
