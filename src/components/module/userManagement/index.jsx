@@ -41,7 +41,7 @@ class UserManagement extends Component {
             thisId: "",
             selectTree: [],
             Focus: false,
-            selectname: "",
+            selectname: "",  // 所属组织
             onMouse: false,
             checkbox: false,
             gid: "",
@@ -53,6 +53,8 @@ class UserManagement extends Component {
             modelName: "",
             isEdit: false,//是否编辑
             modelObj: {},//当前编辑的模型对象
+
+            deviceTreeStructureData: []     // 设备的树形结构数据。N维数组。
         };
         UserManagement.this = this;
 
@@ -374,7 +376,8 @@ class UserManagement extends Component {
                             });
                             // console.log(list)
                             this.setState({
-                                treelist: list
+                                treelist: list,
+                                deviceTreeStructureData: this.AnalyticFormat(list)
                             })
                         } else {
                             message.error(result1.msg);
@@ -502,7 +505,8 @@ class UserManagement extends Component {
             // console.log(menuObj)
             vdom.push(
                 <li key={menuObj.id} className='addAlert' id={'addAlert' + menuObj.id} onContextMenu={(e) => this.onContextMenu(e, menuObj.node_type)}>
-                    <h2 onClick={(e) => this.onMenuClicked(e, menuObj)} title={menuObj.region_name}><img src={menuObj.node_type === "details" ? require("../../../assets/images/playVideo.png").default : menuObj.node_type === "group" ? require("../../../assets/images/wenjianjia.png").default : require("../../../assets/images/wgtp.png").default} alt=""></img>
+                    <h2 onClick={(e) => this.onMenuClicked(e, menuObj)} title={menuObj.region_name}>
+                        <img src={menuObj.node_type === "details" ? require("../../../assets/images/playVideo.png").default : menuObj.node_type === "group" ? require("../../../assets/images/wenjianjia.png").default : require("../../../assets/images/wgtp.png").default} alt="" />
                         {menuObj.region_name}{menuObj.node_type !== "details" && <span className="geshu">({menuObj.count ? menuObj.count : 0})</span>}
                     </h2>
                     {/* <input type='text' style={{ 'display': 'none' }} defaultValue={menuObj.region_name} onFocus={(e) => e.stopPropagation()} onChange={(e) => this.listName(e)} /> */}
@@ -546,6 +550,8 @@ class UserManagement extends Component {
         })
         this.closeBtn();
     }
+
+    // 右键修改树形菜单的叶子节点
     gridaddXinxi = (ev, menuObj) => {
         const { modelList } = this.state;
         Model.removeGid(this.state.polygonId);
@@ -561,6 +567,18 @@ class UserManagement extends Component {
         $(ev.currentTarget).parents(".EquipmentAbove").find(".ContractionArea").slideDown();
         let gid = this.state.modelList[menuObj.id] ? this.state.modelList[menuObj.id].gid : menuObj.gid;
         // console.log(menuObj,modelList[menuObj.id],"modelList[menuObj.id]")
+
+        // 查找当前修改对象所属的组织
+        let treeRootNode = menuObj
+        const regionListData = this.state.selectTree
+        while (Number(treeRootNode.pid) !== 0) {
+            treeRootNode = regionListData.find((region) => region.id === treeRootNode.pid)
+            // 避免死循环
+            if (!treeRootNode) {
+                break
+            }
+        }
+
         this.setState({
             isEdit: true,
             thisId: menuObj.id,
@@ -579,10 +597,13 @@ class UserManagement extends Component {
             keshi: menuObj.position,
             checkbox: menuObj.indoor,
             gid: gid,
-            modelObj: modelList[menuObj.id]
+            modelObj: modelList[menuObj.id],
+
+            // 所选组织，为当前叶子节点的根节点
+            selectname: treeRootNode.region_name
         })
         if (menuObj.indoor) {
-            this.GetMapBulid();
+            this.GetMapBulid()
             setTimeout(() => {
                 UserManagement.this.GetMapFloor(menuObj.build_id);
             }, 100);
@@ -928,7 +949,7 @@ class UserManagement extends Component {
                         <button className="ConfirmButton" onClick={() => this.closeWgname()}>取消</button>
                     </div>}
                     <div className="TreeList" style={{ 'height': '300px' }}>
-                        {this.generateMenu(this.AnalyticFormat(treelist))}
+                        {this.generateMenu(this.state.deviceTreeStructureData)}
                     </div>
                 </div>
                 <div className="ContractionArea">
