@@ -262,13 +262,13 @@ export const Model = {
         });
     },
     //删除当前模型对象
-    delectObj() {
+    delectObj(obj) {
         if (!createObj) {
             // alert("请先创建对象！");
             return;
         }
 
-        view3d.OverLayerRemoveObject(createObj);
+        view3d.OverLayerRemoveObject(obj);
         createObj = null;
         view3d.OverLayerStopEdit();
     },
@@ -289,13 +289,16 @@ export const Model = {
             // } : {}
         };
         view3d.OverLayerStartEdit(obj, res => {
-            var strObj = JSON.stringify(res);
-            // var myDate = new Date()
-            // console.log(myDate.toDateString(), strObj);
-            callback(strObj);
+            callback && callback(res);
             view3d.OverLayerStopEdit();
         });
     },
+
+    // 添加模型。
+    addExistModel(config) {
+        view3d.OverLayerCreateObject(config)
+    },
+
     // 编辑文本模型
     updeteLabelModel(obj) {
         view3d.OverLayerUpdateObject(obj);
@@ -311,13 +314,11 @@ export const Model = {
             var strObj = JSON.stringify(res);
             Polygon = res;
             view3d.OverLayerStopEdit();
-            callback(strObj);
+            callback(res);
         });
     },
     //创建面
     createPolygon(point, callback, Color) {
-        // 注意,此功能为异步操作
-        // console.log(point,"point")
         const obj = {
             type: 'polygon',
             color: Color ? Color : '#00ff00',
@@ -325,8 +326,7 @@ export const Model = {
         };
         view3d.OverLayerCreateObject(obj, res => {
             createObj = res;
-            var strObj = JSON.stringify(createObj);
-            callback(strObj)
+            callback && callback(res)
         });
     },
     // 绘制多边形
@@ -334,16 +334,17 @@ export const Model = {
         const obj = {
             type: 'polygon',
             color: item.color,
+            linecolor: item.lineColor || '',
+            linestyle: item.lineStyle || '',
+            linevisible: true,
+            linewidth: item.lineWidth || '',
             points: []
-        };
-
+        }
         view3d.OverLayerStartEdit(obj, res => {
-            var strObj = JSON.stringify(res);
-            Polygon = res;
-            console.log(Polygon, strObj);
-            view3d.OverLayerStopEdit();
-            callback(strObj);
-        });
+            Polygon = res
+            view3d.OverLayerStopEdit()
+            callback && callback(res)
+        })
     },
     //删除面
     delectPolygon() {
@@ -413,18 +414,20 @@ export const Model = {
         view3d.UpdateObjectStyle(gid, style);
     },
     // 绘制折线
-    drawLine(callback) {
+    drawLine(config, callback) {
         const obj = {
             type: 'linestring',
-            color: '#ff0f00',
+            color: config.color || '#ff0f00',
+            linewidth: config.lineWidth || 50,
             points: []
-        };
+        }
 
         view3d.OverLayerStartEdit(obj, res => {
+            view3d.OverLayerStopEdit()
             if (callback) {
                 callback(res);
             }
-        });
+        })
     },
     // 创建折线
     carteLine(points, callback) {
@@ -442,6 +445,20 @@ export const Model = {
         });
     },
 
+    // 添加图片
+    drawImageModel(config, callback) {
+      const objConfig = {
+        gid: config.gid || '',
+        type: 'image',              // 10102  或  image
+        style: config.src || 'default',
+        scale: config.scale || 1,
+        attr: config
+      }
+      view3d.OverLayerStartEdit(objConfig, res => {
+        view3d.OverLayerStopEdit()
+        callback && callback(res)
+      })
+    }
 }
 //网格类
 export const grid = {
@@ -466,7 +483,7 @@ export const Build = {
 
         let floorNum = Number(floorName.substring(floorName.length-2))>=10?Number(floorName.substring(floorName.length-2)):Number(floorName.slice(-1))
         var FLOOR=floorName.substr(0,1);
-    
+
         if(FLOOR==="B"){
             floorNum=-floorNum
         }

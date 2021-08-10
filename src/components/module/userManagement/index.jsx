@@ -1228,16 +1228,40 @@ class UserManagement extends Component {
                   )
                 })}
               </select></div>}
-              <div className="Operation_div"><span>X：</span><input type="number" value={xValue}
-                                                                   onChange={(e) => this.xChange(e)}/></div>
-              <div className="Operation_div"><span>Y：</span><input type="number" value={yValue}
-                                                                   onChange={(e) => this.yChange(e)}/></div>
+              <div className="Operation_div">
+                <span>X：</span>
+                <input
+                  type="number"
+                  value={xValue}
+                  onChange={(e) => this.xChange(e)}
+                />
+              </div>
+              <div className="Operation_div">
+                <span>Y：</span>
+                <input
+                  type="number"
+                  value={yValue}
+                  onChange={(e) => this.yChange(e)}
+                />
+              </div>
               {/* <div className="Operation_div"><span>偏转角：</span><input type="text" value={zValue} onChange={(e)=>this.zChange(e)}/></div> */}
-              <div className="Operation_div"><span>Z：</span><input type="number" value={zValue}
-                                                                   onChange={(e) => this.zChange(e)}/></div>
+              <div className="Operation_div">
+                <span>Z：</span>
+                <input
+                  type="number"
+                  value={zValue}
+                  onChange={(e) => this.zChange(e)}
+                />
+              </div>
               {/* <div className="Operation_div"><span>pitch:：</span><input  type="number"   value={pitchValue} onChange={(e)=>this.pitchChange(e)}/></div> */}
-              <div className="Operation_div"><span>yaw：</span><input type="number" value={yawValue}
-                                                                     onChange={(e) => this.yawChange(e)}/></div>
+              <div className="Operation_div">
+                <span>yaw：</span>
+                <input
+                  type="number"
+                  value={yawValue}
+                  onChange={(e) => this.yawChange(e)}
+                />
+              </div>
               {/* <div className="Operation_div"><span>roll：</span><input type="number"  value={rollValue} onChange={(e)=>this.rollChange(e)}/></div> */}
             </div>
           </div>

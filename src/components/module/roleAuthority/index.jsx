@@ -5,6 +5,7 @@ import { ChromePicker } from "react-color";
 import { Slider, message } from 'antd';
 import { getMapGroup, setMapGroup, delMapGroup, getMapLayer, setMapLayer, delMapLayer } from '../../../api/mainApi';
 import { Model, createMap } from '../../../map3D/map3d';
+
 const RoleAuthority = (props) => {
   const [list, setListArry] = useState([]);
   const [groupId, setGroupId] = useState("");
@@ -27,6 +28,20 @@ const RoleAuthority = (props) => {
   const [postion, setPostion] = useState("");
   // 当前覆盖物
   const [gMulch, setGMulch] = useState();
+
+  // 绘制结束后，保存传回的绘制对象的location属性，以便后续调整位置属性。
+  const [objLocation, setObjectLocation] = useState({
+    x: 0,
+    y: 0,
+    z: 0,
+    yaw: 0,
+    pitch: 0,
+    roll: 0
+  })
+
+  // 当前绘制结束后，返回的完整的绘制对象属性
+  const [currentDrawObject, setCurrentDrawObject] = useState(null)
+
   useEffect(() => {
     const GetMapGroup = () => {
       let data = [];
@@ -114,7 +129,7 @@ const RoleAuthority = (props) => {
   const DelMapGroup = (e, id) => {
     e.stopPropagation();
     e.preventDefault();
-    delMapGroup({ id: id }).then(res => {
+    delMapGroup({id: id}).then(res => {
       if (res.msg === "success") {
         message.success("删除成功");
         GetMapGroup();
@@ -258,7 +273,8 @@ const RoleAuthority = (props) => {
   // 删除图层
   const DelMapLayer = (e, item) => {
     e.stopPropagation();
-    delMapLayer({ id: item.id }).then(res => {
+
+    delMapLayer({id: item.id}).then(res => {
       if (res.msg === "success") {
         message.success("删除成功");
         GetMapGroup();
@@ -269,7 +285,7 @@ const RoleAuthority = (props) => {
         } else {
           Pos = JSON.parse(item.options.postion);
         }
-        Model.delectMulch({ gid: Pos.gid });
+        Model.delectMulch({gid: Pos.gid});
       } else {
         message.error(res.msg);
       }
@@ -359,9 +375,14 @@ const RoleAuthority = (props) => {
 
         createMap.FlyToPosition(loca);
       } else {
-        Pos = JSON.parse(obj.options.postion);
-        createMap.FlyToPosition(Pos.location);
+        Pos = typeof obj.options.postion === 'string' ? JSON.parse(obj.options.postion) : obj.options.postion
+        createMap.FlyToPosition({
+          ...Pos.location,
+          pitch: -90,
+          z: Pos.location.z + 5000
+        });
       }
+      setPostion(Pos)
       setGMulch(Pos);
 
       $('#tcmc').val(obj.layer_name);
@@ -394,6 +415,10 @@ const RoleAuthority = (props) => {
         default:
           break;
       }
+      // 点击的图层，添加到地图上
+      Model.addExistModel(Pos)
+      setCurrentDrawObject(Pos)
+      setObjectLocation(Pos.location)
     }, 10);
   }
   const addBtn = (e) => {
@@ -449,7 +474,8 @@ const RoleAuthority = (props) => {
   // 绘制
   const huizhi = () => {
     if (gMulch) {
-      Model.delectMulch({ gid: gMulch.gid });
+      console.log("gMulch: ", gMulch)
+      Model.delectMulch({gid: gMulch.gid});
     }
     if (typeText === "文本") {
       let bzwb = $('#bzwb').val();
@@ -466,23 +492,71 @@ const RoleAuthority = (props) => {
         color: colorOne,
         size: ztdx
       }
-      Model.LabelModel(json, (obj) => {
-        setPostion(obj)
+      Model.LabelModel(json, (res) => {
+        setPostion(res)
+        setCurrentDrawObject(res)
+        setObjectLocation(res.location)
       });
-    } else {
-
-      Model.playPolygon2({ color: colorOne }, (obj) => {
-        console.log(obj, "obj")
-        setPostion(obj);
-
+    } else if (typeText === '图片') {
+      Model.drawImageModel({
+        // src: imageSrc,
+        // src: "https://picsum.photos/200/300",
+        src: "menjin",  // 不支持自定义图片地址。所有图片都要从图片库取。
+        scale: 2
+      }, (res) => {
+        console.log(res)
+        setPostion(res)
+        setCurrentDrawObject(res)
+        setObjectLocation(res.location)
+      })
+    } else if (typeText === '折线') {
+      let lineConfig = {
+        color: colorTwo,
+        lineWidth: $('#zxkd').val()
+      }
+      Model.drawLine(lineConfig, (res) => {
+        console.log(res)
+        setPostion(res)
+        setCurrentDrawObject(res)
+        setObjectLocation(res.location)
+      })
+    } else if (typeText === '多边形') {
+      let bkkd = $('#bkkd').val();
+      Model.playPolygon2({
+        color: colorOne,
+        lineColor: colorTwo,
+        lineWidth: bkkd
+      }, (res) => {
+        console.log(res)
+        setCurrentDrawObject(res)
+        setObjectLocation(res.location)
       })
     }
   }
+
+  const updateObjectLocation = (e, key) => {
+    const newLocation = {
+      ...objLocation,
+      [key]: e.target.value
+
+    }
+    setObjectLocation(newLocation)
+    setCurrentDrawObject(current => ({
+      ...current,
+      location: newLocation
+    }))
+    Model.modify({
+      ...currentDrawObject,
+      location: newLocation
+    })
+  }
+  const showPositionControl =  typeText === '文本'
   return (
     <div className="custom">
       <div className="RightTitle">
         <span>自定义数据</span>
-        <img src={require("../../../assets/images/closeWhite.png").default} onClick={() => props.setMoudleId("")} alt="" />
+        <img src={require("../../../assets/images/closeWhite.png").default} onClick={() => props.setMoudleId("")}
+             alt=""/>
       </div>
       <div className="customList">
         <div className="customBtn">
@@ -491,12 +565,20 @@ const RoleAuthority = (props) => {
         <ul>
           {list.map((item, index) => {
             return (
-              <li key={index}><span className="spanAtive" onContextMenu={(e) => rightClick(e)} onClick={(e) => leftClick(e, item)}>{item.group_name}</span>
+              <li key={index}><span className="spanAtive" onContextMenu={(e) => rightClick(e)}
+                                    onClick={(e) => leftClick(e, item)}>{item.group_name}</span>
                 <ul>
                   {item.childen && item.childen.map(item2 => {
                     return (
-                      <li key={item2.id}><span className="spanAtive" onContextMenu={(e) => rightClick(e)} onClick={(e) => tcleftClick(e, item.id, item2)}>{item2.layer_name}</span>
-                        <div className="Alert" style={{ display: "none" }}>
+                      <li key={item2.id}>
+                        <span
+                          className="spanAtive"
+                          onContextMenu={(e) => rightClick(e)}
+                          onClick={(e) => tcleftClick(e, item.id, item2)}
+                        >
+                          {item2.layer_name}
+                        </span>
+                        <div className="Alert" style={{display: "none"}}>
                           <p onClick={(e) => DelMapLayer(e, item2)}>删除</p>
                         </div>
                       </li>
@@ -504,7 +586,7 @@ const RoleAuthority = (props) => {
                   })}
 
                 </ul>
-                <div className="Alert" style={{ display: "none" }}>
+                <div className="Alert" style={{display: "none"}}>
                   <p onClick={(e) => addTczBtn(e, item.id)}>添加</p>
                   {JSON.stringify(item.childen) === "[]" && <p onClick={(e) => DelMapGroup(e, item.id)}>删除</p>}
                 </div>
@@ -515,19 +597,22 @@ const RoleAuthority = (props) => {
       </div>
       <div className="ContractionArea">
         <div className="shrinkage">
-          <p onClick={(e) => shrinkageBtn(e)}><img src={require("../../../assets/images/shousuojt.png").default} alt="" /></p>
+          <p onClick={(e) => shrinkageBtn(e)}><img src={require("../../../assets/images/shousuojt.png").default}
+                                                   alt=""/></p>
         </div>
         {Flag ? <div className="CustomPanel">
-          <div className="CustomPanel_Div"><span>分层名称：</span><input className="inputAll" type="text" id="fcmc" /></div>
-          <div className="CustomPanel_Div"><span>分层图标：</span><p onClick={(ev) => fileOpen(ev)}>{imgPic !== "" && imgPic !== undefined ? <img src={imgPic} alt="" /> : "pic"}<input type="file" onChange={(ev) => fileQr(ev)} /></p></div>
-          <div className="CustomPanel_Div"><span>分层备注：</span><textarea className="inputAll" id="fcbz"></textarea></div>
-        </div> :
+            <div className="CustomPanel_Div"><span>分层名称：</span><input className="inputAll" type="text" id="fcmc"/></div>
+            <div className="CustomPanel_Div"><span>分层图标：</span><p
+              onClick={(ev) => fileOpen(ev)}>{imgPic !== "" && imgPic !== undefined ?
+              <img src={imgPic} alt=""/> : "pic"}<input type="file" onChange={(ev) => fileQr(ev)}/></p></div>
+            <div className="CustomPanel_Div"><span>分层备注：</span><textarea className="inputAll" id="fcbz"/></div>
+          </div> :
           <div className="CustomPanel">
             <div className="TextWb">
               <span>图层名称：</span>
-              <input type="text" className="inputAll" id="tcmc" />
+              <input type="text" className="inputAll" id="tcmc"/>
             </div>
-            <div className="TextWb" style={{ width: "200px" }}>
+            <div className="TextWb" style={{width: "200px"}}>
               <span>上图方式：</span>
               <select name="" className="sleAll" id="stfs" value={typeText} onChange={(e) => typeQh(e.target.value)}>
                 <option value="文本">文本</option>
@@ -540,38 +625,67 @@ const RoleAuthority = (props) => {
               switch (typeText) {
                 case "文本":
                   return (
-                    <div><div className="TextWb">
-                      <span>标注文本：</span>
-                      <input type="text" className="inputAll" id="bzwb" />
-                    </div>
+                    <div>
+                      <div className="TextWb">
+                        <span>标注文本：</span>
+                        <input type="text" className="inputAll" id="bzwb"/>
+                      </div>
                       <div className={`TextWb`}>
                         <span>标注颜色：</span>
-                        <div className="colorArea" style={{ backgroundColor: colorOne }} onClick={(e) => colorOpen(e, "colorOne")}></div>
-                        {colorOneFlag && <div className="ChromePicker"><div className="mask" onClick={() => colorClose()}></div><ChromePicker color={colorOne} onChange={handleChoosePalette.bind(this, 'colorOne')}></ChromePicker></div>}
+                        <div
+                          className="colorArea"
+                          style={{backgroundColor: colorOne}}
+                          onClick={(e) => colorOpen(e, "colorOne")}
+                        />
+                        {colorOneFlag &&
+                        <div className="ChromePicker">
+                          <div className="mask" onClick={() => colorClose()}/>
+                          <ChromePicker
+                            color={colorOne}
+                            onChange={handleChoosePalette.bind(this, 'colorOne')}
+                          />
+                        </div>
+                        }
                       </div>
                       <div className="TextWb">
                         <span>字体大小：</span>
-                        <input type="text" className="inputAll" id="ztdx" />
+                        <input type="text" className="inputAll" id="ztdx"/>
                       </div>
                       <div className="TextWb">
                         <span>是否衬色：</span>
-                        <input type="checkbox" checked={csFlag} onChange={() => SetCsFlag()} />
+                        <input type="checkbox" checked={csFlag} onChange={() => SetCsFlag()}/>
                       </div>
                       <div className={`TextWb ${!csFlag ? "disableState" : ""}`}>
                         <span>衬色颜色：</span>
-                        <div className="colorArea" style={{ backgroundColor: colorTwo }} onClick={csFlag ? (e) => colorOpen(e, "colorTwo") : null}></div>
-                        {colorTwoFlag && <div className="ChromePicker"><div className="mask" onClick={() => colorClose()}></div><ChromePicker color={colorTwo} onChange={handleChoosePalette.bind(this, 'colorTwo')}></ChromePicker></div>}
+                        <div
+                          className="colorArea"
+                          style={{backgroundColor: colorTwo}}
+                          onClick={csFlag ? (e) => colorOpen(e, "colorTwo") : null}
+                        />
+                        {colorTwoFlag && <div className="ChromePicker">
+                          <div className="mask" onClick={() => colorClose()}/>
+                          <ChromePicker
+                            color={colorTwo}
+                            onChange={handleChoosePalette.bind(this, 'colorTwo')}
+                          />
+                        </div>}
                       </div>
                       <div className={`TextWb ${!csFlag ? "disableState" : ""}`}>
                         <span>衬色宽度：</span>
-                        <input type="text" className="inputAll" id="cskd" disabled={!csFlag ? "disabled" : ""} />
+                        <input type="text" className="inputAll" id="cskd" disabled={!csFlag ? "disabled" : ""}/>
                       </div>
                     </div>
                   )
                 case "图片":
                   return (
                     <div>
-                      <div className="TextWb"><span>上传图标：</span><p onClick={(ev) => fileOpen(ev)}>{imgPic !== "" && imgPic !== undefined ? <img src={imgPic} alt="" /> : "pic"}<input type="file" onChange={(ev) => fileQr(ev)} /></p></div>
+                      <div className="TextWb">
+                        <span>上传图标：</span>
+                        <p onClick={(ev) => fileOpen(ev)}>{imgPic !== "" && imgPic !== undefined ?
+                          <img src={imgPic} alt=""/> : "pic"}
+                          <input type="file" onChange={(ev) => fileQr(ev)}/>
+                        </p>
+                      </div>
                     </div>
                   )
                 case "折线":
@@ -579,25 +693,40 @@ const RoleAuthority = (props) => {
                     <div>
                       <div className={`TextWb`}>
                         <span>折线颜色：</span>
-                        <div className="colorArea" style={{ backgroundColor: colorOne }} onClick={(e) => colorOpen(e, "colorOne")}></div>
-                        {colorOneFlag && <div className="ChromePicker"><div className="mask" onClick={() => colorClose()}></div><ChromePicker color={colorOne} onChange={handleChoosePalette.bind(this, 'colorOne')}></ChromePicker></div>}
+                        <div className="colorArea" style={{backgroundColor: colorOne}}
+                             onClick={(e) => colorOpen(e, "colorOne")}/>
+                        {colorOneFlag &&
+                        <div className="ChromePicker">
+                          <div className="mask" onClick={() => colorClose()}/>
+                          <ChromePicker color={colorOne} onChange={handleChoosePalette.bind(this, 'colorOne')}/>
+                        </div>}
                       </div>
                       <div className="TextWb">
                         <span>折线宽度：</span>
-                        <input type="text" className="inputAll" id="zxkd" />
+                        <input type="text" className="inputAll" id="zxkd"/>
                       </div>
                       <div className={`TextWb`}>
                         <span>衬色颜色：</span>
-                        <div className="colorArea" style={{ backgroundColor: colorTwo }} onClick={(e) => colorOpen(e, "colorTwo")}></div>
-                        {colorTwoFlag && <div className="ChromePicker"><div className="mask" onClick={() => colorClose()}></div><ChromePicker color={colorTwo} onChange={handleChoosePalette.bind(this, 'colorTwo')}></ChromePicker></div>}
+                        <div
+                          className="colorArea"
+                          style={{backgroundColor: colorTwo}}
+                          onClick={(e) => colorOpen(e, "colorTwo")}
+                        />
+                        {colorTwoFlag &&
+                        <div className="ChromePicker">
+                          <div className="mask" onClick={() => colorClose()}/>
+                          <ChromePicker color={colorTwo} onChange={handleChoosePalette.bind(this, 'colorTwo')}
+                          />
+                        </div>
+                        }
                       </div>
                       <div className="TextWb">
                         <span>衬色宽度：</span>
-                        <input type="text" className="inputAll" id="cskd" />
+                        <input type="text" className="inputAll" id="cskd"/>
                       </div>
                       <div className="TextWb">
-                        <span style={{ width: "110px" }}>边框透明度：</span>
-                        <Slider onChange={SetBktmd} value={bktmd} tipFormatter={formatter} />
+                        <span style={{width: "110px"}}>边框透明度：</span>
+                        <Slider onChange={SetBktmd} value={bktmd} tipFormatter={formatter}/>
                       </div>
                     </div>
                   )
@@ -606,25 +735,47 @@ const RoleAuthority = (props) => {
                     <div>
                       <div className={`TextWb`}>
                         <span>多边形颜色：</span>
-                        <div className="colorArea" style={{ backgroundColor: colorOne }} onClick={(e) => colorOpen(e, "colorOne")}></div>
-                        {colorOneFlag && <div className="ChromePicker"><div className="mask" onClick={() => colorClose()}></div><ChromePicker color={colorOne} onChange={handleChoosePalette.bind(this, 'colorOne')}></ChromePicker></div>}
+                        <div
+                          className="colorArea"
+                          style={{backgroundColor: colorOne}}
+                          onClick={(e) => colorOpen(e, "colorOne")}
+                        />
+                        {colorOneFlag &&
+                        <div className="ChromePicker">
+                          <div className="mask" onClick={() => colorClose()}/>
+                          <ChromePicker
+                            color={colorOne}
+                            onChange={handleChoosePalette.bind(this, 'colorOne')}
+                          />
+                        </div>}
                       </div>
                       <div className="TextWb">
                         <span>透明度：</span>
-                        <Slider onChange={SetTmd} value={tmd} tipFormatter={formatter} />
+                        <Slider onChange={SetTmd} value={tmd} tipFormatter={formatter}/>
                       </div>
                       <div className="TextWb">
                         <span>边框宽度：</span>
-                        <input type="text" className="inputAll" id="bkkd" />
+                        <input type="text" className="inputAll" id="bkkd"/>
                       </div>
                       <div className={`TextWb`}>
                         <span>边框颜色：</span>
-                        <div className="colorArea" style={{ backgroundColor: colorTwo }} onClick={(e) => colorOpen(e, "colorTwo")}></div>
-                        {colorTwoFlag && <div className="ChromePicker"><div className="mask" onClick={() => colorClose()}></div><ChromePicker color={colorTwo} onChange={handleChoosePalette.bind(this, 'colorTwo')}></ChromePicker></div>}
+                        <div
+                          className="colorArea"
+                          style={{backgroundColor: colorTwo}}
+                          onClick={(e) => colorOpen(e, "colorTwo")}
+                        />
+                        {colorTwoFlag &&
+                        <div className="ChromePicker">
+                          <div className="mask" onClick={() => colorClose()}/>
+                          <ChromePicker
+                            color={colorTwo}
+                            onChange={handleChoosePalette.bind(this, 'colorTwo')}
+                          />
+                        </div>}
                       </div>
                       <div className="TextWb">
-                        <span style={{ width: "110px" }}>边框透明度：</span>
-                        <Slider onChange={SetBktmd} value={bktmd} tipFormatter={formatter} />
+                        <span style={{width: "110px"}}>边框透明度：</span>
+                        <Slider onChange={SetBktmd} value={bktmd} tipFormatter={formatter}/>
                       </div>
                     </div>
                   )
@@ -633,7 +784,60 @@ const RoleAuthority = (props) => {
               }
 
             })()}
-
+            {showPositionControl &&
+            <div className="Operation">
+              <div className="Operation_div">
+                <span>X：</span>
+                <input
+                  type="number"
+                  value={objLocation.x}
+                  onChange={(e) => updateObjectLocation(e, 'x')}
+                />
+              </div>
+              <div className="Operation_div">
+                <span>Y：</span>
+                <input
+                  type="number"
+                  value={objLocation.y}
+                  onChange={(e) => updateObjectLocation(e, 'y')}
+                />
+              </div>
+              <div className="Operation_div">
+                <span>Z：</span>
+                <input
+                  type="number"
+                  value={objLocation.z}
+                  onChange={(e) => updateObjectLocation(e, 'z')}
+                />
+              </div>
+              <div className="Operation_div" title="俯仰角">
+                <span>pitch:：</span>
+                <input
+                  type="number"
+                  value={objLocation.pitch}
+                  min={-90}
+                  max={90}
+                  onChange={(e) => updateObjectLocation(e, 'pitch')}
+                />
+              </div>
+              <div className="Operation_div" title="偏航角">
+                <span>yaw：</span>
+                <input
+                  type="number"
+                  value={objLocation.yaw}
+                  onChange={(e) => updateObjectLocation(e, 'yaw')}
+                />
+              </div>
+              <div className="Operation_div" title="翻滚角">
+                <span>roll：</span>
+                <input
+                  type="number"
+                  value={objLocation.roll}
+                  onChange={(e) => updateObjectLocation(e, 'roll')}
+                />
+              </div>
+            </div>
+            }
           </div>
         }
         <div className="CustomPanelBtn">
