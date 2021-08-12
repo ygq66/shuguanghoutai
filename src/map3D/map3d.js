@@ -91,6 +91,12 @@ export const createMap = {
             view3d.enableMouse = true;
         }
     },
+    disableKeyboard() {
+        if (view3d) {
+            view3d.enableKeyboard = false;
+            view3d.enableMouse = true;
+        }
+    },
     //飞到位置点
     FlyToPosition(pos) {
         // const pos = {
@@ -314,7 +320,7 @@ export const Model = {
             var strObj = JSON.stringify(res);
             Polygon = res;
             view3d.OverLayerStopEdit();
-            callback(res);
+            callback(strObj);
         });
     },
     //创建面
@@ -326,7 +332,7 @@ export const Model = {
         };
         view3d.OverLayerCreateObject(obj, res => {
             createObj = res;
-            callback && callback(res)
+            callback && callback(JSON.stringify(res))
         });
     },
     // 绘制多边形

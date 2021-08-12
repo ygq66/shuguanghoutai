@@ -2,8 +2,15 @@ import React, { Component } from 'react';
 import './style.scss';
 import $ from "jquery";
 import { createMap, Model, Build } from "../../../map3D/map3d";
-import { getBuildList, getFloorList, getPeopleLocation, setPeopleLocation, delPeopleLocation } from '../../../api/mainApi';
+import {
+  getBuildList,
+  getFloorList,
+  getPeopleLocation,
+  setPeopleLocation,
+  delPeopleLocation
+} from '../../../api/mainApi';
 import { message } from 'antd';
+
 class PerPosition extends Component {
   constructor(props) {
     super(props);
@@ -22,10 +29,13 @@ class PerPosition extends Component {
       floorList: [],//楼层列表
       ModelPolygon: null,//当前绘制的object
       flag_edit: false,//是否编辑
-      oldName: "",//上一个名称
+      oldName: ""//上一个名称
     };
     PerPosition.this = this;
+
+    this.listContainerRef = React.createRef()
   }
+
   componentDidMount() {
     this.GetBuildList();
     this.getPeopleLocation();
@@ -35,6 +45,7 @@ class PerPosition extends Component {
       });
     })
   }
+
   // v-model数据绑定
   setOnChange = (e, type) => {
     this.setState({
@@ -62,7 +73,7 @@ class PerPosition extends Component {
   // 获取楼层列表
   GetFloorList = (id) => {
     PerPosition.this.showFloorAll();
-    getFloorList({ build_id: id }).then(res => {
+    getFloorList({build_id: id}).then(res => {
       PerPosition.this.setState({
         floorList: res.data,
         floorId: res.data[0].floor_id,
@@ -73,20 +84,23 @@ class PerPosition extends Component {
         if (PerPosition.this.state.isOne) {
           PerPosition.this.showFloor();
         }
-        PerPosition.this.setState({ isOne: true })
+        PerPosition.this.setState({isOne: true})
       }, 100)
     })
   }
   // 楼层切换事件
   floorQiehuan = (e) => {
-    this.setState({ floorId: e.target.value });
+    this.setState({floorId: e.target.value});
     setTimeout(() => {
       PerPosition.this.showFloor();
     }, 0)
   }
   // 楼层全部展示
   showFloorAll = () => {
-    const { floorList, oldbuildId } = this.state;
+    const {
+      floorList,
+      oldbuildId
+    } = this.state;
     let floor = [];
     floorList.forEach(res => {
       let floor_id = res.floor_id.split("#")[1];
@@ -96,7 +110,11 @@ class PerPosition extends Component {
   }
   // 楼层掀层
   showFloor = () => {
-    const { floorList, floorId, buildId } = this.state;
+    const {
+      floorList,
+      floorId,
+      buildId
+    } = this.state;
     let floor = [];
     floorList.forEach(res => {
       let floor_id = res.floor_id.split("#")[1];
@@ -109,10 +127,10 @@ class PerPosition extends Component {
   }
   // 左键点击事件
   onSelect = (item, index) => {
-    const { ModelPolygon } = this.state;
+    const {ModelPolygon} = this.state;
     if (ModelPolygon) {
       Model.removeGid(ModelPolygon.gid)
-    };
+    }
     PerPosition.this.showPolygon(item.positions)
     this.setState({
       flag_Node: false,
@@ -122,7 +140,7 @@ class PerPosition extends Component {
   }
   // 展示面
   showPolygon = (item) => {
-    const { ModelPolygon } = this.state;
+    const {ModelPolygon} = this.state;
     if (ModelPolygon) {
       Model.removeGid(ModelPolygon.gid);
     }
@@ -146,20 +164,25 @@ class PerPosition extends Component {
     event.preventDefault();
     var x = event.currentTarget.offsetLeft + event.currentTarget.clientWidth;
     var y = event.currentTarget.offsetTop;
+    const containerScrollTop = this.listContainerRef.current.scrollTop
     this.setState({
       flag_Node: true,
       NodeTreeItem: {
         ...item,
         pageX: x,
-        pageY: y,
+        pageY: y - containerScrollTop
       },
       listNum: index
     });
-    console.log(x, y, item, "item")
+    // console.log(x, y, item, "item")
   }
+
   // 右键操作面板
   getNodeTreeMenu() {
-    const { pageX, pageY } = { ...this.state.NodeTreeItem };
+    const {
+      pageX,
+      pageY
+    } = {...this.state.NodeTreeItem};
     const tmpStyle = {
       left: `${pageX + 5}px`,
       top: `${pageY}px`,
@@ -173,6 +196,7 @@ class PerPosition extends Component {
     );
     return menu;
   }
+
   // 显示/隐藏操作栏
   setOperatingArea = (flag) => {
     if (flag) {
@@ -215,7 +239,10 @@ class PerPosition extends Component {
   }
   // 清空
   clearData = (flag) => {
-    const { buildList, ModelPolygon } = this.state;
+    const {
+      buildList,
+      ModelPolygon
+    } = this.state;
     if (ModelPolygon !== null) {
       Model.removeGid(ModelPolygon.gid);
       PerPosition.this.setState({
@@ -235,7 +262,7 @@ class PerPosition extends Component {
   }
   // 绘制区域
   drawPolygon = () => {
-    const { ModelPolygon } = this.state;
+    const {ModelPolygon} = this.state;
     message.warning("鼠标右键结束绘制");
     if (ModelPolygon !== null) {
       Model.removeGid(ModelPolygon.gid);
@@ -252,7 +279,15 @@ class PerPosition extends Component {
   }
   // 添加or修改人员定位信息
   setPeopleLocation = (flag) => {
-    const { oldName, name, buildId, floorId, ModelPolygon, NodeTreeItem } = this.state;
+    const {
+      oldName,
+      name,
+      buildId,
+      floorId,
+      ModelPolygon,
+      NodeTreeItem,
+      perList
+    } = this.state;
     if (name === "") {
       message.error("请先填写区域名称");
       return;
@@ -265,7 +300,11 @@ class PerPosition extends Component {
         location_name: name,
         build_id: buildId,
         floor_id: floorId,
-        positions: { ...ModelPolygon, center: JSON.parse(msg) }
+        order: perList.length,
+        positions: {
+          ...ModelPolygon,
+          center: JSON.parse(msg)
+        }
       }
       if (!flag) {
         json["id"] = NodeTreeItem.id;
@@ -273,6 +312,7 @@ class PerPosition extends Component {
       if (oldName === name) {
         return;
       }
+      console.log(json)
       setPeopleLocation(json).then(res => {
         message.success(flag ? "添加成功" : "修改成功");
         PerPosition.this.getPeopleLocation();
@@ -286,36 +326,55 @@ class PerPosition extends Component {
   }
   // 删除房间
   delPeopleLocation = (item) => {
-    delPeopleLocation({ id: item.id }).then(res => {
+    delPeopleLocation({id: item.id}).then(res => {
       message.success("删除成功");
       PerPosition.this.getPeopleLocation();
       PerPosition.this.setOperatingArea(false);
     })
   }
   setMoudleId = () => {
-    const { ModelPolygon } = this.state;
+    const {ModelPolygon} = this.state;
     PerPosition.this.showFloorAll();
     if (ModelPolygon) {
       Model.removeGid(ModelPolygon.gid);
     }
     this.props.setMoudleId("");
   }
+
   render() {
-    const { listNum, perList, NodeTreeItem, flag_Node, name, buildList, floorList, buildId, floorId, ModelPolygon, flag_edit } = this.state;
+    const {
+      listNum,
+      perList,
+      NodeTreeItem,
+      flag_Node,
+      name,
+      buildList,
+      floorList,
+      buildId,
+      floorId,
+      ModelPolygon,
+      flag_edit
+    } = this.state;
     return (
       <div className="PerPosition">
         <div className="RightTitle">
           <span>人员定位</span>
-          <img src={require("../../../assets/images/closeWhite.png").default} onClick={() => this.setMoudleId()} alt="" />
+          <img src={require("../../../assets/images/closeWhite.png").default} onClick={() => this.setMoudleId()} alt=""/>
         </div>
         <div className="CreateLayer_button">
           <button className="CreateLayerbutton" onClick={() => this.addBtn()}>新建区域</button>
         </div>
         <div className="domtree2">
-          <ul>
+          <ul ref={this.listContainerRef}>
             {perList.map((item, index) => {
               return (
-                <li key={index}><span className={listNum === index ? "active" : ""} onContextMenu={(e) => this.onRightClick(e, item, index)} onClick={() => this.onSelect(item, index)}>{index + 1}.&nbsp;&nbsp;&nbsp;{item.location_name}</span></li>
+                <li key={index}>
+                  <span
+                    className={listNum === index ? "active" : ""}
+                    onContextMenu={(e) => this.onRightClick(e, item, index)}
+                    onClick={() => this.onSelect(item, index)}>{index + 1}.&nbsp;&nbsp;&nbsp;{item.location_name}
+                  </span>
+                </li>
               )
             })}
           </ul>
@@ -323,14 +382,29 @@ class PerPosition extends Component {
         </div>
         <div className="ContractionArea">
           <div className="shrinkage">
-            <p onClick={() => this.setOperatingArea(false)}><img src={require("../../../assets/images/shousuojt.png").default} alt="" /></p>
+            <p onClick={() => this.setOperatingArea(false)}><img
+              src={require("../../../assets/images/shousuojt.png").default} alt=""/></p>
           </div>
-          <div className="RoomName" >
-            <div style={{ paddingTop: "20px", display: "flex", alignItems: "center" }}>
-              <span style={{ color: 'white' }}>区域名称：</span><input type="text" className="inputAll" value={name} onChange={(e) => this.setOnChange(e, "name")}></input>
+          <div className="RoomName">
+            <div style={{
+              paddingTop: "20px",
+              display: "flex",
+              alignItems: "center"
+            }}>
+              <span style={{color: 'white'}}>区域名称：</span>
+              <input
+                type="text"
+                className="inputAll" value={name}
+
+                onChange={(e) => this.setOnChange(e, "name")}
+              />
             </div>
-            <div className="BuildFloor" style={{ marginTop: "20px", display: "flex", alignItems: "center" }}>
-              <span style={{ color: 'white' }}>建筑：</span>
+            <div className="BuildFloor" style={{
+              marginTop: "20px",
+              display: "flex",
+              alignItems: "center"
+            }}>
+              <span style={{color: 'white'}}>建筑：</span>
               <select className="sleAll" value={buildId} onChange={(e) => this.GetFloorList(e.target.value)}>
                 {buildList.map(item => {
                   return (
@@ -338,7 +412,10 @@ class PerPosition extends Component {
                   )
                 })}
               </select>
-              <span style={{ color: 'white', marginLeft: "10px" }}>楼层：</span>
+              <span style={{
+                color: 'white',
+                marginLeft: "10px"
+              }}>楼层：</span>
               <select className="sleAll" value={floorId} onChange={(e) => this.floorQiehuan(e)}>
                 {floorList.map(item => {
                   return (
@@ -347,13 +424,28 @@ class PerPosition extends Component {
                 })}
               </select>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", margin: "40px 0 20px 0" }}>
-              <div className="Draw" style={{ borderRadius: "5px", marginLeft: "80px", fontSize: "14px", cursor: "pointer" }} onClick={() => this.drawPolygon()}>{ModelPolygon !== null ? "重新绘制" : "绘制"}</div>
-              <div className="Save" style={{ borderRadius: "5px", marginRight: "80px", fontSize: "14px", cursor: "pointer" }} onClick={() => this.setPeopleLocation(flag_edit)}>保存</div>
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              margin: "40px 0 20px 0"
+            }}>
+              <div className="Draw" style={{
+                borderRadius: "5px",
+                marginLeft: "80px",
+                fontSize: "14px",
+                cursor: "pointer"
+              }} onClick={() => this.drawPolygon()}>{ModelPolygon !== null ? "重新绘制" : "绘制"}</div>
+              <div className="Save" style={{
+                borderRadius: "5px",
+                marginRight: "80px",
+                fontSize: "14px",
+                cursor: "pointer"
+              }} onClick={() => this.setPeopleLocation(flag_edit)}>保存
+              </div>
             </div>
           </div>
         </div>
-      </div >
+      </div>
     );
   }
 }

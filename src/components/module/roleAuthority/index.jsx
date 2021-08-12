@@ -180,6 +180,13 @@ const RoleAuthority = (props) => {
           message.error("请填写衬色宽度！");
           return false;
         }
+        let newPosition = {
+          ...postion,
+          location: {
+            ...postion.location,
+            ...objLocation
+          }
+        }
         json["options"] = {
           bzwb: bzwb,
           bzys: colorOne,
@@ -187,7 +194,7 @@ const RoleAuthority = (props) => {
           csflag: csFlag,
           csys: colorTwo,
           cskd: cskd,
-          postion: postion
+          postion: newPosition
         }
         break;
       case "图片":
@@ -379,7 +386,9 @@ const RoleAuthority = (props) => {
         createMap.FlyToPosition({
           ...Pos.location,
           pitch: -90,
-          z: Pos.location.z + 5000
+          z: Pos.location.z + 5000,
+          yaw: 0,
+          roll: 0
         });
       }
       setPostion(Pos)

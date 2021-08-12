@@ -1,6 +1,6 @@
 {
-  "Url": "http://192.168.0.245:8096/MapW5.5",
-  "map_url":"http://77.22.171.7:9901/aimapvision3d",
-  "projectId":"5fc45cac1339490b9235978f4d4b4c91",
-  "token":"286a3d87c2f9cd8f9aadc5013246a58c"
+    "Url": "http://192.168.0.178:8096/zhuzhouW5.5",
+    "map_url":"http://192.168.0.178:9903",
+    "projectId":"5fc45cac1339490b9235978f4d4b4c91",
+    "token":"286a3d87c2f9cd8f9aadc5013246a58c"
 }

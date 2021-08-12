@@ -73,7 +73,10 @@ class UserManagement extends Component {
       deviceTreeStructureData: [],     // 设备的树形结构数据。N维数组。
 
       // 相机列表
-      cameraList: []
+      cameraList: [],
+
+      floorId: '', // 楼层ID
+      buildId: ''  // 楼层ID
     };
     UserManagement.this = this;
 
@@ -250,6 +253,7 @@ class UserManagement extends Component {
       polygonId
     } = this.state
     if (gid !== "" && name !== "" && videoType !== "0") {
+      const self = this
       createMap.getCurrent(msg => {
         setTimeout(() => {
           const location = {
@@ -274,8 +278,10 @@ class UserManagement extends Component {
             device_code: code,
             category_id: flagText,
             indoor: checkbox,
-            build_id: $("#buildId").find("option:selected").val(),
-            floor_id: $("#floorId").find("option:selected").val()
+            // build_id: $("#buildId").find("option:selected").val(),
+            build_id: self.state.buildId,
+            // floor_id: $("#floorId").find("option:selected").val()
+            floor_id: self.state.floorId
           }
           if (thisId !== "") {
             data['id'] = thisId
@@ -736,13 +742,16 @@ class UserManagement extends Component {
         this.GetMapBulid()
 
         setTimeout(() => {
-          $("#buildId").val(menuObj.build_id)
-          $("#floorId").val(menuObj.floor_id)
+          // $("#buildId").val(menuObj.build_id)
+          // $("#floorId").val(menuObj.floor_id)
+          // console.log('当前楼层：', $("#floorId").val(), menuObj.floor_id)
+          this.setState({
+            floorId: menuObj.floor_id,
+            buildId: menuObj.build_id
+          }, () => {
+            UserManagement.this.GetMapFloor(menuObj.build_id)
+          })
         }, 200)
-
-        setTimeout(() => {
-          UserManagement.this.GetMapFloor(menuObj.build_id)
-        }, 100);
       }
     })
 
@@ -1036,7 +1045,8 @@ class UserManagement extends Component {
       if (res.msg === "success") {
         this.setState({
           floorList: res.data,
-          oldbuildId: id
+          oldbuildId: id,
+          buildId: id
         });
         setTimeout(() => {
           UserManagement.this.showFloor();
@@ -1058,7 +1068,7 @@ class UserManagement extends Component {
     Build.showFloor(oldbuildId, "all", floor);
   }
   // 楼层掀层
-  showFloor = () => {
+  showFloor = (selectedFloorId) => {
     const {
       floorList,
       cameraList
@@ -1068,9 +1078,11 @@ class UserManagement extends Component {
       let floor_id = res.floor_id.split("#")[1];
       floor.push(floor_id);
     })
-    let build_id = $("#buildId").find("option:selected").val();
+    // let build_id = $("#buildId").find("option:selected").val();
+    let build_id = this.state.buildId
     // let floor_id = $("#floorId").find("option:selected").val();
-    let floor_id = $("#floorId").val()
+    // let floor_id = $("#floorId").val()
+    let floor_id = selectedFloorId || this.state.floorId
     let originFloorId = floor_id
     floor_id = floor_id.split("#")[1];
     Build.showFloor(build_id, floor_id, floor);
@@ -1088,6 +1100,11 @@ class UserManagement extends Component {
         createMap.updateObjectVisible(camera.model_url, cameraVisible)
       }
     })
+    if (selectedFloorId) {
+      this.setState({
+        floorId: selectedFloorId
+      })
+    }
   }
   closeChuang = () => {
     UserManagement.this.showFloorAll();
@@ -1118,8 +1135,10 @@ class UserManagement extends Component {
       title,
       selectname,
       playvideo,
-      selectTree
-    } = this.state;
+      selectTree,
+      buildId,
+      floorId
+    } = this.state
     return (
       <div className="EquipmentAbove">
         {/* <FloorList></FloorList> */}
@@ -1211,7 +1230,12 @@ class UserManagement extends Component {
               {checkbox &&
               <div className="Operation_div">
                 <span>楼：</span>
-                <select className="Operation_sle" id="buildId" onChange={(e) => this.GetMapFloor(e.target.value)}>
+                <select
+                  className="Operation_sle"
+                  id="buildId"
+                  onChange={(e) => this.GetMapFloor(e.target.value)}
+                  value={buildId}
+                >
                   {buildList.map(item => {
                     return (
                       <option key={item.build_id} value={item.build_id}>{item.build_name}</option>
@@ -1220,14 +1244,24 @@ class UserManagement extends Component {
                 </select>
               </div>
               }
-              {checkbox && <div className="Operation_div"><span>层：</span> <select id="floorId" className="Operation_sle"
-                                                                                  onChange={() => this.showFloor()}>
-                {floorList.map(item => {
-                  return (
-                    <option key={item.floor_id} value={item.floor_id}>{item.floor_name}</option>
-                  )
-                })}
-              </select></div>}
+              {
+                checkbox &&
+                <div className="Operation_div">
+                  <span>层：</span>
+                  <select
+                    id="floorId"
+                    className="Operation_sle"
+                    onChange={(e) => this.showFloor(e.target.value)}
+                    value={floorId}
+                  >
+                    {floorList.map(item => {
+                      return (
+                        <option key={item.floor_id} value={item.floor_id}>{item.floor_name}</option>
+                      )
+                    })}
+                  </select>
+                </div>
+              }
               <div className="Operation_div">
                 <span>X：</span>
                 <input
