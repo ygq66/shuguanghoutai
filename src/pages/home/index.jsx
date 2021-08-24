@@ -38,7 +38,7 @@ const Home = () => {
               token: token
             })
             setTimeout(function () {
-              message.success("地图加载成功");
+              message.success("地图加载成功")
               // 去掉键盘控制先。不然点位上图输入都会被影响
               // createMap.eanbleKeyboard();
               axios.post(global.Url + "/device/camera/listS").then((res) => {
@@ -59,8 +59,8 @@ const Home = () => {
                         Model.modelLoading(obj, msg => {
                           if (++index < data.length) {
                             setTimeout(() => {
-                              objModel[msg.attr.id] = { ...msg, device_code: msg.attr.device_code };
-                              loop(index);
+                              objModel[msg.attr?.id] = { ...msg, device_code: msg.attr?.device_code };
+                              loop(index)
                             }, 0)
                           } else {
                             console.log("全部执行完毕");

@@ -877,9 +877,12 @@ class UserManagement extends Component {
         })
       }, 100);
       UserManagement.this.shrinkageBtn(e, item.indoor);
+      // console.log('click camera: ', item)
+      Model.setObjectHighlight(item)
     } else {
       UserManagement.this.shrinkageBtn(e);
     }
+
     e.stopPropagation();
     $(".Alert").hide();
     $(e.currentTarget).parents("ul").find("h2").css("color", "white");

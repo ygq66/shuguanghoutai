@@ -227,7 +227,7 @@ export const Model = {
             type: 'model',
             filename: strObj.filename, // box, capsule, cone, cube, cylinder, pipe, pyramid, sphere, capsule
             radius: 1,
-            scale: 1,
+            scale: 5,
             attr: strObj.attr,
             location: {
                 x: strObj.location.x,
@@ -415,6 +415,18 @@ export const Model = {
             // callback(strObj)
         });
     },
+    addModelClickEvent() {
+        var paramers = {
+            prefix: 'MP,TEMP,J',
+            path: '',
+            speedroute: 10
+        };
+        view3d.SetParameters(paramers)
+        view3d.SetMouseCallback(res => {
+            console.log(res)
+        })
+    },
+
     // 修改模型高亮颜色
     updateModelStyle(gid, style) {
         view3d.UpdateObjectStyle(gid, style);
@@ -464,6 +476,16 @@ export const Model = {
         view3d.OverLayerStopEdit()
         callback && callback(res)
       })
+    },
+
+    // 高亮对象
+    setObjectHighlight(modelAttribute) {
+        if (view3d) {
+            view3d.ClearHighlight()
+            setTimeout(() => {
+                view3d.SetObjectHighlight(modelAttribute.gid)
+            }, 10)
+        }
     }
 }
 //网格类
