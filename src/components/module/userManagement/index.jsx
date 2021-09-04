@@ -762,6 +762,7 @@ class UserManagement extends Component {
   AnalyticFormat(vdom) {
     // debugger
     var menuObj = vdom;
+    menuObj.sort((a,b)=>a.region_name.localeCompare(b.region_name))
 
     //转成树
     function getTree(data, Pid) {
