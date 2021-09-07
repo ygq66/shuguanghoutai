@@ -52,7 +52,7 @@ const Home = () => {
                       if (data[index] && data[index].model_name !== undefined && data[index].model_name !== null) {
                         const obj = {
                           gid: data[index].model_url,
-                          filename: data[index].model_name, // box, capsule, cone, cube, cylinder, pipe, pyramid, sphere, capsule
+                          filename: data[index].model_name,//box,capsule,cone,cube,cylinder,pipe,pyramid,sphere,capsule
                           location: data[index].list_style ? data[index].list_style : data[index].center,
                           attr: data[index]
                         };
@@ -213,7 +213,10 @@ const Home = () => {
               {/* <div className="home_content"></div> */}
               {`${moudleId}` !== "" && <div className="mapright animate__animated animate__fadeInRight" style={{ width: `${moudleId}` === "" || `${moudleId}` === "layoutStyle" ? "0" : "450px" }}>
                 <Suspense fallback={<div>"loading"</div>}>
-                  <DynamicModule setMoudleId={setModel} modellist={modelList} buildlabel={buildLabelList} textlabel={textLabelList} />
+                  {DynamicModule === 'div'
+                      ? ''
+                      : <DynamicModule setMoudleId={setModel} modellist={modelList} buildlabel={buildLabelList} textlabel={textLabelList} />
+                  }
                 </Suspense>
               </div>}
             </div>
