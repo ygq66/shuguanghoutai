@@ -53,6 +53,9 @@ export const createMap = {
                 event.preventDefault()
                 fullScreen();
             }
+            if(event.code === 'F5'){
+                window.location.reload();
+            }
         }
         return view3d;
     },
@@ -85,7 +88,7 @@ export const createMap = {
     initialPosition() {
         view3d.ResetHome();
     },
-    eanbleKeyboard() {
+    enableKeyboard() {
         if (view3d) {
             view3d.enableKeyboard = false;
             view3d.enableMouse = true;
@@ -227,7 +230,7 @@ export const Model = {
             type: 'model',
             filename: strObj.filename, // box, capsule, cone, cube, cylinder, pipe, pyramid, sphere, capsule
             radius: 1,
-            scale: 5,
+            scale: 1,
             attr: strObj.attr,
             location: {
                 x: strObj.location.x,
