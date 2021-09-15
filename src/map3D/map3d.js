@@ -435,16 +435,14 @@ export const Model = {
         view3d.UpdateObjectStyle(gid, style);
     },
     // 绘制折线
-    drawLine(config, callback) {
+    drawLine(callback) {
         const obj = {
             type: 'linestring',
-            color: config.color || '#ff0f00',
-            linewidth: config.lineWidth || 50,
+            color: '#ff0f00',
+            linewidth: 50,
             points: []
         }
-
         view3d.OverLayerStartEdit(obj, res => {
-            view3d.OverLayerStopEdit()
             if (callback) {
                 callback(res);
             }
