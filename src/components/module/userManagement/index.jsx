@@ -98,6 +98,8 @@ class UserManagement extends Component {
       } else {
       }
     })
+    console.log('关闭地图键盘事件')
+    createMap.disableKeyboard(); // 输入框spin需要禁用这个功能
   }
 
   isload(id) {
@@ -551,6 +553,8 @@ class UserManagement extends Component {
   componentWillUnmount() {
     // Model.delectObj();
     // Model.delectPolygon();
+    console.log('开启地图键盘事件')
+    createMap.enableKeyboard();
   }
 
   hanldeinputflag() {
@@ -1112,7 +1116,9 @@ class UserManagement extends Component {
   }
   closeChuang = () => {
     UserManagement.this.showFloorAll();
-    this.props.setMoudleId("")
+    this.props.setMoudleId("");
+    console.log('开启地图键盘事件')
+    createMap.enableKeyboard();
   }
 
   render() {

@@ -98,7 +98,7 @@ export const createMap = {
   },
   enableKeyboard() {
     if (view3d) {
-      view3d.enableKeyboard = false;
+      view3d.enableKeyboard = true;
       view3d.enableMouse = true;
     }
   },
