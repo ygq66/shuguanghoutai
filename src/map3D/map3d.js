@@ -1,10 +1,12 @@
+import helperShapeUtil from "./helperShapeUtil";
+
 var view3d;
 var createObj = null;
 var Polygon = null;
 var allBuildModelObj = {};
 //创建地图类
 export const createMap = {
-  createMap(options) {
+  createMap(options, callback) {
     //创建实例
     /* global MapVision */
     view3d = new MapVision.View3d({
@@ -19,17 +21,15 @@ export const createMap = {
       createObj = null;
       view3d.OverLayerStopEdit();
       view3d.SetNorthControl(true, 0, 0, 0.5);
-      [
-        "fullscreenchange",
-        "webkitfullscreenchange",
-        "mozfullscreenchange",
-      ].forEach((item, index) => {
-        window.addEventListener(item, function () {
-          setTimeout(function () {
-            SetResolution(options, view3d);
-          }, 500);
+      window.$view3d = view3d; // 绑定实例
+      ["fullscreenchange", "webkitfullscreenchange", "mozfullscreenchange",]
+        .forEach((item, index) => {
+          window.addEventListener(item, function () {
+            setTimeout(function () {
+              SetResolution(options, view3d);
+            }, 500);
+          });
         });
-      });
       SetResolution(options, view3d);
       Build.getBuild((res) => {
         let buildObj = JSON.parse(res);
@@ -52,6 +52,15 @@ export const createMap = {
           })(0);
         }
       });
+
+      // 点击时, 设置鼠标事件
+      window.onmousedown = function (e) {
+        Model.getModel();
+      }
+
+      if (callback) {
+        callback();
+      }
     });
     // setTimeout(function () {
     //     Model.getModel();
@@ -118,8 +127,23 @@ export const createMap = {
     //     yaw : 0,   // 偏航角 0-360度
     //     roll : 0     // 翻滚角
     // };
+    if (pos.x && pos.y && pos.z) {
+      let posNew = Model.formatPos(pos)
+      console.log('定位', posNew);
 
-    view3d.FlyToPosition(pos);
+      // 定位到相对位置
+      let distance = 1500;
+      posNew.z += distance;
+      posNew.pitch = 45;
+      posNew.yaw += 180;
+      posNew.x -= Math.cos(posNew.yaw / 180 * Math.PI) * distance;
+      posNew.y -= Math.sin(posNew.yaw / 180 * Math.PI) * distance;
+      console.log('定位计算后的相对位置', posNew);
+
+      view3d.FlyToPosition(posNew);
+    } else {
+      console.error('定位格式错误', pos)
+    }
   },
   flawto(location) {
     const pos = {
@@ -400,22 +424,16 @@ export const Model = {
   //点击获取当前模型信息
   getModel() {
     // 过滤 对象  prefix 对象名称前缀   ，path 路径前缀
-    var paramers = {
-      prefix: "MP,T,J",
-      path: "",
-      speedroute: 10,
-    };
+    var paramers = {prefix: "MP,T,J", path: "", speedroute: 10,};
     view3d.SetParameters(paramers);
-    console.log("我被执行了");
+    // console.log("我被执行了");
     view3d.SetMouseCallback((res) => {
       // var strObj = JSON.stringify(res);
       console.log(res, "我被点击了");
       let data = {};
       if (res.typename === "model") {
-        data = {
-          switchName: "model",
-          Personnel: res,
-        };
+        data = {switchName: "model", Personnel: res,};
+        helperShapeUtil.updateHelperShapePos(res.location); // 创建标注
       } else if (res.gid.split("_")[0] === "MP") {
         let buildarr = res.gid.split("_");
         buildarr.shift();
@@ -501,6 +519,17 @@ export const Model = {
       }, 10);
     }
   },
+  // 格式化坐标点
+  formatPos(pos) {
+    let posNew = {...pos};
+    posNew.x = parseFloat(posNew.x.toString())
+    posNew.y = parseFloat(posNew.y.toString())
+    posNew.z = parseFloat(posNew.z.toString())
+    posNew.pitch = posNew.pitch ? parseFloat(posNew.pitch.toString()) : 0
+    posNew.yaw = posNew.yaw ? parseFloat(posNew.yaw.toString()) : 0
+    posNew.roll = posNew.roll ? parseFloat(posNew.roll.toString()) : 0
+    return posNew;
+  }
 };
 //网格类
 export const grid = {};
@@ -572,6 +601,7 @@ export const Event = {
     view3d.Clear();
   },
 };
+
 //设置屏幕
 function SetResolution(options, view3d) {
   if (view3d) {

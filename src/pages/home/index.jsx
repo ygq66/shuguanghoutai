@@ -1,15 +1,16 @@
-import React, { useState, useEffect, Suspense, lazy, Fragment } from 'react';
+import React, {useState, useEffect, Suspense, lazy, Fragment} from 'react';
 import './style.scss';
 import $ from "jquery";
 import HomeLeft from '../../components/homeLeft'
 import HomeHeader from '../../components/homeHeader'
 import axios from 'axios';
-import { message } from 'antd';
-import { createMap, Model } from '../../map3D/map3d';
-import { useDispatch, useMappedState } from 'redux-react-hook';
-import { getFigureLabel, getBuildLabel } from "../../api/mainApi";
-import { Redirect } from 'react-router';
-import { configData2 as MapUrl, configData3 as projectId, configData4 as token } from '../../api/address';
+import {message} from 'antd';
+import {createMap, Model} from '../../map3D/map3d';
+import {useDispatch, useMappedState} from 'redux-react-hook';
+import {getFigureLabel, getBuildLabel} from "../../api/mainApi";
+import {Redirect} from 'react-router';
+import {configData2 as MapUrl, configData3 as projectId, configData4 as token} from '../../api/address';
+import helperShapeUtil from "../../map3D/helperShapeUtil";
 
 const Home = () => {
   const isLogin = sessionStorage.getItem("isLogin");
@@ -36,6 +37,8 @@ const Home = () => {
               url: MapUrl,
               projectId: projectId,
               token: token
+            }, () => {
+              helperShapeUtil.createHelperShape()
             })
             setTimeout(function () {
               message.success("地图加载成功")
@@ -59,12 +62,12 @@ const Home = () => {
                         Model.modelLoading(obj, msg => {
                           if (++index < data.length) {
                             setTimeout(() => {
-                              objModel[msg.attr?.id] = { ...msg, device_code: msg.attr?.device_code };
+                              objModel[msg.attr?.id] = {...msg, device_code: msg.attr?.device_code};
                               loop(index)
                             }, 0)
                           } else {
                             console.log("全部执行完毕");
-                            dispatch({ type: "model_list", model_list: { ...objModel } });
+                            dispatch({type: "model_list", model_list: {...objModel}});
                             GetBuildLabel();
                           }
                         })
@@ -75,7 +78,7 @@ const Home = () => {
                           }, 0)
                         } else {
                           console.log("全部执行完毕");
-                          dispatch({ type: "model_list", model_list: { ...objModel } });
+                          dispatch({type: "model_list", model_list: {...objModel}});
                           GetBuildLabel();
                         }
                       }
@@ -107,14 +110,14 @@ const Home = () => {
             var buildLabel = {};
             (function loop2(index2) {
               if (Label[index2].children) {
-                const obj2 = { ...Label[index2].children[0].position, attr: { buildId: Label[index2].build_id } };
+                const obj2 = {...Label[index2].children[0].position, attr: {buildId: Label[index2].build_id}};
 
                 Model.labelLoading(obj2, msg => {
                   if (++index2 < Label.length) {
-                    buildLabel[Label[index2].id] = { ...msg };
+                    buildLabel[Label[index2].id] = {...msg};
                     loop2(index2);
                   } else {
-                    dispatch({ type: "buildLabel_list", buildLabel_list: { ...buildLabel } });
+                    dispatch({type: "buildLabel_list", buildLabel_list: {...buildLabel}});
                     GetFigureLabel();
                   }
                 })
@@ -122,7 +125,7 @@ const Home = () => {
                 if (++index2 < Label.length) {
                   loop2(index2);
                 } else {
-                  dispatch({ type: "buildLabel_list", buildLabel_list: { ...buildLabel } });
+                  dispatch({type: "buildLabel_list", buildLabel_list: {...buildLabel}});
                   GetFigureLabel();
                 }
               }
@@ -148,19 +151,19 @@ const Home = () => {
                     loop2(index2);
                   }, 0)
                 } else {
-                  dispatch({ type: "textLabel_list", textLabel_list: { ...textLabel } });
+                  dispatch({type: "textLabel_list", textLabel_list: {...textLabel}});
                 }
                 return;
               }
-              const obj2 = { ...JSON.parse(Label[index2].label_style.model), attr: { center: Label[index2].label_style.center } };
+              const obj2 = {...JSON.parse(Label[index2].label_style.model), attr: {center: Label[index2].label_style.center}};
               Model.labelLoading(obj2, msg => {
                 if (++index2 < Label.length) {
-                  textLabel[Label[index2].id] = { ...msg };
+                  textLabel[Label[index2].id] = {...msg};
                   setTimeout(() => {
                     loop2(index2);
                   }, 0)
                 } else {
-                  dispatch({ type: "textLabel_list", textLabel_list: { ...textLabel } });
+                  dispatch({type: "textLabel_list", textLabel_list: {...textLabel}});
                 }
               })
             })(0);
@@ -182,7 +185,7 @@ const Home = () => {
     setTimeout(() => {
       setMoudleId(value)
     }, 800)
-    dispatch({ type: "check_left", title_left_check: -1 })
+    dispatch({type: "check_left", title_left_check: -1})
   }
   const stPageModel = (value) => {
     if (moudleId !== "") {
@@ -203,15 +206,16 @@ const Home = () => {
   return (
     <Fragment>
       {
-        (!isLogin || isLogin === "false") ? <Redirect to='/login' /> :
+        (!isLogin || isLogin === "false") ? <Redirect to='/login'/> :
           <div id="Home_all" className="">
-            <HomeLeft setMoudleId={stPageModel} value="-1" />
+            <HomeLeft setMoudleId={stPageModel} value="-1"/>
             <div className="homRight">
-              <HomeHeader setMoudleId2={stPageModel} />
+              <HomeHeader setMoudleId2={stPageModel}/>
               <div id="mapv3dContainer" className="map"></div>
 
               {/* <div className="home_content"></div> */}
-              {`${moudleId}` !== "" && <div className="mapright animate__animated animate__fadeInRight" style={{ width: `${moudleId}` === "" || `${moudleId}` === "layoutStyle" ? "0" : "450px" }}>
+              {`${moudleId}` !== "" &&
+              <div className="mapright animate__animated animate__fadeInRight" style={{width: `${moudleId}` === "" || `${moudleId}` === "layoutStyle" ? "0" : "450px"}}>
                 <Suspense fallback={<div>"loading"</div>}>
                   {DynamicModule === 'div'
                       ? ''
