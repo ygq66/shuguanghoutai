@@ -424,7 +424,7 @@ export const Model = {
   //点击获取当前模型信息
   getModel() {
     // 过滤 对象  prefix 对象名称前缀   ，path 路径前缀
-    var paramers = {prefix: "MP,T,J", path: "", speedroute: 10,};
+    var paramers = {prefix: "MP,T,J", path: "", speedroute: 10, showmouse: false,};
     view3d.SetParameters(paramers);
     // console.log("我被执行了");
     view3d.SetMouseCallback((res) => {
