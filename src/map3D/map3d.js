@@ -1,4 +1,5 @@
 import helperShapeUtil from "./helperShapeUtil";
+import eventUtil from "./eventUtil";
 
 var view3d;
 var createObj = null;
@@ -54,9 +55,7 @@ export const createMap = {
       });
 
       // 点击时, 设置鼠标事件
-      window.onmousedown = function (e) {
-        // Model.getModel();
-      }
+      eventUtil.setMousedown();
 
       if (callback) {
         callback();
@@ -434,6 +433,7 @@ export const Model = {
       if (res.typename === "model") {
         data = {switchName: "model", Personnel: res,};
         helperShapeUtil.updateHelperShapePos(res.location); // 创建标注
+
       } else if (res.gid.split("_")[0] === "MP") {
         let buildarr = res.gid.split("_");
         buildarr.shift();

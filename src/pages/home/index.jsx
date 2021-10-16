@@ -180,6 +180,21 @@ const Home = () => {
     }
   }, [isLogin, moudleId, openFlag, dispatch]);
 
+  // 接受点击事件
+  useEffect(() => {
+    window.addEventListener('message', (e) => {
+      let data = e.data;
+      switch (data.switchName) {
+        case 'model':
+          // console.log(data);
+          message.success(data?.Personnel.attr?.device_name)
+          break
+        default:
+          break
+      }
+    })
+  }, [])
+
   const setModel = (value) => {
     $('.mapright').addClass("animate__fadeOutRight");
     setTimeout(() => {
@@ -200,9 +215,11 @@ const Home = () => {
     }
 
   }
+
   // useEffect(() => {
   //   console.log(modelList, "model_list")
   // }, [modelList])
+
   return (
     <Fragment>
       {

@@ -6,6 +6,7 @@ import {message, Checkbox} from 'antd';
 import axios from 'axios';
 import {getMapBulid, getMapFloor} from "../../../api/mainApi";
 import helperShapeUtil from "../../../map3D/helperShapeUtil";
+import eventUtil from "../../../map3D/eventUtil";
 
 // import FloorList from "../floorList/index"
 class UserManagement extends Component {
@@ -102,6 +103,7 @@ class UserManagement extends Component {
     })
     console.log('关闭地图键盘事件')
     createMap.disableKeyboard(); // 输入框spin需要禁用这个功能
+    eventUtil.unSetMousedown();
   }
 
   isload(id) {
@@ -402,8 +404,8 @@ class UserManagement extends Component {
       isEdit: false
     })
     setTimeout(() => {
-      UserManagement.this.delectModel()
-    }, 100)
+      UserManagement.this.delectModel();
+    }, 100);
   }
 
   delectModel() {
@@ -551,6 +553,7 @@ class UserManagement extends Component {
     // Model.delectPolygon();
     console.log('开启地图键盘事件')
     createMap.enableKeyboard();
+    eventUtil.setMousedown();
   }
 
   hanldeinputflag() {
