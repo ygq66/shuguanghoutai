@@ -55,7 +55,7 @@ export const createMap = {
 
       // 点击时, 设置鼠标事件
       window.onmousedown = function (e) {
-        Model.getModel();
+        // Model.getModel();
       }
 
       if (callback) {
@@ -132,7 +132,7 @@ export const createMap = {
       console.log('定位', posNew);
 
       // 定位到相对位置
-      let distance = 1500;
+      let distance = 500;
       posNew.z += distance;
       posNew.pitch = 45;
       posNew.yaw += 180;

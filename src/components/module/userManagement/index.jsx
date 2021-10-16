@@ -693,7 +693,8 @@ class UserManagement extends Component {
     console.log('修改的叶子节点：', menuObj)
     const {modelList} = this.state;
     Model.removeGid(this.state.polygonId);
-    createMap.FlyToPosition(menuObj.center)
+    createMap.FlyToPosition(menuObj.list_style ? menuObj.list_style : menuObj.center)
+    helperShapeUtil.updateHelperShapePos(menuObj.list_style ? menuObj.list_style : menuObj.center)
     if (menuObj.position) {
       // Model.showModel(this.state.polygonId, true)
       Model.createPolygon(menuObj.position.points, (msg) => {
@@ -803,6 +804,7 @@ class UserManagement extends Component {
   }
 
   addXinxi = (e, id, flag, name) => {
+    console.log('修改')
     e.stopPropagation();
     this.setState({
       inputflag: true,

@@ -10,8 +10,8 @@ let helperShapeUtil = {
       gid: this.gid, // 自定义gid，可以设置自定义前缀，用于点选匹配不同的对象
       type: 'cone',
       style: 'SplineOrangeHighlight1',
-      radius: 100.0,    // 半径
-      height: 120.0,    // 高
+      radius: 20.0,    // 半径
+      height: 30.0,    // 高
       // style: 'red',  // style 样式优先于color
       color: '#FF0000',
       location: Model.formatPos(location)
@@ -30,7 +30,7 @@ let helperShapeUtil = {
     if (shape && posNew && window.$view3d) {
       shape.location = posNew;
       shape.location.pitch = 180;
-      shape.location.z += 200;
+      shape.location.z += 100;
       console.log('标注位置', posNew);
       window.$view3d.OverLayerUpdateObject(shape);
     }
