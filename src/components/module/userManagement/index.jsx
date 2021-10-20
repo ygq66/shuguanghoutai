@@ -696,7 +696,7 @@ class UserManagement extends Component {
     console.log('修改的叶子节点：', menuObj)
     const {modelList} = this.state;
     Model.removeGid(this.state.polygonId);
-    createMap.FlyToPosition(menuObj.list_style ? menuObj.list_style : menuObj.center)
+    createMap.flyTo(menuObj.list_style ? menuObj.list_style : menuObj.center)
     helperShapeUtil.updateHelperShapePos(menuObj.list_style ? menuObj.list_style : menuObj.center)
     if (menuObj.position) {
       // Model.showModel(this.state.polygonId, true)
@@ -867,7 +867,7 @@ class UserManagement extends Component {
           oldbuildId: item.build_id
         })
       }
-      createMap.FlyToPosition(item.list_style ? item.list_style : item.center);
+      createMap.flyTo(item.list_style ? item.list_style : item.center);
       if (this.state.polygonId !== "") {
         // Model.showModel(this.state.polygonId, false);
         Model.removeGid(this.state.polygonId);

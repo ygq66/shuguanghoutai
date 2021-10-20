@@ -126,6 +126,20 @@ export const createMap = {
     //     yaw : 0,   // 偏航角 0-360度
     //     roll : 0     // 翻滚角
     // };
+    view3d.FlyToPosition(pos);
+  },
+  // 计算相对位置
+  flyTo(pos) {
+    // const pos = {
+    //   x: location.x,
+    //   y: location.y,
+    //   z: location.z,
+    //   pitch: 0, // 俯仰角 0——90度
+    //   yaw: location.yaw, // 偏航角 0-360度
+    //   roll: 0, // 翻滚角
+    // };
+    //
+    // view3d.FlyToPosition(pos);
     if (pos.x && pos.y && pos.z) {
       let posNew = Model.formatPos(pos)
       console.log('定位', posNew);
@@ -143,18 +157,6 @@ export const createMap = {
     } else {
       console.error('定位格式错误', pos)
     }
-  },
-  flawto(location) {
-    const pos = {
-      x: location.x,
-      y: location.y,
-      z: location.z,
-      pitch: 0, // 俯仰角 0——90度
-      yaw: location.yaw, // 偏航角 0-360度
-      roll: 0, // 翻滚角
-    };
-
-    view3d.FlyToPosition(pos);
   },
   // 根据id飞到位置点
   flyToObjectById(item) {
