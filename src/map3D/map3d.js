@@ -562,6 +562,15 @@ export const Build = {
       floorNum = -floorNum;
     }
 
+    // 显示隐藏地面
+    if (FLOOR === "B") {
+      console.log('隐藏地面')
+      view3d.SetGroundVisible(false);
+    } else {
+      console.log('显示地面')
+      view3d.SetGroundVisible(true);
+    }
+
     view3d.SetBuildingVisible(buildingName, floorName === "all" ? true : false);
     // floor undefined 的报错处理。
     if (!floor) {

@@ -1050,13 +1050,15 @@ class UserManagement extends Component {
   }
   // 获取楼层
   GetMapFloor = (id) => {
+    console.log('获取楼层', id)
     UserManagement.this.showFloorAll();
     getMapFloor({build_id: id}).then(res => {
+      console.log('获取楼层响应', res)
       if (res.msg === "success") {
         this.setState({
           floorList: res.data,
           oldbuildId: id,
-          buildId: id
+          buildId: id,
         });
         setTimeout(() => {
           UserManagement.this.showFloor();
@@ -1092,7 +1094,11 @@ class UserManagement extends Component {
     let build_id = this.state.buildId
     // let floor_id = $("#floorId").find("option:selected").val();
     // let floor_id = $("#floorId").val()
-    let floor_id = selectedFloorId || this.state.floorId
+    let floor_id = selectedFloorId || this.state.floorId;
+    if (!floor_id) {
+      console.log('floor_id为空, 无法显示楼层', floor_id)
+      return;
+    }
     let originFloorId = floor_id
     floor_id = floor_id.split("#")[1];
     Build.showFloor(build_id, floor_id, floor);
