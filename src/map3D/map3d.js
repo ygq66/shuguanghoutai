@@ -595,6 +595,8 @@ export const Build = {
         }, 1000);
       }
     });
+    //猜测是这里
+    Model.getModel(view3d);
   },
 };
 // 功能块
