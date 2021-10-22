@@ -71,8 +71,8 @@ class PatrolRoute extends Component {
         postion.push(obj)
         if (index === res.data.patrol_line_subsection.length - 1) {
           let obj2 = {
-            x: msg.options.noodles[0][2],
-            y: msg.options.noodles[0][3],
+            x: msg.options.noodles[0][6],
+            y: msg.options.noodles[0][7],
             z: 380
           };
           postion.push(obj2);
@@ -169,33 +169,33 @@ class PatrolRoute extends Component {
         ];
         positions.push(arr);
       }
-      // positions.forEach(element => {
-      //   element[0].noodles.forEach(element2 => {
-      //     let newArr = []
-      //     newArr.push({
-      //       x:element2[0],
-      //       y:element2[1],
-      //       z:380
-      //     })
-      //     newArr.push({
-      //       x:element2[2],
-      //       y:element2[3],
-      //       z:380
-      //     })
-      //     newArr.push({
-      //       x:element2[4],
-      //       y:element2[5],
-      //       z:380
-      //     })
-      //     newArr.push({
-      //       x:element2[6],
-      //       y:element2[7],
-      //       z:380
-      //     })
-      //     console.log(newArr)
-      //     Model.createPolygon(newArr)
-      //   });
-      // });
+      positions.forEach(element => {
+        element[0].noodles.forEach(element2 => {
+          let newArr = []
+          newArr.push({
+            x:element2[0],
+            y:element2[1],
+            z:380
+          })
+          newArr.push({
+            x:element2[2],
+            y:element2[3],
+            z:380
+          })
+          newArr.push({
+            x:element2[4],
+            y:element2[5],
+            z:380
+          })
+          newArr.push({
+            x:element2[6],
+            y:element2[7],
+            z:380
+          })
+          console.log(newArr)
+          Model.createPolygon(newArr)
+        });
+      });
       this.getLineSelectCamera(positions);
     })
   }
@@ -215,9 +215,7 @@ class PatrolRoute extends Component {
       postion.x, postion.y, 
       postion.x, hcY1, 
       postion2.x, hcY2,
-
-      postion2.x, postion2.y, 
-
+      postion2.x, postion2.y
     ];
     return noodles;
   }
@@ -352,7 +350,7 @@ class PatrolRoute extends Component {
     this.setState({
       flagNum: 0,
       routeName: "",
-      bufferH: 0,
+      bufferH: 2,
       indoor: false,
       buildId: "",
       floorId: "",
