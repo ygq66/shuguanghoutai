@@ -55,7 +55,7 @@ export const createMap = {
       });
 
       // 点击时, 设置鼠标事件
-      eventUtil.setMousedown();
+      // eventUtil.setMousedown();
 
       if (callback) {
         callback();
@@ -425,12 +425,13 @@ export const Model = {
   //点击获取当前模型信息
   getModel() {
     // 过滤 对象  prefix 对象名称前缀   ，path 路径前缀
-    var paramers = {prefix: "MP,T,J", path: "", speedroute: 10, showmouse: false,};
+    var paramers = {prefix: "MP,T,J,V", path: "", speedroute: 10, showmouse: false};
     view3d.SetParameters(paramers);
     // console.log("我被执行了");
     view3d.SetMouseCallback((res) => {
       // var strObj = JSON.stringify(res);
       console.log(res, "我被点击了");
+      if(res.length ===0){return;}
       let data = {};
       if (res.typename === "model") {
         data = {switchName: "model", Personnel: res,};
@@ -472,10 +473,9 @@ export const Model = {
     const obj = {
       type: "linestring",
       color: "#ff0f00",
-      linewidth: 50,
       points: [],
     };
-    view3d.OverLayerStartEdit(obj, (res) => {
+    view3d.OverLayerStartEdit(obj, res => {
       if (callback) {
         callback(res);
       }
@@ -595,6 +595,8 @@ export const Build = {
         }, 1000);
       }
     });
+    //猜测是这里
+    Model.getModel(view3d);
   },
 };
 // 功能块
