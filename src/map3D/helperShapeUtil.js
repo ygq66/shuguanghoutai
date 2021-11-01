@@ -24,6 +24,9 @@ let helperShapeUtil = {
     return this.instance;
   },
   updateHelperShapePos(pos) {
+    if (!pos || Object.keys(pos).length === 0) {
+      return;
+    }
     let posNew = Model.formatPos(pos);
     let shape = this.getHelperShape()
     // console.log(shape)

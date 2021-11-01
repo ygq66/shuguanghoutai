@@ -5,7 +5,7 @@
     .EquipmentCategory {
         display: flex;
         color: white;
-        margin: 20px 0 20px 20px;
+        margin: 20px 0 10px 20px;
 
         p {
             display: inline-block;
@@ -16,7 +16,7 @@
 
         ul {
             display: flex;
-            //flex-wrap: wrap;
+            flex-wrap: wrap;
             justify-content: flex-start;
             width: 100%;
             padding-right: 18px;
@@ -27,9 +27,9 @@
                 align-items: center;
                 justify-content: center;
                 color: #f2a10a;
-                padding: 5px 4px;
-                width: 40%;
-                margin-bottom: 10px;
+                padding: 5px 5px;
+                // width: 40%;
+                margin-bottom: 5px;
                 cursor: pointer;
                 user-select: none;
             }
@@ -41,7 +41,7 @@
             .ative {
                 border: 1px solid #f2a10a;
                 border-radius: 5px;
-                padding: 4px 0;
+                padding: 4px 5px;
             }
         }
     }

@@ -38,9 +38,7 @@ const Home = () => {
               projectId: projectId,
               token: token
             }, () => {
-              helperShapeUtil.createHelperShape()
-            })
-            setTimeout(function () {
+              helperShapeUtil.createHelperShape();
               message.success("地图加载成功")
               // 去掉键盘控制先。不然点位上图输入都会被影响
               // createMap.eanbleKeyboard();
@@ -91,8 +89,8 @@ const Home = () => {
                   message.error("加载模型失败");
                 }
               })
+            });
 
-            }, 1000)
           } else {
             message.warning('未找到地图数据');
           }
@@ -228,15 +226,16 @@ const Home = () => {
             <HomeLeft setMoudleId={stPageModel} value="-1"/>
             <div className="homRight">
               <HomeHeader setMoudleId2={stPageModel}/>
-              <div id="mapv3dContainer" className="map"></div>
+              <div id="mapv3dContainer" className="map"/>
 
               {/* <div className="home_content"></div> */}
               {`${moudleId}` !== "" &&
               <div className="mapright animate__animated animate__fadeInRight" style={{width: `${moudleId}` === "" || `${moudleId}` === "layoutStyle" ? "0" : "450px"}}>
                 <Suspense fallback={<div>"loading"</div>}>
                   {DynamicModule === 'div'
-                      ? ''
-                      : <DynamicModule setMoudleId={setModel} modellist={modelList} buildlabel={buildLabelList} textlabel={textLabelList} />
+                    ? ''
+                    :
+                    <DynamicModule setMoudleId={setModel} modellist={modelList} buildlabel={buildLabelList} textlabel={textLabelList}/>
                   }
                 </Suspense>
               </div>}

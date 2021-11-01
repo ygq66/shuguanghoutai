@@ -607,28 +607,43 @@ class UserManagement extends Component {
     })
   }
 
+  // 对象没有上图, 或者是父节点
+  isObjNoPosition(menuObj) {
+    if (menuObj.center && Object.keys(menuObj.center).length !== 0) {
+      return false;
+    } else if (!menuObj.gid) { // 不存在gid, 就是父节点
+      return false;
+    }
+    return true;
+  }
+
+  // 获取菜单图标
+  getMenuIcon(menuObj) {
+    return menuObj.node_type === "details"
+      ? require("../../../assets/images/playVideo.png").default
+      : menuObj.node_type === "group"
+        ? require("../../../assets/images/wenjianjia.png").default
+        : require("../../../assets/images/wgtp.png").default
+  }
+
   // 生成树dom
   generateMenu(data) {
     let menuObj = data
     for (let i = 0; i < menuObj.length; i++) {
       const tiem = menuObj[i];
-      var obj = {num: 0}
+      let obj = {num: 0}
       this.count(tiem, obj)
     }
     let vdom = [];
     // const { changeName } = this.state;
     if (menuObj instanceof Array) {
       let list = [];
-      for (var item of menuObj) {
+      for (let item of menuObj) {
         list.push(this.generateMenu(item));
       }
-      vdom.push(
-        <ul key="single">
-          {list}
-        </ul>
-      );
+      vdom.push(<ul key="single">{list}</ul>);
     } else {
-      if (menuObj == null) {
+      if (!menuObj) {
         return;
       }
       // console.log(menuObj)
@@ -636,13 +651,9 @@ class UserManagement extends Component {
         <li key={menuObj.id} className="addAlert" id={'addAlert' + menuObj.id}
             onContextMenu={(e) => this.onContextMenu(e, menuObj.node_type)}>
           <h2 onClick={(e) => this.onMenuClicked(e, menuObj)} title={menuObj.region_name}>
-            <img src={menuObj.node_type === "details"
-              ? require("../../../assets/images/playVideo.png").default
-              : menuObj.node_type === "group"
-                ? require("../../../assets/images/wenjianjia.png").default
-                : require("../../../assets/images/wgtp.png").default}
-                 alt=""/>&nbsp;
-            {menuObj.region_name}
+            <img src={this.getMenuIcon(menuObj)} alt=""/>&nbsp;
+            {/* 未上图标记灰色 */}
+            <span style={{color: this.isObjNoPosition(menuObj) ? 'gray' : ''}}>{menuObj.region_name}</span>
             {menuObj.node_type !== "details" && <span className="geshu">({menuObj.count ? menuObj.count : 0})</span>}
           </h2>
           {/* <input type='text' style={{ 'display': 'none' }} defaultValue={menuObj.region_name} onFocus={(e) => e.stopPropagation()} onChange={(e) => this.listName(e)} /> */}
@@ -918,9 +929,7 @@ class UserManagement extends Component {
         list.push(this.generateMenu2(item));
       }
       vdom.push(
-        <ul key="single">
-          {list}
-        </ul>
+        <ul key="single"> {list} </ul>
       );
     } else {
       if (menuObj == null) {

@@ -72,6 +72,10 @@ export const createMap = {
       if (event.code === "F5") {
         window.location.reload();
       }
+      if (event.code === "F10") {
+        console.log('重新布局');
+        SetResolution({id: 'mapv3dContainer'}, view3d);
+      }
     };
     return view3d;
   },
@@ -129,33 +133,26 @@ export const createMap = {
     view3d.FlyToPosition(pos);
   },
   // 计算相对位置
-  flyTo(pos) {
-    // const pos = {
-    //   x: location.x,
-    //   y: location.y,
-    //   z: location.z,
-    //   pitch: 0, // 俯仰角 0——90度
-    //   yaw: location.yaw, // 偏航角 0-360度
-    //   roll: 0, // 翻滚角
-    // };
-    //
-    // view3d.FlyToPosition(pos);
+  flyTo(pos, distance = 300, isBefore = true) {
     if (pos.x && pos.y && pos.z) {
-      let posNew = Model.formatPos(pos)
+      let posNew = Model.formatPos(pos);
       console.log('定位', posNew);
 
+      if (isBefore) {
+        posNew.yaw = (posNew.yaw + 180) % 360;
+      }
+
       // 定位到相对位置
-      let distance = 500;
-      posNew.z += distance;
       posNew.pitch = 45;
-      posNew.yaw += 180;
       posNew.x -= Math.cos(posNew.yaw / 180 * Math.PI) * distance;
       posNew.y -= Math.sin(posNew.yaw / 180 * Math.PI) * distance;
+      posNew.z += distance;
       console.log('定位计算后的相对位置', posNew);
 
       view3d.FlyToPosition(posNew);
     } else {
-      console.error('定位格式错误', pos)
+      console.error('设备未上图', pos);
+      window.$message.error(`设备未上图 pos:${JSON.stringify(pos)}`)
     }
   },
   // 根据id飞到位置点
@@ -431,7 +428,9 @@ export const Model = {
     view3d.SetMouseCallback((res) => {
       // var strObj = JSON.stringify(res);
       console.log(res, "我被点击了");
-      if(res.length ===0){return;}
+      if (res.length === 0) {
+        return;
+      }
       let data = {};
       if (res.typename === "model") {
         data = {switchName: "model", Personnel: res,};
