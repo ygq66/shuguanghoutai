@@ -494,6 +494,10 @@ export const grid = {
 }
 // 建筑楼层类
 export const Build = {
+    //地面显示隐藏
+    showDM(groundVisible, view3d) {
+        view3d.SetGroundVisible(groundVisible);
+    },
     getBuild(callback) {
         view3d.GetBuildingNames(res => {
             var strObj = JSON.stringify(res);
@@ -514,6 +518,10 @@ export const Build = {
 
         if(FLOOR==="B"){
             floorNum=-floorNum
+            // 显示地下的情况时,把地面隐藏掉
+            Build.showDM(false, view3d)
+        } else {
+            Build.showDM(true, view3d)
         }
 
         view3d.SetBuildingVisible(buildingName, floorName === "all" ? true : false);
