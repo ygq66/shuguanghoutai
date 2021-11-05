@@ -1,10 +1,12 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import './style.scss';
-import { Build, createMap, Model } from '../../../map3D/map3d';
+import {Build, createMap, Model} from '../../../map3D/map3d';
 import $ from "jquery";
-import { message, Checkbox } from 'antd';
+import {message, Checkbox} from 'antd';
 import axios from 'axios';
-import { getMapBulid, getMapFloor } from "../../../api/mainApi";
+import {getMapBulid, getMapFloor} from "../../../api/mainApi";
+import helperShapeUtil from "../../../map3D/helperShapeUtil";
+import eventUtil from "../../../map3D/eventUtil";
 
 // import FloorList from "../floorList/index"
 class UserManagement extends Component {
@@ -90,6 +92,7 @@ class UserManagement extends Component {
 
   componentDidMount() {
     axios.get(global.Url + "/device/category/list").then((res) => {
+      console.log('获取设备种类', res)
       const result = res.data;
       if (result.msg === "success") {
         this.setState({
@@ -98,6 +101,9 @@ class UserManagement extends Component {
       } else {
       }
     })
+    console.log('关闭地图键盘事件')
+    createMap.disableKeyboard(); // 输入框spin需要禁用这个功能
+    eventUtil.unSetMousedown();
   }
 
   isload(id) {
@@ -398,8 +404,8 @@ class UserManagement extends Component {
       isEdit: false
     })
     setTimeout(() => {
-      UserManagement.this.delectModel()
-    }, 100)
+      UserManagement.this.delectModel();
+    }, 100);
   }
 
   delectModel() {
@@ -433,31 +439,27 @@ class UserManagement extends Component {
     })
   }
 
+  // 点击设备类别
   btnListXz = (obj) => {
-    this.setState({
-      flagText: obj.id,
-      title: obj.category_name
-    })
+    console.log('点击设备类别', obj)
+    this.setState({flagText: obj.id, title: obj.category_name})
     this.onloadtree(obj.id);
     this.isload(obj.id)
   }
 
+  // 获取树状图
   onloadtree(id) {
-    const data = {
-      category_id: id
-    }
+    console.log('生成树状列表', id)
+    const data = {category_id: id}
     var list = []
     axios.post(global.Url + "/device/region/list", data).then((res) => {
+      console.log('获取设备列表', res)
       const result = res.data;
-      const data2 = res.data.data
+      const data2 = res.data.data;
       if (result.msg === "success") {
         // console.log(data2, "data2")
-        this.setState({
-          selectTree: data2
-        })
-        data2.forEach(element => {
-          list.push(element);
-        });
+        this.setState({selectTree: data2})
+        data2.forEach(element => { list.push(element); });
         if (list.length > 0) {
           axios.post(global.Url + "/device/camera/listS").then((res1) => {
             const result1 = res1.data;
@@ -494,9 +496,7 @@ class UserManagement extends Component {
             }
           })
         } else {
-          this.setState({
-            treelist: []
-          })
+          this.setState({treelist: []})
         }
 
       } else {
@@ -551,6 +551,9 @@ class UserManagement extends Component {
   componentWillUnmount() {
     // Model.delectObj();
     // Model.delectPolygon();
+    console.log('开启地图键盘事件')
+    createMap.enableKeyboard();
+    eventUtil.setMousedown();
   }
 
   hanldeinputflag() {
@@ -604,29 +607,43 @@ class UserManagement extends Component {
     })
   }
 
+  // 对象没有上图, 或者是父节点
+  isObjNoPosition(menuObj) {
+    if (menuObj.center && Object.keys(menuObj.center).length !== 0) {
+      return false;
+    } else if (!menuObj.gid) { // 不存在gid, 就是父节点
+      return false;
+    }
+    return true;
+  }
+
+  // 获取菜单图标
+  getMenuIcon(menuObj) {
+    return menuObj.node_type === "details"
+      ? require("../../../assets/images/playVideo.png").default
+      : menuObj.node_type === "group"
+        ? require("../../../assets/images/wenjianjia.png").default
+        : require("../../../assets/images/wgtp.png").default
+  }
+
+  // 生成树dom
   generateMenu(data) {
     let menuObj = data
     for (let i = 0; i < menuObj.length; i++) {
       const tiem = menuObj[i];
-      var obj = {
-        num: 0
-      }
+      let obj = {num: 0}
       this.count(tiem, obj)
     }
     let vdom = [];
     // const { changeName } = this.state;
     if (menuObj instanceof Array) {
       let list = [];
-      for (var item of menuObj) {
+      for (let item of menuObj) {
         list.push(this.generateMenu(item));
       }
-      vdom.push(
-        <ul key="single">
-          {list}
-        </ul>
-      );
+      vdom.push(<ul key="single">{list}</ul>);
     } else {
-      if (menuObj == null) {
+      if (!menuObj) {
         return;
       }
       // console.log(menuObj)
@@ -634,11 +651,10 @@ class UserManagement extends Component {
         <li key={menuObj.id} className="addAlert" id={'addAlert' + menuObj.id}
             onContextMenu={(e) => this.onContextMenu(e, menuObj.node_type)}>
           <h2 onClick={(e) => this.onMenuClicked(e, menuObj)} title={menuObj.region_name}>
-            <img
-              src={menuObj.node_type === "details" ? require("../../../assets/images/playVideo.png").default : menuObj.node_type === "group" ? require("../../../assets/images/wenjianjia.png").default : require("../../../assets/images/wgtp.png").default}
-              alt=""/>
-            {menuObj.region_name}{menuObj.node_type !== "details" &&
-          <span className="geshu">({menuObj.count ? menuObj.count : 0})</span>}
+            <img src={this.getMenuIcon(menuObj)} alt=""/>&nbsp;
+            {/* 未上图标记灰色 */}
+            <span style={{color: this.isObjNoPosition(menuObj) ? 'gray' : ''}}>{menuObj.region_name}</span>
+            {menuObj.node_type !== "details" && <span className="geshu">({menuObj.count ? menuObj.count : 0})</span>}
           </h2>
           {/* <input type='text' style={{ 'display': 'none' }} defaultValue={menuObj.region_name} onFocus={(e) => e.stopPropagation()} onChange={(e) => this.listName(e)} /> */}
           {this.generateMenu(menuObj.children)}
@@ -691,7 +707,8 @@ class UserManagement extends Component {
     console.log('修改的叶子节点：', menuObj)
     const {modelList} = this.state;
     Model.removeGid(this.state.polygonId);
-    createMap.FlyToPosition(menuObj.center)
+    createMap.flyTo(menuObj.list_style ? menuObj.list_style : menuObj.center)
+    helperShapeUtil.updateHelperShapePos(menuObj.list_style ? menuObj.list_style : menuObj.center)
     if (menuObj.position) {
       // Model.showModel(this.state.polygonId, true)
       Model.createPolygon(menuObj.position.points, (msg) => {
@@ -758,10 +775,11 @@ class UserManagement extends Component {
     this.closeBtn();
   }
 
-  //树结构生成
+  // 树结构生成
   AnalyticFormat(vdom) {
     // debugger
-    var menuObj = vdom;
+    let menuObj = vdom;
+    menuObj.sort((a, b) => a.region_name.localeCompare(b.region_name))
 
     //转成树
     function getTree(data, Pid) {
@@ -800,6 +818,7 @@ class UserManagement extends Component {
   }
 
   addXinxi = (e, id, flag, name) => {
+    console.log('修改')
     e.stopPropagation();
     this.setState({
       inputflag: true,
@@ -851,6 +870,7 @@ class UserManagement extends Component {
     $(e.currentTarget).children(".Alert").show();
   }
   onMenuClicked = (e, item) => {
+    console.log('点击节点', item)
     if (item.node_type === "details") {
       if (item.indoor) {
         Build.showFloor(item.build_id, item.floor_id.split("#")[1]);
@@ -858,16 +878,13 @@ class UserManagement extends Component {
           oldbuildId: item.build_id
         })
       }
-      createMap.FlyToPosition(item.center);
+      createMap.flyTo(item.list_style ? item.list_style : item.center);
       if (this.state.polygonId !== "") {
         // Model.showModel(this.state.polygonId, false);
-        Model.removeGid(this.state.polygonId)
+        Model.removeGid(this.state.polygonId);
       }
-      const _this = this
-      _this.setState({
-        polygonId: item.position.gid,
-        isEdit: false
-      })
+      const _this = this;
+      _this.setState({polygonId: item.position.gid, isEdit: false});
       setTimeout(() => {
         // Model.showModel(this.state.polygonId, true)
         Model.createPolygon(item.position.points, (msg) => {
@@ -878,7 +895,8 @@ class UserManagement extends Component {
       }, 100);
       UserManagement.this.shrinkageBtn(e, item.indoor);
       // console.log('click camera: ', item)
-      Model.setObjectHighlight(item)
+      Model.setObjectHighlight(item);
+      helperShapeUtil.updateHelperShapePos(item.list_style ? item.list_style : item.center);
     } else {
       UserManagement.this.shrinkageBtn(e);
     }
@@ -911,9 +929,7 @@ class UserManagement extends Component {
         list.push(this.generateMenu2(item));
       }
       vdom.push(
-        <ul key="single">
-          {list}
-        </ul>
+        <ul key="single"> {list} </ul>
       );
     } else {
       if (menuObj == null) {
@@ -1043,13 +1059,15 @@ class UserManagement extends Component {
   }
   // 获取楼层
   GetMapFloor = (id) => {
+    console.log('获取楼层', id)
     UserManagement.this.showFloorAll();
     getMapFloor({build_id: id}).then(res => {
+      console.log('获取楼层响应', res)
       if (res.msg === "success") {
         this.setState({
           floorList: res.data,
           oldbuildId: id,
-          buildId: id
+          buildId: id,
         });
         setTimeout(() => {
           UserManagement.this.showFloor();
@@ -1085,7 +1103,11 @@ class UserManagement extends Component {
     let build_id = this.state.buildId
     // let floor_id = $("#floorId").find("option:selected").val();
     // let floor_id = $("#floorId").val()
-    let floor_id = selectedFloorId || this.state.floorId
+    let floor_id = selectedFloorId || this.state.floorId;
+    if (!floor_id) {
+      console.log('floor_id为空, 无法显示楼层', floor_id)
+      return;
+    }
     let originFloorId = floor_id
     floor_id = floor_id.split("#")[1];
     // selectedFloorId
@@ -1114,7 +1136,9 @@ class UserManagement extends Component {
   }
   closeChuang = () => {
     UserManagement.this.showFloorAll();
-    this.props.setMoudleId("")
+    this.props.setMoudleId("");
+    console.log('开启地图键盘事件')
+    createMap.enableKeyboard();
   }
 
   render() {
@@ -1170,8 +1194,7 @@ class UserManagement extends Component {
             {treelist.length === 0 &&
             <button className="ConfirmButton" onClick={() => this.hanldeinputflag()}>添加组织结构</button>}
             <button className="ConfirmButton" onClick={(ev) => this.handeaddModel(ev)}>添加设备</button>
-          </div>
-          }
+          </div>}
           {inputflag && <div className="TextWb Gridinput">
             <span>名称：</span>
             <input type="text" className="inputAll" id="wgName" value={nameValue}

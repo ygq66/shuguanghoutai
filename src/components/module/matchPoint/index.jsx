@@ -54,6 +54,7 @@ class MatchPoint extends Component {
   }
   // 添加/删除文字标注
   SetFigureLabel = () => {
+    console.log('进了3')
     let dId = this.state.dId;
     let labelName = this.state.labelName;
     let textColor = this.state.textColor;
@@ -63,6 +64,7 @@ class MatchPoint extends Component {
     let cskd = this.state.cskd;
     let labelModel = this.state.labelModel;
     let textLabel = this.state.textLabel;
+    console.log('绘制上图', labelModel)
     if (labelName === "") {
       message.error("请填写标注文本");
       return;
@@ -243,6 +245,7 @@ class MatchPoint extends Component {
   }
   // 绘制
   playLabelModel = () => {
+    console.log('进了1')
     const { dId, labelName, labelFont, textColor } = this.state;
     let textLabel = this.state.textLabel;
     let oldLabelModel = this.state.oldLabelModel;
@@ -257,22 +260,28 @@ class MatchPoint extends Component {
     createMap.getCurrent(msg => {
       setTimeout(() => {
         Model.LabelModel({ text: labelName, color: textColor, size: labelFont, attr: { center: msg } }, (res) => {
+          console.log('进了2', res, typeof (res))
+          console.log('这里值是', { ...res })
           // console.log(res)
           if (textLabel[dId]) {
-            textLabel[dId].gid = JSON.parse(res).gid;
-            oldLabelModel.gid = JSON.parse(res).gid;
+            textLabel[dId].gid = res.gid;
+            oldLabelModel.gid = res.gid;
           }
+
           MatchPoint.this.setState({
             textLabel: textLabel,
             oldLabelModel: oldLabelModel,
-            labelModel: { ...JSON.parse(res) },
-            X: JSON.parse(res).location.x,
-            Y: JSON.parse(res).location.y,
-            Z: JSON.parse(res).location.z,
-            pitch: JSON.parse(res).location.pitch,
-            yaw: JSON.parse(res).location.yaw,
-            roll: JSON.parse(res).location.roll,
+            labelModel: { ...res },
+            X: res.location.x,
+            Y: res.location.y,
+            Z: res.location.z,
+            pitch: res.location.pitch,
+            yaw: res.location.yaw,
+            roll: res.location.roll,
           })
+        }, () => {
+          console.log('执行了吗')
+          console.log('我是值', this.state.labelModel)
         })
       }, 10)
     })

@@ -36,3 +36,5 @@ yarn-error.log*
 .idea/
 package-json.lock
 yarn.lock
+
+*.7z

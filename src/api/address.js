@@ -10,8 +10,7 @@ $.ajax({
     type: "get",
     async: false,
     success: function (response) {
-        let projectAddrass = window.location.host;
-        console.log(projectAddrass)
+        console.log(response,'configjson配置')
         // 返回当前的URL协议,既http协议还是https协议
         // let protocol = document.location.protocol;
         // const interfaceIp = `${protocol}//${projectAddrass}/api`;

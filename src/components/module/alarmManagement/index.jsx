@@ -25,22 +25,51 @@ class AlarmManagement extends Component {
     }
     // 获取地图建筑
     getMapVBuild = () => {
+        console.log('我是建筑')
         Build.getBuild((obj) => {
+            console.log('建筑执行了吧')
             AlarmManagement.this.setState({
                 buildList: JSON.parse(obj)
             })
             this.getMapVFloor(JSON.parse(obj));
+            if (JSON.parse(obj).length <= 0) {
+                message.error("请确认数据是否具有室内建筑");
+            }
         })
     }
     // 获取地图楼层
     getMapVFloor = async (obj) => {
+
         let floorList = this.state.floorList;
+        console.log('楼层执行了吧', floorList, '66', obj, '77', Build)
+
+        // for (let index = 0; index < obj.length; index++) {
+        //     const element = obj[index];
+        //         console.log(11);
+        //         Build.getFloor(element.id, res => {
+        //             console.log('你有执行吗')
+        //             floorList = [...floorList, ...JSON.parse(res)]
+        //             // num++;
+        //             console.log('执行没有', floorList, index, obj.length);
+        //             if (index === obj.length - 1) {
+        //                 console.log(999)
+        //                 AlarmManagement.this.setState({
+        //                     floorList: floorList
+        //                 });
+        //                 AlarmManagement.this.SetMap(AlarmManagement.this.state.buildList, AlarmManagement.this.state.floorList)
+        //                 console.log(AlarmManagement.this.state.buildList, AlarmManagement.this.state.floorList)
+        //             }
+        //         });
+        // }
         let num = 0;
         obj.forEach(element => {
-            Build.getFloor(element.id, (item) => {
-                floorList = [...floorList, ...JSON.parse(item)]
+            Build.getFloor(element.id, res => {
+                console.log('你有执行吗')
+                floorList = [...floorList, ...JSON.parse(res)]
                 num++;
+                console.log('执行没有', floorList, num, obj.length);
                 if (num === obj.length) {
+                    console.log(999)
                     AlarmManagement.this.setState({
                         floorList: floorList
                     });
@@ -48,11 +77,11 @@ class AlarmManagement extends Component {
                     console.log(AlarmManagement.this.state.buildList, AlarmManagement.this.state.floorList)
                 }
             });
-
         });
     }
     // 数据同步到后台
     SetMap = (build, floor) => {
+        console.log('啥', build, floor)
         build.forEach(item => {
             this.SetMapBuild(item.name, item.id, "");
         })
@@ -77,11 +106,13 @@ class AlarmManagement extends Component {
     }
     //楼层请求
     SetMapFloor = (buildname, floorname, floorId, id, flag) => {
+        console.log('值', buildname, floorname, floorId, id)
         let json = { build_id: buildname, floor_name: floorname, floor_id: floorId, postions: {} }
         if (id !== "") {
             json["id"] = id;
         }
         setMapFloor(json).then(res => {
+            console.log('我返回的是', res)
             if (res.msg === "success" && id !== "") {
                 this.getMap();
                 message.success("修改成功");
