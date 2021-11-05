@@ -104,9 +104,11 @@ class AlarmManagement extends Component {
       build_id: build_id,
       postions: {}
     }
+
     if (id !== "") {
       json["id"] = id
     }
+
     setMapBuild(json).then(res => {
       if (res.msg === "success" && id !== "") {
         this.getMap();
@@ -171,6 +173,7 @@ class AlarmManagement extends Component {
   }
   // 左键事件
   onMenuClicked = (e, obj, flag) => {
+    console.log(obj, flag)
     $(".alerth2").css("color", "#ffffff")
     $(e.currentTarget).css("color", "#ea9310")
     $(e.currentTarget).parents("li").siblings("li").children("ul").slideUp()
@@ -216,14 +219,26 @@ class AlarmManagement extends Component {
     $(".floorConfiguration").find(".ContractionArea").slideDown()
   }
 
+  // 点击保存
+  handleSave = () => {
+    const {
+      name,
+      buildFlag,
+      dqObj
+    } = this.state
+    if (buildFlag) {
+      this.SetMapBuild(name, dqObj.build_id, dqObj.id)
+    } else {
+      this.SetMapFloor(dqObj.build_id, name, dqObj.floor_id, dqObj.id)
+    }
+  }
+
   render() {
     const {
       bulidFloor,
       buildId,
       name,
-      postion,
-      buildFlag,
-      dqObj
+      postion
     } = this.state
 
     return (
@@ -258,8 +273,11 @@ class AlarmManagement extends Component {
                       {menuObj.childen.map(item => {
                         return (
                           <li key={item.id} className="addAlert">
-                            <h2 className="alerth2" onClick={(e) => this.onMenuClicked(e, item, false)}
-                                title={item.floor_name}>
+                            <h2
+                              className="alerth2"
+                              onClick={(e) => this.onMenuClicked(e, item, false)}
+                              title={item.floor_name}
+                            >
                               {item.floor_name}
                             </h2>
                           </li>
@@ -289,7 +307,7 @@ class AlarmManagement extends Component {
               <input
                 type="text"
                 className="inputAll"
-                defaultValue={name}
+                value={name}
                 onChange={(e) => this.inputAll(e, "name")}
               />
             </div>
@@ -301,7 +319,7 @@ class AlarmManagement extends Component {
           <div className="floorBtn">
             <button
               className="ConfirmButton"
-              onClick={buildFlag ? () => this.SetMapBuild(name, dqObj.build_id, dqObj.id) : () => this.SetMapFloor(dqObj.build_id, name, dqObj.floor_id, dqObj.id)}
+              onClick={this.handleSave}
             >
               保存
             </button>
