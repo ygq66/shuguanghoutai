@@ -52,6 +52,10 @@ class PatrolRoute extends Component {
     })
   }
 
+  componentWillUnmount() {
+    this.closeRoute()
+  }
+
   // v-model数据绑定
   setOnChange = (e, type) => {
     this.setState({
