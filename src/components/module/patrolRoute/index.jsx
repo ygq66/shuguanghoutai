@@ -68,9 +68,19 @@ class PatrolRoute extends Component {
   }
   // 巡逻路线编辑查看
   editView = (ev, item) => {
-    console.log(ev, item)
+
     $(ev.currentTarget).parent("li").siblings("li").removeClass("tr-color-btn-active");
     $(ev.currentTarget).parent("li").addClass("tr-color-btn-active");
+
+    let floorId = item.floor_id
+    let baseRouteZ = 450
+
+    // 根据路线所在楼层，计算一下 Z 值
+    if (floorId) {
+      // "V001_JZ0002#F003" => 3
+      let floorNumber = Build.getFloorNumberByFloorId(floorId)
+      baseRouteZ *= floorNumber
+    }
 
     getPatrolLineAll({id: item.id}).then(res => {
       PatrolRoute.this.setState({
@@ -81,18 +91,18 @@ class PatrolRoute extends Component {
       });
       PatrolRoute.this.setOperatingArea(true);
       let postion = []
-      res.data.patrol_line_subsection.forEach((msg, index) => {
+      res.data?.patrol_line_subsection?.forEach((msg, index) => {
         let obj = {
           x: msg.options.noodles[0][0],
           y: msg.options.noodles[0][1],
-          z: 380
+          z: baseRouteZ
         };
         postion.push(obj)
         if (index === res.data.patrol_line_subsection.length - 1) {
           let obj2 = {
             x: msg.options.noodles[0][6],
             y: msg.options.noodles[0][7],
-            z: 380
+            z: baseRouteZ
           };
           postion.push(obj2);
         }
@@ -116,7 +126,6 @@ class PatrolRoute extends Component {
     createMap.FlyToPosition(JSON.parse(center));
 
     Model.removeGid(showRouteGid);
-    console.log(showRouteGid)
 
     setTimeout(() => {
       Model.carteLine(geom, res => {
@@ -187,11 +196,15 @@ class PatrolRoute extends Component {
 
   // 取消当前绘制路线记录
   closeRoute = () => {
-    const {routeGid} = this.state;
+    const {routeGid, showRouteGid} = this.state;
     PatrolRoute.this.hideRoute();
     Model.removeGid(routeGid);
+    Model.removeGid(showRouteGid);
     this.setOperatingArea(false);
     this.clearAll();
+
+    Build.showAllBuilding()
+
     $('.tr-color-btn-active').removeClass("tr-color-btn-active");
   }
 
@@ -483,11 +496,6 @@ class PatrolRoute extends Component {
     $(e.currentTarget).parent("li").addClass("tr-color-btn-active");
   }
 
-  // 线路预览
-  handlePreviewPatrol = () => {
-
-  }
-
   render() {
     const {
       routeList,
@@ -677,7 +685,6 @@ class PatrolRoute extends Component {
                 </div>
                 <div className="table-btn">
                   <div className="table-ok" onClick={() => this.setPatrolLine()} style={{marginRight: "20px"}}>保存</div>
-                  <div className="btn__preview" onClick={this.handlePreviewPatrol}>预览</div>
                   <div className="table-cancel" onClick={() => this.closeRoute()}>取消</div>
                 </div>
               </div>
@@ -763,7 +770,6 @@ class PatrolRoute extends Component {
                     </div>
                   </div>
                   <div className="table-btn">
-                    <div className="btn__preview" onClick={this.handlePreviewPatrol}>预览</div>
                     <div className="table-ok" onClick={() => this.updatePatrolLine()}>保存</div>
                   </div>
                 </div>

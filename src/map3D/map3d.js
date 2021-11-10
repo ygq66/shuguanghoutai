@@ -559,6 +559,29 @@ export const Build = {
       callback(strObj);
     });
   },
+
+  /**
+   * 提取楼层号
+   * @param floorId V001_JZ0002#F003
+   * @returns {number} 数字格式的楼层号
+   */
+  getFloorNumberByFloorId(floorId) {
+    let floorName = floorId.split('#')[1]
+    return Build.getFloorNumberByName(floorName)
+  },
+
+  /**
+   * 提取楼层号
+   * @param floorNameString F001,B001的格式
+   * @returns {number|number} 数字格式的楼层号
+   */
+  getFloorNumberByName(floorNameString) {
+    let floorReg = /\d+/
+    let floorNumString = floorNameString.match(floorReg)[0]
+    let isUnderFloor = floorNameString.startsWith('B')
+    return floorNumString ? (isUnderFloor ? Number(floorNumString) * -1 : Number(floorNumString)) : 1
+  },
+
   // 楼层显示隐藏
   showFloor(buildingName, floorName, floor) {
     // let floorNum =
@@ -568,14 +591,8 @@ export const Build = {
     // var FLOOR = floorName.substr(0, 1);
     // floorName 的格式为：B001，F001之类的
 
-    const getFloorNumber = (floorNameString) => {
-      let floorReg = /\d+/
-      let floorNumString = floorNameString.match(floorReg)[0]
-      return floorNumString ? Number(floorNumString) : 1
-    }
-
     floorName = floorName.split('#')[1]
-    let floorNum = getFloorNumber(floorName)
+    let floorNum = Build.getFloorNumberByName(floorName)
     let isCurrentFloorUnderground = floorName.startsWith('B')
 
     if (isCurrentFloorUnderground) {
@@ -594,7 +611,7 @@ export const Build = {
     }
 
     floor.forEach((item, index) => {
-      let FNum = getFloorNumber(item)
+      let FNum = Build.getFloorNumberByName(item)
       var ItmFloor = item.substr(0, 1);
       if (ItmFloor === "B") {
         FNum = -FNum;
