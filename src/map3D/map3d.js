@@ -34,13 +34,11 @@ export const createMap = {
       SetResolution(options, view3d);
       Build.getBuild((res) => {
         let buildObj = JSON.parse(res);
-        console.log("我是这个值", buildObj);
         if (buildObj.length > 0) {
           (function loopBuild(index) {
             Build.getFloor(buildObj[index].id, (msg2) => {
               // console.log(buildObj, index)
               // 处理一下index越界的可能
-              console.log("我执行了吗");
               if (index < buildObj.length) {
                 allBuildModelObj[buildObj[index].id] = JSON.parse(msg2);
                 if (++index < buildObj.length) {
@@ -413,7 +411,7 @@ export const Model = {
     selObj = null;
   },
   removeGid(gid) {
-    view3d.OverLayerRemoveObjectById(gid);
+    view3d && view3d.OverLayerRemoveObjectById(gid);
   },
   // 显示隐藏模型
   showModel(id, flag) {
@@ -483,6 +481,7 @@ export const Model = {
       points: []
     };
     view3d.OverLayerStartEdit(obj, res => {
+      console.log(res)
       if (callback) {
         callback(res);
       }
@@ -546,33 +545,40 @@ export const grid = {};
 export const Build = {
   //地面显示隐藏
   showDM(groundVisible, view3d) {
-    view3d.SetGroundVisible(groundVisible);
+    view3d && view3d.SetGroundVisible(groundVisible);
   },
 
   getBuild(callback) {
-    view3d.GetBuildingNames((res) => {
-      console.log("8989建筑");
-      var strObj = JSON.stringify(res);
-      callback(strObj);
+    view3d && view3d.GetBuildingNames((res) => {
+      callback && callback(JSON.stringify(res));
     });
   },
   getFloor(buildingName, callback) {
     view3d.GetFloorNames(buildingName, res => {
-      console.log("888999");
       var strObj = JSON.stringify(res);
-      console.log(strObj);
       callback(strObj);
     });
   },
   // 楼层显示隐藏
   showFloor(buildingName, floorName, floor) {
-    let floorNum =
-      Number(floorName.substring(floorName.length - 2)) >= 10
-        ? Number(floorName.substring(floorName.length - 2))
-        : Number(floorName.slice(-1));
-    var FLOOR = floorName.substr(0, 1);
+    // let floorNum =
+    //   Number(floorName.substring(floorName.length - 2)) >= 10
+    //     ? Number(floorName.substring(floorName.length - 2))
+    //     : Number(floorName.slice(-1));
+    // var FLOOR = floorName.substr(0, 1);
+    // floorName 的格式为：B001，F001之类的
 
-    if (FLOOR === "B") {
+    const getFloorNumber = (floorNameString) => {
+      let floorReg = /\d+/
+      let floorNumString = floorNameString.match(floorReg)[0]
+      return floorNumString ? Number(floorNumString) : 1
+    }
+
+    floorName = floorName.split('#')[1]
+    let floorNum = getFloorNumber(floorName)
+    let isCurrentFloorUnderground = floorName.startsWith('B')
+
+    if (isCurrentFloorUnderground) {
       floorNum = -floorNum
       // 显示地下的情况时,把地面隐藏掉
       Build.showDM(false, view3d)
@@ -581,31 +587,47 @@ export const Build = {
     }
 
     view3d.SetBuildingVisible(buildingName, floorName === "all" ? true : false);
+
     // floor undefined 的报错处理。
     if (!floor) {
       return;
     }
-    floor.forEach((item) => {
-      let FNum = Number(item.substring(1));
+
+    floor.forEach((item, index) => {
+      let FNum = getFloorNumber(item)
       var ItmFloor = item.substr(0, 1);
       if (ItmFloor === "B") {
         FNum = -FNum;
       }
+
+      let floorVisible = true
       if (FNum > floorNum) {
-        view3d.SetFloorVisible(buildingName, item, false);
-      } else {
-        view3d.SetFloorVisible(buildingName, item, true);
+        floorVisible = false
       }
-      if (floor.length - 1 === item) {
+
+      view3d.SetFloorVisible(buildingName, item, floorVisible);
+
+      if (index === floor.length - 1) {
+        console.log('call get model')
         setTimeout(() => {
           Model.getModel(view3d);
         }, 1000);
       }
     });
     //猜测是这里
-    Model.getModel(view3d);
+    // Model.getModel(view3d);
+  },
+
+  showAllBuilding() {
+    if (view3d) {
+      Build.getBuild(res => {
+        Array.from(JSON.parse(res)).forEach(item => {
+          view3d.SetBuildingVisible(item.id, true);
+        })
+      })
+    }
   }
-};
+}
 // 功能块
 export const Event = {
   // 创建路线
