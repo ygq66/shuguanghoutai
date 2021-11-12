@@ -19,13 +19,17 @@
     }
 
     .map {
-      margin-top: 100px;
+      // margin-top: 100px;
       // position: absolute;
       width: 100%;
-      height: calc(100vh - 110px);
+      // height: calc(100vh - 110px);
+      height: 100vh;
       // top: 100px;
       // left: 300px;
       background-color: white;
+      position: absolute;
+      top: 0;
+      left: 0;
     }
 
     .mapright {
@@ -104,7 +108,6 @@
 
   option {
     background-color: #343434;
-
   }
 }
 
@@ -129,7 +132,8 @@
   p {
     width: 76px;
     height: 24px;
-    background: url("../../assets/images/shousuobtn.png") no-repeat center center;
+    background: url("../../assets/images/shousuobtn.png") no-repeat center
+      center;
     display: flex;
     align-items: center;
     justify-content: center;
