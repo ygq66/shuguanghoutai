@@ -14,7 +14,7 @@ export const createMap = {
       id: options.id,
       url: options.url,
       projectId: options.projectId,
-      token: options.token,
+      token: options.token
     });
     view3d.Open((res) => {
       console.log("MapVision View3d " + res);
@@ -23,24 +23,22 @@ export const createMap = {
       view3d.OverLayerStopEdit();
       view3d.SetNorthControl(true, 0, 0, 0.5);
       window.$view3d = view3d; // 绑定实例
-      ["fullscreenchange", "webkitfullscreenchange", "mozfullscreenchange",]
-        .forEach((item, index) => {
-          window.addEventListener(item, function () {
-            setTimeout(function () {
-              SetResolution(options, view3d);
-            }, 500);
-          });
+      ["fullscreenchange", "webkitfullscreenchange", "mozfullscreenchange"]
+      .forEach((item, index) => {
+        window.addEventListener(item, function () {
+          setTimeout(function () {
+            SetResolution(options, view3d);
+          }, 500);
         });
+      });
       SetResolution(options, view3d);
       Build.getBuild((res) => {
         let buildObj = JSON.parse(res);
-        console.log("我是这个值", buildObj);
         if (buildObj.length > 0) {
           (function loopBuild(index) {
             Build.getFloor(buildObj[index].id, (msg2) => {
               // console.log(buildObj, index)
               // 处理一下index越界的可能
-              console.log("我执行了吗");
               if (index < buildObj.length) {
                 allBuildModelObj[buildObj[index].id] = JSON.parse(msg2);
                 if (++index < buildObj.length) {
@@ -209,7 +207,7 @@ export const createMap = {
 
   setObjectsVisible(objects) {
     view3d.SetObjectsVisible(objects);
-  },
+  }
 };
 //模型标注类
 export const Model = {
@@ -220,7 +218,7 @@ export const Model = {
       filename: videoType.fileName, // box, capsule, cone, cube, cylinder, pipe, pyramid, sphere, capsule
       radius: 1,
       scale: 1,
-      attr: videoType.attr,
+      attr: videoType.attr
     };
     view3d.OverLayerStartEdit(obj, (res) => {
       var strObj = JSON.stringify(res);
@@ -273,8 +271,8 @@ export const Model = {
         z: strObj.location.z,
         pitch: 0,
         yaw: strObj.location.yaw,
-        roll: 0,
-      },
+        roll: 0
+      }
     };
     // 注意,此功能为异步操作
     // console.log(obj,"strObj")
@@ -298,7 +296,7 @@ export const Model = {
       halign: "left", // left center right
       valign: "top", // bottom center top
       location: strObj.location,
-      attr: strObj["attr"] ? strObj.attr : {},
+      attr: strObj["attr"] ? strObj.attr : {}
     };
     view3d.OverLayerCreateObject(obj, (res) => {
       view3d.SetMouseCallback(null);
@@ -326,7 +324,7 @@ export const Model = {
       fontsize: strObj.size,
       halign: "left", // left center right
       valign: "top", // bottom center top
-      attr: strObj["attr"] ? strObj.attr : {},
+      attr: strObj["attr"] ? strObj.attr : {}
 
       // strObj["center"] ? {
       //     center: strObj.center
@@ -352,7 +350,7 @@ export const Model = {
     const obj = {
       type: "polygon",
       color: "#00ff00",
-      points: [],
+      points: []
     };
     view3d.OverLayerStartEdit(obj, (res) => {
       var strObj = JSON.stringify(res);
@@ -366,7 +364,7 @@ export const Model = {
     const obj = {
       type: "polygon",
       color: Color ? Color : "#00ff00",
-      points: point,
+      points: point
     };
     view3d.OverLayerCreateObject(obj, (res) => {
       createObj = res;
@@ -382,7 +380,7 @@ export const Model = {
       linestyle: item.lineStyle || "",
       linevisible: true,
       linewidth: item.lineWidth || "",
-      points: [],
+      points: []
     };
     view3d.OverLayerStartEdit(obj, (res) => {
       Polygon = res;
@@ -413,7 +411,7 @@ export const Model = {
     selObj = null;
   },
   removeGid(gid) {
-    view3d.OverLayerRemoveObjectById(gid);
+    view3d && view3d.OverLayerRemoveObjectById(gid);
   },
   // 显示隐藏模型
   showModel(id, flag) {
@@ -422,7 +420,12 @@ export const Model = {
   //点击获取当前模型信息
   getModel() {
     // 过滤 对象  prefix 对象名称前缀   ，path 路径前缀
-    var paramers = {prefix: "MP,T,J,V", path: "", speedroute: 10, showmouse: false};
+    var paramers = {
+      prefix: "MP,T,J,V",
+      path: "",
+      speedroute: 10,
+      showmouse: false
+    };
     view3d.SetParameters(paramers);
     // console.log("我被执行了");
     view3d.SetMouseCallback((res) => {
@@ -433,7 +436,10 @@ export const Model = {
       }
       let data = {};
       if (res.typename === "model") {
-        data = {switchName: "model", Personnel: res,};
+        data = {
+          switchName: "model",
+          Personnel: res
+        };
         helperShapeUtil.updateHelperShapePos(res.location); // 创建标注
 
       } else if (res.gid.split("_")[0] === "MP") {
@@ -444,7 +450,7 @@ export const Model = {
         console.log(buildarr, buildId, "我是被点击的建筑id");
         data = {
           switchName: "buildLable",
-          Personnel: buildId,
+          Personnel: buildId
         };
       }
       window.parent.postMessage(data, "*");
@@ -455,7 +461,7 @@ export const Model = {
     var paramers = {
       prefix: "MP,TEMP,J",
       path: "",
-      speedroute: 10,
+      speedroute: 10
     };
     view3d.SetParameters(paramers);
     view3d.SetMouseCallback((res) => {
@@ -472,9 +478,10 @@ export const Model = {
     const obj = {
       type: "linestring",
       color: "#ff0f00",
-      points: [],
+      points: []
     };
     view3d.OverLayerStartEdit(obj, res => {
+      console.log(res)
       if (callback) {
         callback(res);
       }
@@ -487,7 +494,7 @@ export const Model = {
       type: "linestring",
       style: "red",
       linewidth: 40.0,
-      points: points,
+      points: points
     };
     view3d.OverLayerCreateObject(obj, (res) => {
       if (callback) {
@@ -503,7 +510,7 @@ export const Model = {
       type: "image", // 10102  或  image
       style: config.src || "default",
       scale: config.scale || 1,
-      attr: config,
+      attr: config
     };
     view3d.OverLayerStartEdit(objConfig, (res) => {
       view3d.OverLayerStopEdit();
@@ -536,68 +543,108 @@ export const Model = {
 export const grid = {};
 // 建筑楼层类
 export const Build = {
+  //地面显示隐藏
+  showDM(groundVisible, view3d) {
+    view3d && view3d.SetGroundVisible(groundVisible);
+  },
+
   getBuild(callback) {
-    view3d.GetBuildingNames((res) => {
-      console.log("8989建筑");
-      var strObj = JSON.stringify(res);
-      callback(strObj);
+    view3d && view3d.GetBuildingNames((res) => {
+      callback && callback(JSON.stringify(res));
     });
   },
   getFloor(buildingName, callback) {
     view3d.GetFloorNames(buildingName, res => {
-      console.log("888999");
       var strObj = JSON.stringify(res);
-      console.log(strObj);
       callback(strObj);
     });
   },
+
+  /**
+   * 提取楼层号
+   * @param floorId V001_JZ0002#F003
+   * @returns {number} 数字格式的楼层号
+   */
+  getFloorNumberByFloorId(floorId) {
+    let floorName = floorId.split('#')[1]
+    return Build.getFloorNumberByName(floorName)
+  },
+
+  /**
+   * 提取楼层号
+   * @param floorNameString F001,B001的格式
+   * @returns {number|number} 数字格式的楼层号
+   */
+  getFloorNumberByName(floorNameString) {
+    let floorReg = /\d+/
+    let floorNumString = floorNameString.match(floorReg)[0]
+    let isUnderFloor = floorNameString.startsWith('B')
+    return floorNumString ? (isUnderFloor ? Number(floorNumString) * -1 : Number(floorNumString)) : 1
+  },
+
   // 楼层显示隐藏
   showFloor(buildingName, floorName, floor) {
-    let floorNum =
-      Number(floorName.substring(floorName.length - 2)) >= 10
-        ? Number(floorName.substring(floorName.length - 2))
-        : Number(floorName.slice(-1));
-    var FLOOR = floorName.substr(0, 1);
+    // let floorNum =
+    //   Number(floorName.substring(floorName.length - 2)) >= 10
+    //     ? Number(floorName.substring(floorName.length - 2))
+    //     : Number(floorName.slice(-1));
+    // var FLOOR = floorName.substr(0, 1);
+    // floorName 的格式为：B001，F001之类的
 
-    if (FLOOR === "B") {
-      floorNum = -floorNum;
-    }
+    floorName = floorName.split('#')[1]
+    let floorNum = Build.getFloorNumberByName(floorName)
+    let isCurrentFloorUnderground = floorName.startsWith('B')
 
-    // 显示隐藏地面
-    if (FLOOR === "B") {
-      console.log('隐藏地面')
-      view3d.SetGroundVisible(false);
+    if (isCurrentFloorUnderground) {
+      floorNum = -floorNum
+      // 显示地下的情况时,把地面隐藏掉
+      Build.showDM(false, view3d)
     } else {
-      console.log('显示地面')
-      view3d.SetGroundVisible(true);
+      Build.showDM(true, view3d)
     }
 
     view3d.SetBuildingVisible(buildingName, floorName === "all" ? true : false);
+
     // floor undefined 的报错处理。
     if (!floor) {
       return;
     }
-    floor.forEach((item) => {
-      let FNum = Number(item.substring(1));
+
+    floor.forEach((item, index) => {
+      let FNum = Build.getFloorNumberByName(item)
       var ItmFloor = item.substr(0, 1);
       if (ItmFloor === "B") {
         FNum = -FNum;
       }
+
+      let floorVisible = true
       if (FNum > floorNum) {
-        view3d.SetFloorVisible(buildingName, item, false);
-      } else {
-        view3d.SetFloorVisible(buildingName, item, true);
+        floorVisible = false
       }
-      if (floor.length - 1 === item) {
+
+      view3d.SetFloorVisible(buildingName, item, floorVisible);
+
+      if (index === floor.length - 1) {
+        console.log('call get model')
         setTimeout(() => {
           Model.getModel(view3d);
         }, 1000);
       }
     });
     //猜测是这里
-    Model.getModel(view3d);
+    // Model.getModel(view3d);
   },
-};
+
+  showAllBuilding() {
+    if (view3d) {
+      Build.getBuild(res => {
+        Array.from(JSON.parse(res)).forEach(item => {
+          view3d.SetBuildingVisible(item.id, true);
+        })
+      })
+    }
+  }
+}
 // 功能块
 export const Event = {
   // 创建路线
@@ -611,7 +658,7 @@ export const Event = {
   // 路径迅游清除
   clearPatrolPath() {
     view3d.Clear();
-  },
+  }
 };
 
 //设置屏幕

@@ -1110,7 +1110,10 @@ class UserManagement extends Component {
     }
     let originFloorId = floor_id
     floor_id = floor_id.split("#")[1];
-    Build.showFloor(build_id, floor_id, floor);
+    // selectedFloorId
+    if (build_id && floor_id) {
+      Build.showFloor(build_id, floor_id, floor);
+    }
 
     // 只显示当前楼层的相机，其他层的隐藏
     cameraList.forEach(camera => {

@@ -1,15 +1,15 @@
-import React, {useState, useEffect, Suspense, lazy, Fragment} from 'react';
+import React, { useState, useEffect, Suspense, lazy, Fragment } from 'react';
 import './style.scss';
 import $ from "jquery";
 import HomeLeft from '../../components/homeLeft'
 import HomeHeader from '../../components/homeHeader'
 import axios from 'axios';
-import {message} from 'antd';
-import {createMap, Model} from '../../map3D/map3d';
-import {useDispatch, useMappedState} from 'redux-react-hook';
-import {getFigureLabel, getBuildLabel} from "../../api/mainApi";
-import {Redirect} from 'react-router';
-import {configData2 as MapUrl, configData3 as projectId, configData4 as token} from '../../api/address';
+import { message } from 'antd';
+import { createMap, Model } from '../../map3D/map3d';
+import { useDispatch, useMappedState } from 'redux-react-hook';
+import { getFigureLabel, getBuildLabel } from "../../api/mainApi";
+import { Redirect } from 'react-router';
+import { configData2 as MapUrl, configData3 as projectId, configData4 as token } from '../../api/address';
 import helperShapeUtil from "../../map3D/helperShapeUtil";
 
 const Home = () => {
@@ -23,6 +23,9 @@ const Home = () => {
   const [DynamicModule, setDynamicModule] = useState("div");
   const [moudleId, setMoudleId] = useState('')
   const [openFlag, setopenFlag] = useState(false)
+
+  const [panelFadeOut, setPanelFadeOut] = useState(false)
+
   useEffect(() => {
     if (!isLogin || isLogin === "false") {
       return;
@@ -32,16 +35,21 @@ const Home = () => {
         const result = res.data;
         if (result.msg === "success") {
           if (result.data.length > 0) {
-            createMap.createMap({
+            var view3d = createMap.createMap({
               id: "mapv3dContainer",
               url: MapUrl,
               projectId: projectId,
               token: token
             }, () => {
+
+              console.clear()
+              console.dir(view3d)
+
               helperShapeUtil.createHelperShape();
               message.success("地图加载成功")
-              // 去掉键盘控制先。不然点位上图输入都会被影响
-              // createMap.eanbleKeyboard();
+
+              createMap.enableKeyboard();
+
               axios.post(global.Url + "/device/camera/listS").then((res) => {
                 const result = res.data;
                 const data = res.data.data
@@ -60,12 +68,17 @@ const Home = () => {
                         Model.modelLoading(obj, msg => {
                           if (++index < data.length) {
                             setTimeout(() => {
-                              objModel[msg.attr?.id] = {...msg, device_code: msg.attr?.device_code};
+                              objModel[msg.attr?.id] = {
+                                ...msg,
+                                device_code: msg.attr?.device_code
+                              };
                               loop(index)
                             }, 0)
                           } else {
-                            console.log("全部执行完毕");
-                            dispatch({type: "model_list", model_list: {...objModel}});
+                            dispatch({
+                              type: "model_list",
+                              model_list: {...objModel}
+                            });
                             GetBuildLabel();
                           }
                         })
@@ -76,7 +89,10 @@ const Home = () => {
                           }, 0)
                         } else {
                           console.log("全部执行完毕");
-                          dispatch({type: "model_list", model_list: {...objModel}});
+                          dispatch({
+                            type: "model_list",
+                            model_list: {...objModel}
+                          });
                           GetBuildLabel();
                         }
                       }
@@ -100,6 +116,7 @@ const Home = () => {
       })
       setopenFlag(true)
     }
+
     const GetBuildLabel = () => {
       getBuildLabel().then(result => {
         const Label = result.data;
@@ -108,14 +125,20 @@ const Home = () => {
             var buildLabel = {};
             (function loop2(index2) {
               if (Label[index2].children) {
-                const obj2 = {...Label[index2].children[0].position, attr: {buildId: Label[index2].build_id}};
+                const obj2 = {
+                  ...Label[index2].children[0].position,
+                  attr: {buildId: Label[index2].build_id}
+                };
 
                 Model.labelLoading(obj2, msg => {
                   if (++index2 < Label.length) {
                     buildLabel[Label[index2].id] = {...msg};
                     loop2(index2);
                   } else {
-                    dispatch({type: "buildLabel_list", buildLabel_list: {...buildLabel}});
+                    dispatch({
+                      type: "buildLabel_list",
+                      buildLabel_list: {...buildLabel}
+                    });
                     GetFigureLabel();
                   }
                 })
@@ -123,7 +146,10 @@ const Home = () => {
                 if (++index2 < Label.length) {
                   loop2(index2);
                 } else {
-                  dispatch({type: "buildLabel_list", buildLabel_list: {...buildLabel}});
+                  dispatch({
+                    type: "buildLabel_list",
+                    buildLabel_list: {...buildLabel}
+                  });
                   GetFigureLabel();
                 }
               }
@@ -149,11 +175,17 @@ const Home = () => {
                     loop2(index2);
                   }, 0)
                 } else {
-                  dispatch({type: "textLabel_list", textLabel_list: {...textLabel}});
+                  dispatch({
+                    type: "textLabel_list",
+                    textLabel_list: {...textLabel}
+                  });
                 }
                 return;
               }
-              const obj2 = {...JSON.parse(Label[index2].label_style.model), attr: {center: Label[index2].label_style.center}};
+              const obj2 = {
+                ...JSON.parse(Label[index2].label_style.model),
+                attr: {center: Label[index2].label_style.center}
+              };
               Model.labelLoading(obj2, msg => {
                 if (++index2 < Label.length) {
                   textLabel[Label[index2].id] = {...msg};
@@ -161,7 +193,10 @@ const Home = () => {
                     loop2(index2);
                   }, 0)
                 } else {
-                  dispatch({type: "textLabel_list", textLabel_list: {...textLabel}});
+                  dispatch({
+                    type: "textLabel_list",
+                    textLabel_list: {...textLabel}
+                  });
                 }
               })
             })(0);
@@ -176,6 +211,7 @@ const Home = () => {
         lazy(() => import(`../../components/module/${moudleId}`))
       );
     }
+
   }, [isLogin, moudleId, openFlag, dispatch]);
 
   // 接受点击事件
@@ -194,21 +230,31 @@ const Home = () => {
   }, [])
 
   const setModel = (value) => {
-    $('.mapright').addClass("animate__fadeOutRight");
+    setPanelFadeOut(true)
     setTimeout(() => {
       setMoudleId(value)
+      setPanelFadeOut(false)
     }, 800)
-    dispatch({type: "check_left", title_left_check: -1})
+    dispatch({
+      type: "check_left",
+      title_left_check: -1
+    })
   }
   const stPageModel = (value) => {
+    // 点击重复的左侧标签，不做处理
+    if(value === moudleId) {
+      return
+    }
     if (moudleId !== "") {
-      $('.mapright').addClass("animate__fadeOutRight");
+      setPanelFadeOut(true)
+
       setTimeout(() => {
-        setMoudleId("");
+        // setMoudleId("");
         setMoudleId(value)
+        setPanelFadeOut(false)
       }, 800)
     } else {
-      setMoudleId("");
+      // setMoudleId("");
       setMoudleId(value)
     }
 
@@ -221,7 +267,7 @@ const Home = () => {
   return (
     <Fragment>
       {
-        (!isLogin || isLogin === "false") ? <Redirect to='/login'/> :
+        (!isLogin || isLogin === "false") ? <Redirect to="/login"/> :
           <div id="Home_all" className="">
             <HomeLeft setMoudleId={stPageModel} value="-1"/>
             <div className="homRight">
@@ -230,12 +276,20 @@ const Home = () => {
 
               {/* <div className="home_content"></div> */}
               {`${moudleId}` !== "" &&
-              <div className="mapright animate__animated animate__fadeInRight" style={{width: `${moudleId}` === "" || `${moudleId}` === "layoutStyle" ? "0" : "450px"}}>
+              <div
+                className={`mapright animate__animated animate__fadeInRight ${panelFadeOut ? 'animate__fadeOutRight' : ''}`}
+                style={{width: `${moudleId}` === "" || `${moudleId}` === "layoutStyle" ? "0" : "450px"}}
+              >
                 <Suspense fallback={<div>"loading"</div>}>
                   {DynamicModule === 'div'
                     ? ''
                     :
-                    <DynamicModule setMoudleId={setModel} modellist={modelList} buildlabel={buildLabelList} textlabel={textLabelList}/>
+                    <DynamicModule
+                      setMoudleId={setModel}
+                      modellist={modelList}
+                      buildlabel={buildLabelList}
+                      textlabel={textLabelList}
+                    />
                   }
                 </Suspense>
               </div>}
