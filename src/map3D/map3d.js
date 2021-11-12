@@ -567,7 +567,10 @@ export const Build = {
    */
   getFloorNumberByFloorId(floorId) {
     let floorName = floorId.split('#')[1]
-    return Build.getFloorNumberByName(floorName)
+    if (floorName) {
+      return Build.getFloorNumberByName(floorName)
+    }
+    return
   },
 
   /**
@@ -580,6 +583,14 @@ export const Build = {
     let floorNumString = floorNameString.match(floorReg)[0]
     let isUnderFloor = floorNameString.startsWith('B')
     return floorNumString ? (isUnderFloor ? Number(floorNumString) * -1 : Number(floorNumString)) : 1
+  },
+
+  showAllFloor(buildId, floorList) {
+    view3d.SetBuildingVisible(buildId, true);
+
+    Array.isArray(floorList) && floorList.forEach(floorName => {
+      view3d.SetFloorVisible(buildId  , floorName, true)
+    })
   },
 
   // 楼层显示隐藏
