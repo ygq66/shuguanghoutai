@@ -573,8 +573,12 @@ export const Build = {
    * @returns {number} 数字格式的楼层号
    */
   getFloorNumberByFloorId(floorId) {
-    let floorName = floorId.split("#")[1];
-    return Build.getFloorNumberByName(floorName);
+
+    let floorName = floorId.split('#')[1]
+    if (floorName) {
+      return Build.getFloorNumberByName(floorName)
+    }
+    return
   },
 
   /**
@@ -591,6 +595,14 @@ export const Build = {
         ? Number(floorNumString) * -1
         : Number(floorNumString)
       : 1;
+  },
+
+  showAllFloor(buildId, floorList) {
+    view3d.SetBuildingVisible(buildId, true);
+
+    Array.isArray(floorList) && floorList.forEach(floorName => {
+      view3d.SetFloorVisible(buildId  , floorName, true)
+    })
   },
 
   // 楼层显示隐藏

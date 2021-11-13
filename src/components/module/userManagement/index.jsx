@@ -873,7 +873,7 @@ class UserManagement extends Component {
     console.log('点击节点', item)
     if (item.node_type === "details") {
       if (item.indoor) {
-        Build.showFloor(item.build_id, item.floor_id.split("#")[1]);
+        Build.showFloor(item.build_id, item.floor_id);
         UserManagement.this.setState({
           oldbuildId: item.build_id
         })
@@ -1086,7 +1086,7 @@ class UserManagement extends Component {
       let floor_id = res.floor_id.split("#")[1];
       floor.push(floor_id);
     })
-    Build.showFloor(oldbuildId, "all", floor);
+    Build.showAllFloor(oldbuildId, floor);
   }
   // 楼层掀层
   showFloor = (selectedFloorId) => {
