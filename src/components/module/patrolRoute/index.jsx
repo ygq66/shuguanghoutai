@@ -31,7 +31,7 @@ class PatrolRoute extends Component {
       indoor: false,      //室内外
       buildId: "",        //建筑id
       floorId: "",        //楼层id
-      bufferH: 0,         //缓冲区域高度
+      bufferH: 10,         //缓冲区域高度
       flagNum: 0,
       flag_tab: false,    //当前绘制区域所含设备表
       buildList: [],      //建筑信息
@@ -86,7 +86,8 @@ class PatrolRoute extends Component {
       baseRouteZ *= floorNumber
     }
 
-    getPatrolLineAll({id: item.id}).then(res => {
+    getPatrolLineAll({ id: item.id }).then(res => {
+
       PatrolRoute.this.setState({
         cameraPosition: res.data,
         routeName: res.data.line_name,
@@ -96,20 +97,24 @@ class PatrolRoute extends Component {
       PatrolRoute.this.setOperatingArea(true);
       let postion = []
       res.data?.patrol_line_subsection?.forEach((msg, index) => {
-        let obj = {
-          x: msg.options.noodles[0][0],
-          y: msg.options.noodles[0][1],
-          z: baseRouteZ
-        };
-        postion.push(obj)
-        if (index === res.data.patrol_line_subsection.length - 1) {
-          let obj2 = {
-            x: msg.options.noodles[0][6],
-            y: msg.options.noodles[0][7],
+        console.log('线坐标', msg)
+        for (let index = 0; index < msg.options.length; index++) {
+          const element = msg.options[index];
+          let obj = {
+            x: element.x,
+            y: element.y,
             z: baseRouteZ
           };
-          postion.push(obj2);
+          postion.push(obj)
         }
+        // if (index === res.data.patrol_line_subsection.length - 1) {
+        //   let obj2 = {
+        //     x: msg.options.noodles[0][6],
+        //     y: msg.options.noodles[0][7],
+        //     z: baseRouteZ
+        //   };
+        //   postion.push(obj2);
+        // }
       })
       PatrolRoute.this.showRoute(postion, res.data.remark);
     })
@@ -125,7 +130,8 @@ class PatrolRoute extends Component {
   }
   // 展示漫游线
   showRoute = (geom, center) => {
-    const {showRouteGid} = this.state;
+    console.log('线的数据', geom)
+    const { showRouteGid } = this.state;
 
     createMap.FlyToPosition(JSON.parse(center));
 
@@ -141,9 +147,9 @@ class PatrolRoute extends Component {
   }
   // 删除漫游线
   hideRoute = () => {
-    const {showRouteGid} = this.state;
+    const { showRouteGid } = this.state;
     Model.removeGid(showRouteGid);
-    this.setState({showRouteGid: ""})
+    this.setState({ showRouteGid: "" })
   }
   // 室内切换
   indoorChange = (e) => {
@@ -174,7 +180,7 @@ class PatrolRoute extends Component {
   GetFloorList = (id, cb) => {
     Build.showAllBuilding()
 
-    getFloorList({build_id: id}).then(res => {
+    getFloorList({ build_id: id }).then(res => {
       PatrolRoute.this.setState({
         floorList: res.data,
         floorId: res.data[0].floor_id,
@@ -195,12 +201,12 @@ class PatrolRoute extends Component {
 
     Build.showFloor(buildId, selectedFloorId, floorList.map(floor => floor.floor_name))
 
-    this.setState({floorId: selectedFloorId})
+    this.setState({ floorId: selectedFloorId })
   }
 
   // 取消当前绘制路线记录
   closeRoute = () => {
-    const {routeGid, showRouteGid} = this.state;
+    const { routeGid, showRouteGid } = this.state;
     PatrolRoute.this.hideRoute();
     Model.removeGid(routeGid);
     Model.removeGid(showRouteGid);
@@ -214,7 +220,7 @@ class PatrolRoute extends Component {
 
   // 绘制路线
   drawRoute = () => {
-    const {routeGid} = this.state;
+    const { routeGid } = this.state;
     message.warning("鼠标右键结束绘制");
     Model.removeGid(routeGid);
     PatrolRoute.this.setState({
@@ -247,55 +253,56 @@ class PatrolRoute extends Component {
         routeGid: res.gid
       })
 
-      for (let i = 0; i < res.points.length - 1; i++) {
-        let arr = []
-        let points = res.points[i];
-        let points2 = res.points[i + 1];
-        let mian = this.getLinePoy(points, points2, "+");
-        let mian2 = this.getLinePoy(points, points2, "-");
-        arr = [
-          {
-            index: i,
-            NoodlesLineZ: 0,
-            line: [points.x, points.y],
-            noodles: [mian, mian2],
-            orientation: false
-          }
-        ];
-        positions.push(arr);
-      }
-      positions.forEach(element => {
-        element[0].noodles.forEach(element2 => {
-          let newArr = []
-          newArr.push({
-            x: element2[0],
-            y: element2[1],
-            z: 380
-          })
-          newArr.push({
-            x: element2[2],
-            y: element2[3],
-            z: 380
-          })
-          newArr.push({
-            x: element2[4],
-            y: element2[5],
-            z: 380
-          })
-          newArr.push({
-            x: element2[6],
-            y: element2[7],
-            z: 380
-          })
-          Model.createPolygon(newArr)
-        });
-      });
-      this.getLineSelectCamera(positions);
+      // for (let i = 0; i < res.points.length - 1; i++) {
+      //   let arr = []
+      //   let points = res.points[i];
+      //   let points2 = res.points[i + 1];
+      // let mian = this.getLinePoy(points, points2, "+");
+      // let mian2 = this.getLinePoy(points, points2, "-");
+      // arr = [
+      //   {
+      //     index: i,
+      //     NoodlesLineZ: 0,
+      //     line: [points.x, points.y],
+      //     noodles: [mian, mian2],
+      //     orientation: false
+      //   }
+      // ];
+      // positions.push(arr);
+
+      // }
+      // positions.forEach(element => {
+      //   element[0].noodles.forEach(element2 => {
+      //     let newArr = []
+      //     newArr.push({
+      //       x: element2[0],
+      //       y: element2[1],
+      //       z: 380
+      //     })
+      //     newArr.push({
+      //       x: element2[2],
+      //       y: element2[3],
+      //       z: 380
+      //     })
+      //     newArr.push({
+      //       x: element2[4],
+      //       y: element2[5],
+      //       z: 380
+      //     })
+      //     newArr.push({
+      //       x: element2[6],
+      //       y: element2[7],
+      //       z: 380
+      //     })
+      //     Model.createPolygon(newArr)
+      //   });
+      // });
+      this.getLineSelectCamera(res.points);
     })
   }
   // 计算线段面
   getLinePoy = (postion, postion2, type) => {
-    const {bufferH} = this.state;
+    const { bufferH } = this.state;
     let hcY1;
     let hcY2;
     if (type === "+") {
@@ -318,11 +325,13 @@ class PatrolRoute extends Component {
     const {
       indoor,
       buildId,
-      floorId
+      floorId,
+      bufferH
     } = this.state;
     let json = {
       positions: positions,
-      indoor: indoor
+      indoor: indoor,
+      buffer: bufferH
     }
     if (indoor) {
       json["build_id"] = buildId;
@@ -344,7 +353,7 @@ class PatrolRoute extends Component {
   }
   // 是否启用方法
   setEnable = (item, type, flag) => {
-    let {cameraList} = this.state;
+    let { cameraList } = this.state;
     item[type] = flag;
     this.setState({
       cameraList: cameraList
@@ -446,11 +455,11 @@ class PatrolRoute extends Component {
   // 删除巡逻路线
   delPatrolLine = (e, item) => {
     e.preventDefault();
-    delPatrolLine({id: item.id}).then(res => {
+    delPatrolLine({ id: item.id }).then(res => {
       message.success("删除成功")
       PatrolRoute.this.getPatrolLine();
       PatrolRoute.this.hideRoute();
-      PatrolRoute.this.setState({showRouteGid: ""});
+      PatrolRoute.this.setState({ showRouteGid: "" });
       PatrolRoute.this.setOperatingArea(false);
     })
   }
@@ -473,12 +482,12 @@ class PatrolRoute extends Component {
   }
   // 清空
   clearAll = () => {
-    const {routeGid} = this.state;
+    const { routeGid } = this.state;
     Model.removeGid(routeGid);
     this.setState({
       flagNum: 0,
       routeName: "",
-      bufferH: 2,
+      bufferH: 10,
       indoor: false,
       buildId: "",
       floorId: "",
@@ -537,7 +546,7 @@ class PatrolRoute extends Component {
                   >
                     {index + 1}.&nbsp;&nbsp;&nbsp;{item.line_name}
                   </span>
-                  <div className="Alert" style={{display: "none"}}>
+                  <div className="Alert" style={{ display: "none" }}>
                     <p onClick={(e) => this.delPatrolLine(e, item)}>删除</p>
                   </div>
                 </li>
@@ -548,24 +557,24 @@ class PatrolRoute extends Component {
         <div className="ContractionArea">
           <div className="shrinkage">
             <p onClick={() => this.closeRoute()}>
-              <img src={require("../../../assets/images/shousuojt.png").default} alt=""/>
+              <img src={require("../../../assets/images/shousuojt.png").default} alt="" />
             </p>
           </div>
-          {flagNum === 0 && <div className="rootline" style={{background: "#343434"}}>
+          {flagNum === 0 && <div className="rootline" style={{ background: "#343434" }}>
             <div className="total-root">
-              <div style={{paddingTop: "10px"}}>
-                <p style={{color: "white"}}>
+              <div style={{ paddingTop: "10px" }}>
+                <p style={{ color: "white" }}>
                   路线名称:
                   <input
                     type="text"
                     value={routeName}
                     onChange={(e) => this.setOnChange(e, "routeName")}
-                    className="inputAll" style={{marginLeft: "10px"}}
+                    className="inputAll" style={{ marginLeft: "10px" }}
                   />
                 </p>
               </div>
-              <div style={{paddingTop: "10px"}}>
-                <p style={{color: "white"}}>
+              <div style={{ paddingTop: "10px" }}>
+                <p style={{ color: "white" }}>
                   缓冲区域宽度:
                   <input
                     type="number"
@@ -579,16 +588,16 @@ class PatrolRoute extends Component {
                   />
                 </p>
               </div>
-              <div style={{paddingTop: "10px"}}>
-                <p style={{color: "white"}}>
+              <div style={{ paddingTop: "10px" }}>
+                <p style={{ color: "white" }}>
                   室内:
                   <Checkbox
                     onChange={(e) => this.indoorChange(e)} checked={indoor}
-                    style={{marginLeft: "10px"}}
+                    style={{ marginLeft: "10px" }}
                   />
                   <select
                     className="sleAll"
-                    style={{marginLeft: "10px"}}
+                    style={{ marginLeft: "10px" }}
                     onChange={(e) => this.GetFloorList(e.target.value)}
                   >
                     {buildList.map(item => {
@@ -599,7 +608,7 @@ class PatrolRoute extends Component {
                   </select>
                   <select
                     className="sleAll"
-                    style={{marginLeft: "10px"}}
+                    style={{ marginLeft: "10px" }}
                     onChange={this.handleFloorChange}
                   >
                     {floorList.map(item => {
@@ -613,7 +622,7 @@ class PatrolRoute extends Component {
             </div>
             <div className="DrawRoute_button">
               <button className="ConfirmButton" onClick={() => this.drawRoute()}>
-                {geom.length > 0 ? "重新绘制路线" : "绘制路线"}
+                {geom && geom.length > 0 ? "重新绘制路线" : "绘制路线"}
               </button>
             </div>
             {flag_tab && < div className="body-table">
@@ -639,42 +648,42 @@ class PatrolRoute extends Component {
                           </div>
                           <div className="table-tr-item-camera-list">
                             {item.patrol_camera.length > 0 ? item.patrol_camera.map((item2, index2) => {
-                                return (
-                                  <div className="table-tr-item-camera" key={index2}>
-                                    <div className="table-tr-item-camera-item" title={item2.camera_name}>
-                                      {item2.camera_name}
-                                    </div>
-                                    <div className="table-tr-item tr-color-btn">
+                              return (
+                                <div className="table-tr-item-camera" key={index2}>
+                                  <div className="table-tr-item-camera-item" title={item2.camera_name}>
+                                    {item2.camera_name}
+                                  </div>
+                                  <div className="table-tr-item tr-color-btn">
                                     <span
                                       className={item2.enable ? "tr-color-btn-active" : ""}
                                       onClick={() => this.setEnable(item2, "enable", true)}
                                     >
                                       是
                                     </span>
-                                      <span
-                                        className={!item2.enable ? "tr-color-btn-active" : ""}
-                                        onClick={() => this.setEnable(item2, "enable", false)}
-                                      >
+                                    <span
+                                      className={!item2.enable ? "tr-color-btn-active" : ""}
+                                      onClick={() => this.setEnable(item2, "enable", false)}
+                                    >
                                       否
                                     </span>
-                                    </div>
-                                    <div className="table-tr-item tr-color-btn">
+                                  </div>
+                                  <div className="table-tr-item tr-color-btn">
                                     <span
                                       className={item2.key ? "tr-color-btn-active" : ""}
                                       onClick={() => this.setEnable(item2, "key", true)}
                                     >
                                       是
                                     </span>
-                                      <span
-                                        className={!item2.key ? "tr-color-btn-active" : ""}
-                                        onClick={() => this.setEnable(item2, "key", false)}
-                                      >
+                                    <span
+                                      className={!item2.key ? "tr-color-btn-active" : ""}
+                                      onClick={() => this.setEnable(item2, "key", false)}
+                                    >
                                       否
                                     </span>
-                                    </div>
                                   </div>
-                                )
-                              }) :
+                                </div>
+                              )
+                            }) :
                               <div className="table-tr-item-camera">
                                 <div className="table-tr-item-camera-item">--</div>
                                 <div className="table-tr-item tr-color"><span>是</span><span>否</span></div>
@@ -688,24 +697,24 @@ class PatrolRoute extends Component {
                   </div>
                 </div>
                 <div className="table-btn">
-                  <div className="table-ok" onClick={() => this.setPatrolLine()} style={{marginRight: "20px"}}>保存</div>
+                  <div className="table-ok" onClick={() => this.setPatrolLine()} style={{ marginRight: "20px" }}>保存</div>
                   <div className="table-cancel" onClick={() => this.closeRoute()}>取消</div>
                 </div>
               </div>
             </div>
             }
           </div>}
-          {flagNum === 1 && <div className="rootline" style={{background: "#343434"}}>
+          {flagNum === 1 && <div className="rootline" style={{ background: "#343434" }}>
             <div className="total-root">
-              <div style={{paddingTop: "10px"}}>
-                <p style={{color: "white"}}>
+              <div style={{ paddingTop: "10px" }}>
+                <p style={{ color: "white" }}>
                   路线名称:
                   <input
                     type="text"
                     value={routeName}
                     onChange={(e) => this.setOnChange(e, "routeName")}
                     className="inputAll"
-                    style={{marginLeft: "10px"}}
+                    style={{ marginLeft: "10px" }}
                   />
                 </p>
               </div>

@@ -28,8 +28,11 @@ const HomeHeader = (props) => {
   const comebock = () => {
     getLocationList().then(res => {
       if (res.msg === "success" && res.data.length > 0) {
-        createMap.FlyToPosition(JSON.parse(res.data[0].position));
-      }else{
+        let position = JSON.parse(res.data[0].position);
+        console.log('用来复位的数据', position);
+        // position.z = position.z * 1.8;
+        createMap.SetPosition(position);
+      } else {
         createMap.initialPosition();
       }
     })

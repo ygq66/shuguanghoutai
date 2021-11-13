@@ -14,7 +14,7 @@ export const createMap = {
       id: options.id,
       url: options.url,
       projectId: options.projectId,
-      token: options.token
+      token: options.token,
     });
     view3d.Open((res) => {
       console.log("MapVision View3d " + res);
@@ -23,8 +23,11 @@ export const createMap = {
       view3d.OverLayerStopEdit();
       view3d.SetNorthControl(true, 0, 0, 0.5);
       window.$view3d = view3d; // 绑定实例
-      ["fullscreenchange", "webkitfullscreenchange", "mozfullscreenchange"]
-      .forEach((item, index) => {
+      [
+        "fullscreenchange",
+        "webkitfullscreenchange",
+        "mozfullscreenchange",
+      ].forEach((item, index) => {
         window.addEventListener(item, function () {
           setTimeout(function () {
             SetResolution(options, view3d);
@@ -71,8 +74,8 @@ export const createMap = {
         window.location.reload();
       }
       if (event.code === "F10") {
-        console.log('重新布局');
-        SetResolution({id: 'mapv3dContainer'}, view3d);
+        console.log("重新布局");
+        SetResolution({ id: "mapv3dContainer" }, view3d);
       }
     };
     return view3d;
@@ -130,11 +133,15 @@ export const createMap = {
     // };
     view3d.FlyToPosition(pos);
   },
+  SetPosition(pos) {
+    console.log("摄像机定位的");
+    view3d.SetPosition(pos);
+  },
   // 计算相对位置
   flyTo(pos, distance = 300, isBefore = true) {
     if (pos.x && pos.y && pos.z) {
       let posNew = Model.formatPos(pos);
-      console.log('定位', posNew);
+      console.log("定位", posNew);
 
       if (isBefore) {
         posNew.yaw = (posNew.yaw + 180) % 360;
@@ -142,15 +149,15 @@ export const createMap = {
 
       // 定位到相对位置
       posNew.pitch = 45;
-      posNew.x -= Math.cos(posNew.yaw / 180 * Math.PI) * distance;
-      posNew.y -= Math.sin(posNew.yaw / 180 * Math.PI) * distance;
+      posNew.x -= Math.cos((posNew.yaw / 180) * Math.PI) * distance;
+      posNew.y -= Math.sin((posNew.yaw / 180) * Math.PI) * distance;
       posNew.z += distance;
-      console.log('定位计算后的相对位置', posNew);
+      console.log("定位计算后的相对位置", posNew);
 
       view3d.FlyToPosition(posNew);
     } else {
-      console.error('设备未上图', pos);
-      window.$message.error(`设备未上图 pos:${JSON.stringify(pos)}`)
+      console.error("设备未上图", pos);
+      window.$message.error(`设备未上图 pos:${JSON.stringify(pos)}`);
     }
   },
   // 根据id飞到位置点
@@ -207,7 +214,7 @@ export const createMap = {
 
   setObjectsVisible(objects) {
     view3d.SetObjectsVisible(objects);
-  }
+  },
 };
 //模型标注类
 export const Model = {
@@ -218,7 +225,7 @@ export const Model = {
       filename: videoType.fileName, // box, capsule, cone, cube, cylinder, pipe, pyramid, sphere, capsule
       radius: 1,
       scale: 1,
-      attr: videoType.attr
+      attr: videoType.attr,
     };
     view3d.OverLayerStartEdit(obj, (res) => {
       var strObj = JSON.stringify(res);
@@ -271,8 +278,8 @@ export const Model = {
         z: strObj.location.z,
         pitch: 0,
         yaw: strObj.location.yaw,
-        roll: 0
-      }
+        roll: 0,
+      },
     };
     // 注意,此功能为异步操作
     // console.log(obj,"strObj")
@@ -296,7 +303,7 @@ export const Model = {
       halign: "left", // left center right
       valign: "top", // bottom center top
       location: strObj.location,
-      attr: strObj["attr"] ? strObj.attr : {}
+      attr: strObj["attr"] ? strObj.attr : {},
     };
     view3d.OverLayerCreateObject(obj, (res) => {
       view3d.SetMouseCallback(null);
@@ -324,7 +331,7 @@ export const Model = {
       fontsize: strObj.size,
       halign: "left", // left center right
       valign: "top", // bottom center top
-      attr: strObj["attr"] ? strObj.attr : {}
+      attr: strObj["attr"] ? strObj.attr : {},
 
       // strObj["center"] ? {
       //     center: strObj.center
@@ -350,7 +357,7 @@ export const Model = {
     const obj = {
       type: "polygon",
       color: "#00ff00",
-      points: []
+      points: [],
     };
     view3d.OverLayerStartEdit(obj, (res) => {
       var strObj = JSON.stringify(res);
@@ -364,7 +371,7 @@ export const Model = {
     const obj = {
       type: "polygon",
       color: Color ? Color : "#00ff00",
-      points: point
+      points: point,
     };
     view3d.OverLayerCreateObject(obj, (res) => {
       createObj = res;
@@ -380,7 +387,7 @@ export const Model = {
       linestyle: item.lineStyle || "",
       linevisible: true,
       linewidth: item.lineWidth || "",
-      points: []
+      points: [],
     };
     view3d.OverLayerStartEdit(obj, (res) => {
       Polygon = res;
@@ -424,7 +431,7 @@ export const Model = {
       prefix: "MP,T,J,V",
       path: "",
       speedroute: 10,
-      showmouse: false
+      showmouse: false,
     };
     view3d.SetParameters(paramers);
     // console.log("我被执行了");
@@ -438,10 +445,9 @@ export const Model = {
       if (res.typename === "model") {
         data = {
           switchName: "model",
-          Personnel: res
+          Personnel: res,
         };
         helperShapeUtil.updateHelperShapePos(res.location); // 创建标注
-
       } else if (res.gid.split("_")[0] === "MP") {
         let buildarr = res.gid.split("_");
         buildarr.shift();
@@ -450,7 +456,7 @@ export const Model = {
         console.log(buildarr, buildId, "我是被点击的建筑id");
         data = {
           switchName: "buildLable",
-          Personnel: buildId
+          Personnel: buildId,
         };
       }
       window.parent.postMessage(data, "*");
@@ -461,7 +467,7 @@ export const Model = {
     var paramers = {
       prefix: "MP,TEMP,J",
       path: "",
-      speedroute: 10
+      speedroute: 10,
     };
     view3d.SetParameters(paramers);
     view3d.SetMouseCallback((res) => {
@@ -478,10 +484,10 @@ export const Model = {
     const obj = {
       type: "linestring",
       color: "#ff0f00",
-      points: []
+      points: [],
     };
-    view3d.OverLayerStartEdit(obj, res => {
-      console.log(res)
+    view3d.OverLayerStartEdit(obj, (res) => {
+      console.log(res);
       if (callback) {
         callback(res);
       }
@@ -494,7 +500,7 @@ export const Model = {
       type: "linestring",
       style: "red",
       linewidth: 40.0,
-      points: points
+      points: points,
     };
     view3d.OverLayerCreateObject(obj, (res) => {
       if (callback) {
@@ -510,7 +516,7 @@ export const Model = {
       type: "image", // 10102  或  image
       style: config.src || "default",
       scale: config.scale || 1,
-      attr: config
+      attr: config,
     };
     view3d.OverLayerStartEdit(objConfig, (res) => {
       view3d.OverLayerStopEdit();
@@ -529,15 +535,15 @@ export const Model = {
   },
   // 格式化坐标点
   formatPos(pos) {
-    let posNew = {...pos};
-    posNew.x = parseFloat(posNew.x.toString())
-    posNew.y = parseFloat(posNew.y.toString())
-    posNew.z = parseFloat(posNew.z.toString())
-    posNew.pitch = posNew.pitch ? parseFloat(posNew.pitch.toString()) : 0
-    posNew.yaw = posNew.yaw ? parseFloat(posNew.yaw.toString()) : 0
-    posNew.roll = posNew.roll ? parseFloat(posNew.roll.toString()) : 0
+    let posNew = { ...pos };
+    posNew.x = parseFloat(posNew.x.toString());
+    posNew.y = parseFloat(posNew.y.toString());
+    posNew.z = parseFloat(posNew.z.toString());
+    posNew.pitch = posNew.pitch ? parseFloat(posNew.pitch.toString()) : 0;
+    posNew.yaw = posNew.yaw ? parseFloat(posNew.yaw.toString()) : 0;
+    posNew.roll = posNew.roll ? parseFloat(posNew.roll.toString()) : 0;
     return posNew;
-  }
+  },
 };
 //网格类
 export const grid = {};
@@ -549,12 +555,13 @@ export const Build = {
   },
 
   getBuild(callback) {
-    view3d && view3d.GetBuildingNames((res) => {
-      callback && callback(JSON.stringify(res));
-    });
+    view3d &&
+      view3d.GetBuildingNames((res) => {
+        callback && callback(JSON.stringify(res));
+      });
   },
   getFloor(buildingName, callback) {
-    view3d.GetFloorNames(buildingName, res => {
+    view3d.GetFloorNames(buildingName, (res) => {
       var strObj = JSON.stringify(res);
       callback(strObj);
     });
@@ -566,8 +573,8 @@ export const Build = {
    * @returns {number} 数字格式的楼层号
    */
   getFloorNumberByFloorId(floorId) {
-    let floorName = floorId.split('#')[1]
-    return Build.getFloorNumberByName(floorName)
+    let floorName = floorId.split("#")[1];
+    return Build.getFloorNumberByName(floorName);
   },
 
   /**
@@ -576,10 +583,14 @@ export const Build = {
    * @returns {number|number} 数字格式的楼层号
    */
   getFloorNumberByName(floorNameString) {
-    let floorReg = /\d+/
-    let floorNumString = floorNameString.match(floorReg)[0]
-    let isUnderFloor = floorNameString.startsWith('B')
-    return floorNumString ? (isUnderFloor ? Number(floorNumString) * -1 : Number(floorNumString)) : 1
+    let floorReg = /\d+/;
+    let floorNumString = floorNameString.match(floorReg)[0];
+    let isUnderFloor = floorNameString.startsWith("B");
+    return floorNumString
+      ? isUnderFloor
+        ? Number(floorNumString) * -1
+        : Number(floorNumString)
+      : 1;
   },
 
   // 楼层显示隐藏
@@ -591,16 +602,16 @@ export const Build = {
     // var FLOOR = floorName.substr(0, 1);
     // floorName 的格式为：B001，F001之类的
 
-    floorName = floorName.split('#')[1]
-    let floorNum = Build.getFloorNumberByName(floorName)
-    let isCurrentFloorUnderground = floorName.startsWith('B')
+    floorName = floorName.split("#")[1];
+    let floorNum = Build.getFloorNumberByName(floorName);
+    let isCurrentFloorUnderground = floorName.startsWith("B");
 
     if (isCurrentFloorUnderground) {
-      floorNum = -floorNum
+      floorNum = -floorNum;
       // 显示地下的情况时,把地面隐藏掉
-      Build.showDM(false, view3d)
+      Build.showDM(false, view3d);
     } else {
-      Build.showDM(true, view3d)
+      Build.showDM(true, view3d);
     }
 
     view3d.SetBuildingVisible(buildingName, floorName === "all" ? true : false);
@@ -611,21 +622,21 @@ export const Build = {
     }
 
     floor.forEach((item, index) => {
-      let FNum = Build.getFloorNumberByName(item)
+      let FNum = Build.getFloorNumberByName(item);
       var ItmFloor = item.substr(0, 1);
       if (ItmFloor === "B") {
         FNum = -FNum;
       }
 
-      let floorVisible = true
+      let floorVisible = true;
       if (FNum > floorNum) {
-        floorVisible = false
+        floorVisible = false;
       }
 
       view3d.SetFloorVisible(buildingName, item, floorVisible);
 
       if (index === floor.length - 1) {
-        console.log('call get model')
+        console.log("call get model");
         setTimeout(() => {
           Model.getModel(view3d);
         }, 1000);
@@ -637,14 +648,14 @@ export const Build = {
 
   showAllBuilding() {
     if (view3d) {
-      Build.getBuild(res => {
-        Array.from(JSON.parse(res)).forEach(item => {
+      Build.getBuild((res) => {
+        Array.from(JSON.parse(res)).forEach((item) => {
           view3d.SetBuildingVisible(item.id, true);
-        })
-      })
+        });
+      });
     }
-  }
-}
+  },
+};
 // 功能块
 export const Event = {
   // 创建路线
@@ -658,7 +669,7 @@ export const Event = {
   // 路径迅游清除
   clearPatrolPath() {
     view3d.Clear();
-  }
+  },
 };
 
 //设置屏幕
