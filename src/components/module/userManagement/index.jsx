@@ -1099,18 +1099,14 @@ class UserManagement extends Component {
       let floor_id = res.floor_id.split("#")[1];
       floor.push(floor_id);
     })
-    // let build_id = $("#buildId").find("option:selected").val();
     let build_id = this.state.buildId
-    // let floor_id = $("#floorId").find("option:selected").val();
-    // let floor_id = $("#floorId").val()
     let floor_id = selectedFloorId || this.state.floorId;
+
     if (!floor_id) {
       console.log('floor_id为空, 无法显示楼层', floor_id)
       return;
     }
     let originFloorId = floor_id
-    floor_id = floor_id.split("#")[1];
-    // selectedFloorId
     if (build_id && floor_id) {
       Build.showFloor(build_id, floor_id, floor);
     }
