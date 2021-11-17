@@ -480,6 +480,82 @@ class PatrolRoute extends Component {
     this.clearAll();
     this.setOperatingArea(true);
   }
+
+  changeBool = (item, type, flag) => {
+    flag = !flag;
+    let { cameraList } = this.state;
+    item[type] = flag;
+    this.setState({
+      cameraList: cameraList
+    })
+  }
+
+  //向上向下排序
+  towhere = (where, item) => {
+    /**
+     * 分析一下逻辑
+     * //item拿到了当前项，where代表调整的方向
+     * 
+     * 
+     */
+    console.log('向哪里', where, item)
+
+    let cameraList = this.state.cameraList;
+    console.log('原始总数据', cameraList);
+
+    let patrol_camera = [];
+    let a1, a2;
+
+    for (let index = 0; index < cameraList.length; index++) {
+      const element = cameraList[index];
+      for (let j = 0; j < element.patrol_camera.length; j++) {
+        const element1 = element.patrol_camera[j];
+        if (JSON.stringify(item) == JSON.stringify(element1)) {
+          a1 = index;
+          a2 = j;
+          patrol_camera.push(element);
+        }
+      }
+    }
+
+    console.log('我是选中的那项', patrol_camera, item);
+
+    let newCamera = JSON.parse(JSON.stringify(patrol_camera));
+    console.log('我是深拷贝的新数组', newCamera);
+
+    //调换顺序
+    let newData = newCamera[0]
+
+    for (let i = 0; i < newData.patrol_camera.length; i++) {
+      const element2 = newData.patrol_camera[i];
+      if (JSON.stringify(item) == JSON.stringify(element2)) {
+        console.log('我是需要调换顺序的那项', item);
+        console.log('点击的第几项', i);
+        if (where == 'top') {
+          if (i != 0) {
+            newData.patrol_camera[i] = newData.patrol_camera[i - 1];
+            newData.patrol_camera[i - 1] = item;
+          } else {
+            message.error("到顶了");
+          }
+        }
+
+
+      }
+    }
+    console.log('看下1', newData.patrol_camera);
+    newData.patrol_camera = newData.patrol_camera.filter(res => { return res != "undefined" });
+    console.log('看下', newData.patrol_camera);
+
+    console.log('顺序换了之后的', newCamera, a1, cameraList[a1]);
+    //最终拿到的值，对的,newCamera
+    cameraList[a1] = newCamera[0];
+    console.log('最终切换的', cameraList)
+    this.setState({
+      cameraList: cameraList
+    })
+  }
+
   // 清空
   clearAll = () => {
     const { routeGid } = this.state;
@@ -632,7 +708,8 @@ class PatrolRoute extends Component {
                     <div className="table-td-item">段落</div>
                     <div className="table-td-item">名称</div>
                     <div className="table-td-item">是否启用</div>
-                    <div className="table-td-item">是否重用</div>
+                    {/* <div className="table-td-item">是否重用</div> */}
+                    <div className="table-td-item">顺序调整</div>
                   </div>
                   <div className="table-trs-lists">
                     {cameraList.map((item, index) => {
@@ -654,7 +731,10 @@ class PatrolRoute extends Component {
                                     {item2.camera_name}
                                   </div>
                                   <div className="table-tr-item tr-color-btn">
-                                    <span
+                                    <span className='tr-color-btn-active' onClick={() => this.changeBool(item2, "enable", item2.enable)}>
+                                      {item2.enable ? '是' : '否'}
+                                    </span>
+                                    {/* <span
                                       className={item2.enable ? "tr-color-btn-active" : ""}
                                       onClick={() => this.setEnable(item2, "enable", true)}
                                     >
@@ -665,9 +745,12 @@ class PatrolRoute extends Component {
                                       onClick={() => this.setEnable(item2, "enable", false)}
                                     >
                                       否
-                                    </span>
+                                    </span> */}
                                   </div>
-                                  <div className="table-tr-item tr-color-btn">
+                                  {/* <div className="table-tr-item tr-color-btn">
+                                    <span className="tr-color-btn-active">
+                                      {item2.key ? '是' : '否'}
+                                    </span>
                                     <span
                                       className={item2.key ? "tr-color-btn-active" : ""}
                                       onClick={() => this.setEnable(item2, "key", true)}
@@ -680,6 +763,9 @@ class PatrolRoute extends Component {
                                     >
                                       否
                                     </span>
+                                  </div> */}
+                                  <div className="table-tr-item tr-color-btn">
+                                    <span onClick={() => this.towhere('top', item2)}>向上</span>
                                   </div>
                                 </div>
                               )
@@ -728,10 +814,11 @@ class PatrolRoute extends Component {
                       <div className="table-td-item">段落</div>
                       <div className="table-td-item">名称</div>
                       <div className="table-td-item">是否启用</div>
-                      <div className="table-td-item">是否重用</div>
+                      {/* <div className="table-td-item">是否重用</div> */}
+                      <div className="table-td-item">顺序调整</div>
                     </div>
                     <div className="table-trs-lists">
-                      {cameraList && cameraList.map((item, index) => {
+                      {cameraList && cameraList.length > 0 && cameraList.map((item, index) => {
                         return (
                           <div className="table-trs" key={index}>
                             <div
@@ -750,16 +837,22 @@ class PatrolRoute extends Component {
                                       {item2.camera_name}
                                     </div>
                                     <div className="table-tr-item tr-color-btn">
-                                      <span
+                                      <span className='tr-color-btn-active' onClick={() => this.changeBool(item2, "enable", item2.enable)}>
+                                        {item2.enable ? '是' : '否'}
+                                      </span>
+                                      {/* <span
                                         className={item2.enable ? "tr-color-btn-active" : ""}
                                         onClick={() => this.setEnable(item2, "enable", true)}
                                       >是</span>
                                       <span
                                         className={!item2.enable ? "tr-color-btn-active" : ""}
                                         onClick={() => this.setEnable(item2, "enable", false)}
-                                      >否</span>
+                                      >否</span> */}
                                     </div>
-                                    <div className="table-tr-item tr-color-btn">
+                                    {/* <div className="table-tr-item tr-color-btn">
+                                      <span className="tr-color-btn-active">
+                                        {item2.key ? '是' : '否'}
+                                      </span>
                                       <span
                                         className={item2.key ? "tr-color-btn-active" : ""}
                                         onClick={() => this.setEnable(item2, "key", true)}
@@ -768,6 +861,10 @@ class PatrolRoute extends Component {
                                         className={!item2.key ? "tr-color-btn-active" : ""}
                                         onClick={() => this.setEnable(item2, "key", false)}
                                       >否</span>
+                                    </div> */}
+                                    <div className="table-tr-item tr-color-btn">
+                                      <span onClick={() => this.towhere('top', item2)}>向上</span>
+                                      {/* <span onClick={() => this.towhere('bottom', item2)}>向下</span> */}
                                     </div>
                                   </div>
                                 )
