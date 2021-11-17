@@ -613,20 +613,18 @@ export const Build = {
     //     : Number(floorName.slice(-1));
     // var FLOOR = floorName.substr(0, 1);
     // floorName 的格式为：B001，F001之类的
-
     floorName = floorName.split("#")[1];
-    let floorNum = Build.getFloorNumberByName(floorName);
+    let floorNum = Build.getFloorNumberByName(floorName)
     let isCurrentFloorUnderground = floorName.startsWith("B");
 
     if (isCurrentFloorUnderground) {
-      floorNum = -floorNum;
       // 显示地下的情况时,把地面隐藏掉
       Build.showDM(false, view3d);
     } else {
       Build.showDM(true, view3d);
     }
 
-    view3d.SetBuildingVisible(buildingName, floorName === "all" ? true : false);
+      view3d.SetBuildingVisible(buildingName, floorName === "all" ? true : false);
 
     // floor undefined 的报错处理。
     if (!floor) {
@@ -635,10 +633,6 @@ export const Build = {
 
     floor.forEach((item, index) => {
       let FNum = Build.getFloorNumberByName(item);
-      var ItmFloor = item.substr(0, 1);
-      if (ItmFloor === "B") {
-        FNum = -FNum;
-      }
 
       let floorVisible = true;
       if (FNum > floorNum) {
