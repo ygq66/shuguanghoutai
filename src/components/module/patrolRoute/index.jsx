@@ -728,7 +728,6 @@ class PatrolRoute extends Component {
                           </div>
                           <div className="table-tr-item-camera-list">
                             {item.patrol_camera.length > 0 ? item.patrol_camera.map((item2, index2) => {
-<<<<<<< HEAD
                               return (
                                 <div className="table-tr-item-camera" key={index2}>
                                   <div className="table-tr-item-camera-item" title={item2.camera_name}>
@@ -738,57 +737,10 @@ class PatrolRoute extends Component {
                                     <span className='tr-color-btn-active' onClick={() => this.changeBool(item2, "enable", item2.enable)}>
                                       {item2.enable ? '是' : '否'}
                                     </span>
-                                    {/* <span
-=======
-                                return (
-                                  <div className="table-tr-item-camera" key={index2}>
-                                    <div className="table-tr-item-camera-item" title={item2.camera_name}>
-                                      {item2.camera_name}
-                                    </div>
-                                    <div className="table-tr-item tr-color-btn">
-                                    <span
->>>>>>> ad267308e156ae7e15e7f43bb00c5baf29a28efb
-                                      className={item2.enable ? "tr-color-btn-active" : ""}
-                                      onClick={() => this.setEnable(item2, "enable", true)}
-                                    >
-                                      是
-                                    </span>
-                                      <span
-                                        className={!item2.enable ? "tr-color-btn-active" : ""}
-                                        onClick={() => this.setEnable(item2, "enable", false)}
-                                      >
-                                      否
-<<<<<<< HEAD
-                                    </span> */}
                                   </div>
-                                  {/* <div className="table-tr-item tr-color-btn">
-                                    <span className="tr-color-btn-active">
-                                      {item2.key ? '是' : '否'}
-                                    </span>
-=======
-                                    </span>
-                                    </div>
-                                    <div className="table-tr-item tr-color-btn">
->>>>>>> ad267308e156ae7e15e7f43bb00c5baf29a28efb
-                                    <span
-                                      className={item2.key ? "tr-color-btn-active" : ""}
-                                      onClick={() => this.setEnable(item2, "key", true)}
-                                    >
-                                      是
-                                    </span>
-                                      <span
-                                        className={!item2.key ? "tr-color-btn-active" : ""}
-                                        onClick={() => this.setEnable(item2, "key", false)}
-                                      >
-                                      否
-                                    </span>
-<<<<<<< HEAD
-                                  </div> */}
                                   <div className="table-tr-item tr-color-btn">
                                     <span onClick={() => this.towhere('top', item2)}>向上</span>
-=======
                                     </div>
->>>>>>> ad267308e156ae7e15e7f43bb00c5baf29a28efb
                                   </div>
                                 )
                               }) :
@@ -826,9 +778,6 @@ class PatrolRoute extends Component {
                   />
                 </p>
               </div>
-              {/* <div style={{ paddingTop: "10px" }}>
-                <p style={{ color: "white" }}>缓冲区域宽度:<input type="number" value={bufferH} onChange={(e) => this.setOnChange(e, "bufferH")} className="inputAll" style={{ width: "100px", marginLeft: "10px" }} /></p>
-              </div> */}
               < div className="body-table">
                 <div className="table-view">
                   <div className="table-mode">
@@ -836,7 +785,6 @@ class PatrolRoute extends Component {
                       <div className="table-td-item">段落</div>
                       <div className="table-td-item">名称</div>
                       <div className="table-td-item">是否启用</div>
-                      {/* <div className="table-td-item">是否重用</div> */}
                       <div className="table-td-item">顺序调整</div>
                     </div>
                     <div className="table-trs-lists">
@@ -862,31 +810,9 @@ class PatrolRoute extends Component {
                                       <span className='tr-color-btn-active' onClick={() => this.changeBool(item2, "enable", item2.enable)}>
                                         {item2.enable ? '是' : '否'}
                                       </span>
-                                      {/* <span
-                                        className={item2.enable ? "tr-color-btn-active" : ""}
-                                        onClick={() => this.setEnable(item2, "enable", true)}
-                                      >是</span>
-                                      <span
-                                        className={!item2.enable ? "tr-color-btn-active" : ""}
-                                        onClick={() => this.setEnable(item2, "enable", false)}
-                                      >否</span> */}
                                     </div>
-                                    {/* <div className="table-tr-item tr-color-btn">
-                                      <span className="tr-color-btn-active">
-                                        {item2.key ? '是' : '否'}
-                                      </span>
-                                      <span
-                                        className={item2.key ? "tr-color-btn-active" : ""}
-                                        onClick={() => this.setEnable(item2, "key", true)}
-                                      >是</span>
-                                      <span
-                                        className={!item2.key ? "tr-color-btn-active" : ""}
-                                        onClick={() => this.setEnable(item2, "key", false)}
-                                      >否</span>
-                                    </div> */}
                                     <div className="table-tr-item tr-color-btn">
                                       <span onClick={() => this.towhere('top', item2)}>向上</span>
-                                      {/* <span onClick={() => this.towhere('bottom', item2)}>向下</span> */}
                                     </div>
                                   </div>
                                 )
