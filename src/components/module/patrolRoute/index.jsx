@@ -218,6 +218,8 @@ class PatrolRoute extends Component {
 
     Build.showAllBuilding()
 
+    Build.showDM(true)
+
     $('.tr-color-btn-active').removeClass("tr-color-btn-active");
   }
 
