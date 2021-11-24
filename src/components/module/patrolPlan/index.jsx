@@ -120,27 +120,22 @@ class PatrolPlan extends Component {
       res.data.forEach(obj => {
         let postion = []
         obj.patrol_line_subsection.forEach((msg, index2) => {
-          for (let j = 0; j < msg.options.length; j++) {
-            const element = msg.options[j];
-            let obj = {
-              x: element.x,
-              y: element.y,
+          let obj = {
+            x: msg.options.noodles[0][0],
+            y: msg.options.noodles[0][1],
+            z: 380
+          };
+          postion.push(obj)
+          if (index2 === msg.length - 1) {
+            let obj2 = {
+              x: msg.options.noodles[0][2],
+              y: msg.options.noodles[0][3],
               z: 380
             };
-            postion.push(obj)
+            postion.push(obj2);
           }
-
-          // if (index2 === msg.length - 1) {
-          //   let obj2 = {
-          //     x: msg.options[0].x,
-          //     y: msg.options[0].y,
-          //     z: 380
-          //   };
-          //   postion.push(obj2);
-          // }
         })
-        console.log('我是值啊值', postion)
-        PatrolPlan.this.showRoute(postion, res.data[0].remark);
+        PatrolPlan.this.showRoute(postion,res.data[0].remark);
       })
     })
   }

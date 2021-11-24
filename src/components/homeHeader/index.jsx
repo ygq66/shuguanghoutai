@@ -30,7 +30,6 @@ const HomeHeader = (props) => {
       if (res.msg === "success" && res.data.length > 0) {
         let position = JSON.parse(res.data[0].position);
         console.log('用来复位的数据', position);
-        // position.z = position.z * 1.8;
         createMap.SetPosition(position);
       } else {
         createMap.initialPosition();

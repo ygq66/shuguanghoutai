@@ -533,6 +533,9 @@ export const Model = {
       }, 10);
     }
   },
+  clearObjectHighlight(view3d) {
+    view3d.ClearHighlight();
+  },
   // 格式化坐标点
   formatPos(pos) {
     let posNew = { ...pos };
@@ -573,12 +576,11 @@ export const Build = {
    * @returns {number} 数字格式的楼层号
    */
   getFloorNumberByFloorId(floorId) {
-
-    let floorName = floorId.split('#')[1]
+    let floorName = floorId.split("#")[1];
     if (floorName) {
-      return Build.getFloorNumberByName(floorName)
+      return Build.getFloorNumberByName(floorName);
     }
-    return
+    return;
   },
 
   /**
@@ -600,9 +602,10 @@ export const Build = {
   showAllFloor(buildId, floorList) {
     view3d.SetBuildingVisible(buildId, true);
 
-    Array.isArray(floorList) && floorList.forEach(floorName => {
-      view3d.SetFloorVisible(buildId  , floorName, true)
-    })
+    Array.isArray(floorList) &&
+      floorList.forEach((floorName) => {
+        view3d.SetFloorVisible(buildId, floorName, true);
+      });
   },
 
   // 楼层显示隐藏
@@ -614,7 +617,7 @@ export const Build = {
     // var FLOOR = floorName.substr(0, 1);
     // floorName 的格式为：B001，F001之类的
     floorName = floorName.split("#")[1];
-    let floorNum = Build.getFloorNumberByName(floorName)
+    let floorNum = Build.getFloorNumberByName(floorName);
     let isCurrentFloorUnderground = floorName.startsWith("B");
 
     if (isCurrentFloorUnderground) {
@@ -624,7 +627,7 @@ export const Build = {
       Build.showDM(true, view3d);
     }
 
-      view3d.SetBuildingVisible(buildingName, floorName === "all" ? true : false);
+    view3d.SetBuildingVisible(buildingName, floorName === "all" ? true : false);
 
     // floor undefined 的报错处理。
     if (!floor) {
