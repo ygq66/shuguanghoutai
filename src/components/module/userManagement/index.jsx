@@ -238,25 +238,10 @@ class UserManagement extends Component {
   //保存入库
   baocun() {
     const {
-      modelName,
-      typeName,
-      title,
-      checkbox,
-      name,
-      xValue,
-      yValue,
-      zValue,
-      pitchValue,
-      yawValue,
-      rollValue,
-      videoType,
-      keshi,
-      code,
-      selectId,
-      thisId,
-      flagText,
-      gid,
-      polygonId
+      modelName, typeName, title, checkbox, name,
+      xValue, yValue, zValue, pitchValue, yawValue,
+      rollValue, videoType, keshi, code, selectId,
+      thisId, flagText, gid, polygonId
     } = this.state
     if (gid !== "" && name !== "" && videoType !== "0") {
       const self = this
@@ -306,18 +291,18 @@ class UserManagement extends Component {
                 yValue: "",
                 zValue: "",
                 yawValue: "",
-                videoType: "",
-                name: "",
+                // videoType: "",
+                // name: "",
                 keshi: {},
                 thisId: "",
                 code: "",
                 gid: "",
                 playvideo: false,
-                indoor: false,
-                buildList: [],
-                floorList: []
+                // indoor: false,
+                // buildList: [],
+                // floorList: []
               })
-              $(".EquipmentAbove").find(".ContractionArea").slideUp()
+              // $(".EquipmentAbove").find(".ContractionArea").slideUp()
             } else {
               message.error("获取相机类型失败");
             }
@@ -575,11 +560,11 @@ class UserManagement extends Component {
       flagText,
       pid,
       addflag
-    } = this.state
-    // console.log(nameValue,flagText)
+    } = this.state;
+    // console.log(nameValue, flagText)
     const data = {
       category_id: flagText,
-      region_name: nameValue
+      region_name: nameValue,
     }
     if (!addflag) {
       data["id"] = pid;
@@ -872,11 +857,11 @@ class UserManagement extends Component {
   onMenuClicked = (e, item) => {
     console.log('点击节点', item)
     if (item.node_type === "details") {
-      if (item.indoor) {
+      if (item.indoor && item.build_id && item.floor_id) {
         Build.showFloor(item.build_id, item.floor_id);
         UserManagement.this.setState({
           oldbuildId: item.build_id
-        })
+        });
       }
       createMap.flyTo(item.list_style ? item.list_style : item.center);
       if (this.state.polygonId !== "") {

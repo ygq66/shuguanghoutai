@@ -1,15 +1,15 @@
-import React, { useState, useEffect, Suspense, lazy, Fragment } from 'react';
+import React, {useState, useEffect, Suspense, lazy, Fragment} from 'react';
 import './style.scss';
 import $ from "jquery";
 import HomeLeft from '../../components/homeLeft'
 import HomeHeader from '../../components/homeHeader'
 import axios from 'axios';
-import { message } from 'antd';
-import { createMap, Model } from '../../map3D/map3d';
-import { useDispatch, useMappedState } from 'redux-react-hook';
-import { getFigureLabel, getBuildLabel } from "../../api/mainApi";
-import { Redirect } from 'react-router';
-import { configData2 as MapUrl, configData3 as projectId, configData4 as token } from '../../api/address';
+import {message} from 'antd';
+import {createMap, Model} from '../../map3D/map3d';
+import {useDispatch, useMappedState} from 'redux-react-hook';
+import {getFigureLabel, getBuildLabel} from "../../api/mainApi";
+import {Redirect} from 'react-router';
+import {configData2 as MapUrl, configData3 as projectId, configData4 as token} from '../../api/address';
 import helperShapeUtil from "../../map3D/helperShapeUtil";
 
 const Home = () => {
@@ -41,7 +41,6 @@ const Home = () => {
               projectId: projectId,
               token: token
             }, () => {
-
               console.clear()
               console.dir(view3d)
 
@@ -56,48 +55,68 @@ const Home = () => {
                 // console.log(res, "ddawjdaw")
                 if (result.msg === "success") {
                   if (data.length > 0) {
-                    var objModel = {};
-                    (function loop(index) {
-                      if (data[index] && data[index].model_name !== undefined && data[index].model_name !== null) {
-                        const obj = {
-                          gid: data[index].model_url,
-                          filename: data[index].model_name,//box,capsule,cone,cube,cylinder,pipe,pyramid,sphere,capsule
-                          location: data[index].list_style ? data[index].list_style : data[index].center,
-                          attr: data[index]
-                        };
-                        Model.modelLoading(obj, msg => {
-                          if (++index < data.length) {
-                            setTimeout(() => {
-                              objModel[msg.attr?.id] = {
-                                ...msg,
-                                device_code: msg.attr?.device_code
-                              };
-                              loop(index)
-                            }, 0)
-                          } else {
-                            dispatch({
-                              type: "model_list",
-                              model_list: {...objModel}
-                            });
-                            GetBuildLabel();
-                          }
+                    // var objModel = {};
+                    // (function loop(index) {
+                    //   if (data[index] && data[index].model_name !== undefined && data[index].model_name !== null) {
+                    //     const obj = {
+                    //       gid: data[index].model_url,
+                    //       filename: data[index].model_name,//box,capsule,cone,cube,cylinder,pipe,pyramid,sphere,capsule
+                    //       location: data[index].list_style ? data[index].list_style : data[index].center,
+                    //       attr: data[index]
+                    //     };
+                    //     Model.modelLoading(obj, msg => {
+                    //       if (++index < data.length) {
+                    //         setTimeout(() => {
+                    //           objModel[msg.attr?.id] = {
+                    //             ...msg,
+                    //             device_code: msg.attr?.device_code
+                    //           };
+                    //           loop(index)
+                    //         }, 0)
+                    //       } else {
+                    //         dispatch({
+                    //           type: "model_list",
+                    //           model_list: {...objModel}
+                    //         });
+                    //         GetBuildLabel();
+                    //       }
+                    //     })
+                    //   } else {
+                    //     if (++index < data.length) {
+                    //       setTimeout(() => {
+                    //         loop(index);
+                    //       }, 0)
+                    //     } else {
+                    //       console.log("全部执行完毕");
+                    //       dispatch({
+                    //         type: "model_list",
+                    //         model_list: {...objModel}
+                    //       });
+                    //       GetBuildLabel();
+                    //     }
+                    //   }
+                    //
+                    // })(0);
+                    let objs = []
+                    for (const da of data) {
+                      if (da && da.model_name !== undefined && da.model_name !== null) {
+                        objs.push({
+                          gid: da.model_url,
+                          type: "model",
+                          scale: 1,
+                          filename: da.model_name,//box,capsule,cone,cube,cylinder,pipe,pyramid,sphere,capsule
+                          location: da.list_style ? da.list_style : da.center,
+                          attr: da,
                         })
-                      } else {
-                        if (++index < data.length) {
-                          setTimeout(() => {
-                            loop(index);
-                          }, 0)
-                        } else {
-                          console.log("全部执行完毕");
-                          dispatch({
-                            type: "model_list",
-                            model_list: {...objModel}
-                          });
-                          GetBuildLabel();
-                        }
                       }
-
-                    })(0);
+                    }
+                    let hide = message.loading('加载模型中...', 0)
+                    Model.batchedAddModel(view3d, objs, 40, (start, end) => {
+                      console.log('添加成功', start, end)
+                    }, () => {
+                      hide();
+                      GetBuildLabel();
+                    })
                   } else {
                     GetBuildLabel();
                   }
@@ -242,7 +261,7 @@ const Home = () => {
   }
   const stPageModel = (value) => {
     // 点击重复的左侧标签，不做处理
-    if(value === moudleId) {
+    if (value === moudleId) {
       return
     }
     if (moudleId !== "") {

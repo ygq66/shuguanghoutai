@@ -1,5 +1,6 @@
 import helperShapeUtil from "./helperShapeUtil";
 import eventUtil from "./eventUtil";
+import {message} from "antd";
 
 var view3d;
 var createObj = null;
@@ -8,6 +9,12 @@ var allBuildModelObj = {};
 //创建地图类
 export const createMap = {
   createMap(options, callback) {
+    console.log('创建地图', {
+      id: options.id,
+      url: options.url,
+      projectId: options.projectId,
+      token: options.token,
+    })
     //创建实例
     /* global MapVision */
     view3d = new MapVision.View3d({
@@ -75,7 +82,7 @@ export const createMap = {
       }
       if (event.code === "F10") {
         console.log("重新布局");
-        SetResolution({ id: "mapv3dContainer" }, view3d);
+        SetResolution({id: "mapv3dContainer"}, view3d);
       }
     };
     return view3d;
@@ -310,6 +317,45 @@ export const Model = {
       callback(res);
     });
   },
+  /**
+   * 批量添加模型
+   * @param mapV   {Object}
+   * @param source {Array}
+   * @param size  {Number} 每次最多添加200个。不能再多。多了数据传输会失败。
+   * @param cb    {Function}
+   */
+  batchedAddModel(mapV, source, size = 40, processCb, cb) {
+    if (!Array.isArray(source)) {
+      return
+    }
+    const sourceSize = source.length
+    const addModel = (startOffset, endOffset = 0) => {
+      const sourceSlice = source.slice(startOffset, endOffset);
+      // 结束绘制
+      if (startOffset > sourceSize - 1) {
+        console.log('结束加载: ', startOffset)
+        // map.Stop()
+        setTimeout(() => {
+          cb && cb()
+        }, 20);
+        return
+      }
+
+      // 注意,此功能为异步操作
+      setTimeout(() => {
+        mapV.OverLayerCreateObjects(sourceSlice, res => {
+          if (endOffset <= sourceSize - 1) {
+            processCb(startOffset, endOffset, res);
+          }
+        })
+        if (startOffset < sourceSize) {
+          addModel(endOffset, endOffset + size);
+        }
+      }, 500);
+    }
+
+    addModel(0, size)
+  },
   //删除当前模型对象
   delectObj(obj) {
     if (!createObj) {
@@ -354,16 +400,25 @@ export const Model = {
   },
   //绘制面
   playPolygon(callback) {
-    const obj = {
+    let obj = {
       type: "polygon",
       color: "#00ff00",
       points: [],
     };
+    console.log('开始绘制面');
     view3d.OverLayerStartEdit(obj, (res) => {
-      var strObj = JSON.stringify(res);
-      Polygon = res;
-      view3d.OverLayerStopEdit();
-      callback(strObj);
+      console.log('绘制', res);
+      obj = res;
+    });
+    window.addEventListener('mousedown', function rightClick(e) {
+      if (e.button === 2) {
+        view3d.OverLayerStopEdit();
+        Polygon = obj;
+        if (callback) {
+          callback(JSON.stringify(obj));
+        }
+        window.removeEventListener('mousedown', rightClick)
+      }
     });
   },
   //创建面
@@ -448,7 +503,7 @@ export const Model = {
           Personnel: res,
         };
         helperShapeUtil.updateHelperShapePos(res.location); // 创建标注
-      } else if (res.gid.split("_")[0] === "MP") {
+      } else if (res.gid && res.gid.split("_")[0] === "MP") {
         let buildarr = res.gid.split("_");
         buildarr.shift();
         let buildId = buildarr.join("_");
@@ -481,15 +536,23 @@ export const Model = {
   },
   // 绘制折线
   drawLine(callback) {
-    const obj = {
+    let obj = {
       type: "linestring",
       color: "#ff0f00",
       points: [],
     };
+    console.log('开始绘制路径');
     view3d.OverLayerStartEdit(obj, (res) => {
-      console.log(res);
-      if (callback) {
-        callback(res);
+      console.log('绘制点', res);
+      obj = res;
+    });
+    window.addEventListener('mousedown', function rightClick(e) {
+      if (e.button === 2) {
+        message.success('结束绘制').then()
+        if (callback) {
+          callback(obj);
+        }
+        window.removeEventListener('mousedown', rightClick)
       }
     });
   },
@@ -538,7 +601,7 @@ export const Model = {
   },
   // 格式化坐标点
   formatPos(pos) {
-    let posNew = { ...pos };
+    let posNew = {...pos};
     posNew.x = parseFloat(posNew.x.toString());
     posNew.y = parseFloat(posNew.y.toString());
     posNew.z = parseFloat(posNew.z.toString());
@@ -559,9 +622,9 @@ export const Build = {
 
   getBuild(callback) {
     view3d &&
-      view3d.GetBuildingNames((res) => {
-        callback && callback(JSON.stringify(res));
-      });
+    view3d.GetBuildingNames((res) => {
+      callback && callback(JSON.stringify(res));
+    });
   },
   getFloor(buildingName, callback) {
     view3d.GetFloorNames(buildingName, (res) => {
@@ -603,9 +666,9 @@ export const Build = {
     view3d.SetBuildingVisible(buildId, true);
 
     Array.isArray(floorList) &&
-      floorList.forEach((floorName) => {
-        view3d.SetFloorVisible(buildId, floorName, true);
-      });
+    floorList.forEach((floorName) => {
+      view3d.SetFloorVisible(buildId, floorName, true);
+    });
   },
 
   // 楼层显示隐藏

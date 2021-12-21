@@ -1,10 +1,10 @@
 /**
  * 巡逻路线
  */
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import $ from "jquery"
-import { Checkbox, message } from "antd"
-import { Build, createMap, Model } from "../../../map3D/map3d"
+import {Checkbox, message} from "antd"
+import {Build, createMap, Model} from "../../../map3D/map3d"
 import {
   getBuildList,
   getFloorList,
@@ -72,7 +72,6 @@ class PatrolRoute extends Component {
   }
   // 巡逻路线编辑查看
   editView = (ev, item) => {
-
     $(ev.currentTarget).parent("li").siblings("li").removeClass("tr-color-btn-active");
     $(ev.currentTarget).parent("li").addClass("tr-color-btn-active");
 
@@ -87,7 +86,7 @@ class PatrolRoute extends Component {
     }
 
     getPatrolLineAll({id: item.id}).then(res => {
-
+      debugger
       PatrolRoute.this.setState({
         cameraPosition: res.data,
         routeName: res.data.line_name,
@@ -248,14 +247,13 @@ class PatrolRoute extends Component {
     // window.addEventListener('keydown', handleKeyDown)
 
     Model.drawLine(res => {
-      // console.log('end edit.....')
-      // window.removeEventListener('keydown', handleKeyDown)
+      console.log('end edit', res)
 
       let positions = [];
       Model.endEditing();
       this.setState({
         geom: res.points,
-        routeGid: res.gid
+        routeGid: res.gid,
       })
 
       // for (let i = 0; i < res.points.length - 1; i++) {
@@ -488,7 +486,7 @@ class PatrolRoute extends Component {
 
   changeBool = (item, type, flag) => {
     flag = !flag;
-    let { cameraList } = this.state;
+    let {cameraList} = this.state;
     item[type] = flag;
     this.setState({
       cameraList: cameraList
@@ -500,8 +498,8 @@ class PatrolRoute extends Component {
     /**
      * 分析一下逻辑
      * //item拿到了当前项，where代表调整的方向
-     * 
-     * 
+     *
+     *
      */
     console.log('向哪里', where, item)
 
@@ -677,8 +675,9 @@ class PatrolRoute extends Component {
                     style={{marginLeft: "10px"}}
                   />
                   <select
+                    disabled={!indoor}
                     className="sleAll"
-                    style={{marginLeft: "10px"}}
+                    style={{marginLeft: "10px", width: '180px'}}
                     onChange={(e) => this.GetFloorList(e.target.value)}
                   >
                     {buildList.map(item => {
@@ -688,8 +687,9 @@ class PatrolRoute extends Component {
                     })}
                   </select>
                   <select
+                    disabled={!indoor}
                     className="sleAll"
-                    style={{marginLeft: "10px"}}
+                    style={{marginLeft: "10px", width: '100px'}}
                     onChange={this.handleFloorChange}
                   >
                     {floorList.map(item => {
@@ -730,18 +730,18 @@ class PatrolRoute extends Component {
                           </div>
                           <div className="table-tr-item-camera-list">
                             {item.patrol_camera.length > 0 ? item.patrol_camera.map((item2, index2) => {
-                              return (
-                                <div className="table-tr-item-camera" key={index2}>
-                                  <div className="table-tr-item-camera-item" title={item2.camera_name}>
-                                    {item2.camera_name}
-                                  </div>
-                                  <div className="table-tr-item tr-color-btn">
+                                return (
+                                  <div className="table-tr-item-camera" key={index2}>
+                                    <div className="table-tr-item-camera-item" title={item2.camera_name}>
+                                      {item2.camera_name}
+                                    </div>
+                                    <div className="table-tr-item tr-color-btn">
                                     <span className='tr-color-btn-active' onClick={() => this.changeBool(item2, "enable", item2.enable)}>
                                       {item2.enable ? '是' : '否'}
                                     </span>
-                                  </div>
-                                  <div className="table-tr-item tr-color-btn">
-                                    <span onClick={() => this.towhere('top', item2)}>向上</span>
+                                    </div>
+                                    <div className="table-tr-item tr-color-btn">
+                                      <span onClick={() => this.towhere('top', item2)}>向上</span>
                                     </div>
                                   </div>
                                 )
