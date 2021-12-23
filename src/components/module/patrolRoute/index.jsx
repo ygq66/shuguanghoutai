@@ -72,11 +72,12 @@ class PatrolRoute extends Component {
   }
   // 巡逻路线编辑查看
   editView = (ev, item) => {
+    console.log('显示路线', ev, item)
     $(ev.currentTarget).parent("li").siblings("li").removeClass("tr-color-btn-active");
     $(ev.currentTarget).parent("li").addClass("tr-color-btn-active");
 
     let floorId = item.floor_id
-    let baseRouteZ = 450
+    let baseRouteZ = window.$config.baseRouteZ;
 
     // 根据路线所在楼层，计算一下 Z 值
     if (floorId) {
@@ -86,7 +87,6 @@ class PatrolRoute extends Component {
     }
 
     getPatrolLineAll({id: item.id}).then(res => {
-      debugger
       PatrolRoute.this.setState({
         cameraPosition: res.data,
         routeName: res.data.line_name,
@@ -94,7 +94,7 @@ class PatrolRoute extends Component {
         flagNum: 1
       });
       PatrolRoute.this.setOperatingArea(true);
-      let postion = []
+      let postion = [];
       res.data?.patrol_line_subsection?.forEach((msg, index) => {
         console.log('线坐标', msg)
         for (let index = 0; index < msg.options.length; index++) {
