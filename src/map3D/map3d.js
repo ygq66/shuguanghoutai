@@ -227,21 +227,21 @@ export const createMap = {
 export const Model = {
   //创建模型
   creatmodel(videoType, callback) {
-    var obj = {
+    let obj = {
       type: "model",
       filename: videoType.fileName, // box, capsule, cone, cube, cylinder, pipe, pyramid, sphere, capsule
       radius: 1,
       scale: 1,
       attr: videoType.attr,
     };
-    view3d.OverLayerStartEdit(obj, (res) => {
-      var strObj = JSON.stringify(res);
-      createObj = res;
-      // var myDate = new Date()
-      view3d.OverLayerStopEdit();
-      // return strObj
-      callback(strObj);
-    });
+    setTimeout(() => {
+      view3d.OverLayerStartEdit(obj, (res) => {
+        let strObj = JSON.stringify(res);
+        createObj = res;
+        callback(strObj);
+        view3d.OverLayerStopEdit();
+      });
+    }, 100)
   },
   //关闭编辑
   endEditing() {
@@ -324,37 +324,30 @@ export const Model = {
    * @param size  {Number} 每次最多添加200个。不能再多。多了数据传输会失败。
    * @param cb    {Function}
    */
-  batchedAddModel(mapV, source, size = 40, processCb, cb) {
+  batchedAddModel(mapV, source, size = 30, cbProcess, cb) {
     if (!Array.isArray(source)) {
       return
     }
-    const sourceSize = source.length
+    const sourceSize = source.length;
     const addModel = (startOffset, endOffset = 0) => {
-      const sourceSlice = source.slice(startOffset, endOffset);
-      // 结束绘制
+      const sourceSlice = source.slice(startOffset, endOffset)
       if (startOffset > sourceSize - 1) {
-        console.log('结束加载: ', startOffset)
-        // map.Stop()
-        setTimeout(() => {
-          cb && cb()
-        }, 20);
-        return
+        console.log('添加完成: ', startOffset, sourceSlice)
+        cb && cb();
       }
-
-      // 注意,此功能为异步操作
-      setTimeout(() => {
-        mapV.OverLayerCreateObjects(sourceSlice, res => {
-          if (endOffset <= sourceSize - 1) {
-            processCb(startOffset, endOffset, res);
+      Map.runSync({
+        func() {
+          return Map.overLayerCreateObjects(mapV, sourceSlice);
+        },
+        success() {
+          if (startOffset < sourceSize) {
+            cbProcess && cbProcess(startOffset, endOffset > sourceSize ? sourceSize : endOffset);
+            addModel(endOffset, endOffset + size);
           }
-        })
-        if (startOffset < sourceSize) {
-          addModel(endOffset, endOffset + size);
         }
-      }, 500);
+      })
     }
-
-    addModel(0, size)
+    addModel(0, size);
   },
   //删除当前模型对象
   delectObj(obj) {
@@ -743,6 +736,171 @@ export const Event = {
     view3d.Clear();
   },
 };
+
+export const Map = {
+  modelId: 0,
+  funcArrSync: [],
+  isRun: false,
+  // 以同步方式调用接口
+  async runSync(obj) {
+    this.funcArrSync.push(obj)
+    if (this.isRun !== true) {
+      this.isRun = true;
+      while (Map.funcArrSync.length > 0) {
+        let item = Map.funcArrSync[0];
+        let res = await item.func();
+        item.success && item.success(res);
+        Map.funcArrSync.shift();
+      }
+      this.isRun = false;
+    }
+  },
+  // 计算相对位置
+  flyTo(map, pos, distance = 300, isBefore = true) {
+    if (pos.x && pos.y && pos.z) {
+      let posNew = Map.formatPos(pos);
+      console.log("定位", posNew);
+
+      if (isBefore) {
+        posNew.yaw = (posNew.yaw + 180) % 360;
+      }
+
+      // 定位到相对位置
+      posNew.pitch = 45;
+      posNew.x -= Math.cos((posNew.yaw / 180) * Math.PI) * distance;
+      posNew.y -= Math.sin((posNew.yaw / 180) * Math.PI) * distance;
+      posNew.z += distance;
+      console.log("定位计算后的相对位置", posNew);
+
+      map.FlyToPosition(posNew);
+    } else {
+      console.error("设备未上图", pos);
+      window.$message.error(`设备未上图 pos:${JSON.stringify(pos)}`);
+    }
+  },
+  // 格式化坐标点
+  formatPos(pos) {
+    let posNew = {...pos};
+    posNew.x = parseFloat(posNew.x.toString());
+    posNew.y = parseFloat(posNew.y.toString());
+    posNew.z = parseFloat(posNew.z.toString());
+    posNew.pitch = posNew.pitch ? parseFloat(posNew.pitch.toString()) : 0;
+    posNew.yaw = posNew.yaw ? parseFloat(posNew.yaw.toString()) : 0;
+    posNew.roll = posNew.roll ? parseFloat(posNew.roll.toString()) : 0;
+    return posNew;
+  },
+  overLayerCreateObjects(map, objects) {
+    console.log('开始批量添加', objects)
+    if (objects.length === 0) {
+      return new Promise(resolve => resolve())
+    } else {
+      return new Promise(resolve => {
+        map.OverLayerCreateObjects(objects, res => {
+          console.log('结束批量添加', objects)
+          resolve(res);
+        })
+      })
+    }
+  },
+  overLayerCreateObject(map, object) {
+    console.log('开始批量添加', object)
+    return new Promise(resolve => {
+      map.OverLayerCreateObject(object, res => {
+        console.log('结束批量添加', object);
+        resolve(res);
+      })
+    })
+  },
+  overLayerRemoveAll(map) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        map.OverLayerRemoveAll();
+        resolve();
+      }, 100)
+    })
+  },
+  overLayerStopEdit(map) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        map.OverLayerStopEdit();
+        resolve();
+      }, 100)
+    })
+  },
+  updateObjectVisible(map, id, visible) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        map.UpdateObjectVisible(id, visible);
+        resolve();
+      }, 20)
+    })
+  },
+  overLayerUpdateObject(map, obj) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        map.OverLayerUpdateObject(obj);
+        resolve();
+      }, 20)
+    })
+  },
+  setResolution(view3d, options) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        SetResolution(options, view3d);
+        resolve();
+      }, 200)
+    })
+  },
+  setNorthControl(map, flag, pX, pY, pScale) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        map.SetNorthControl(flag, pX, pY, pScale);
+        resolve();
+      }, 200)
+    })
+  },
+  setBuildingVisible(map, id, visible) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        map.SetBuildingVisible(id, visible)
+        resolve();
+      }, 100)
+    })
+  },
+  setGroundVisible(map, visible) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        map.SetGroundVisible(visible)
+        resolve();
+      }, 20)
+    })
+  },
+  flyToPosition(map, pos) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        map.FlyToPosition(pos)
+        resolve();
+      }, 200)
+    })
+  },
+  setFloorVisible(map, buildId, floorId, visible) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        map.SetFloorVisible(buildId, floorId, visible)
+        resolve();
+      }, 20)
+    })
+  },
+  findObjectById(map, gid) {
+    return new Promise(resolve => {
+      map.findObjectById(gid, res => {
+        resolve(res);
+      })
+    })
+  }
+}
+window.$Map = Map;
+window.$Model = Model;
 
 //设置屏幕
 function SetResolution(options, view3d) {

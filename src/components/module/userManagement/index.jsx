@@ -762,19 +762,31 @@ class UserManagement extends Component {
 
   // 树结构生成
   AnalyticFormat(vdom) {
-    // debugger
     let menuObj = vdom;
-    menuObj.sort((a, b) => a.region_name.localeCompare(b.region_name))
 
-    //转成树
+    // 转成树
     function getTree(data, Pid) {
       let result = [];
       let temp;
       for (let i = 0; i < data.length; i++) {
         if (data[i].pid === Pid) {
           temp = getTree(data, data[i].id);
-          data[i].children = temp
-          result.push(data[i])
+
+          temp.sort((a, b) => a.region_name.localeCompare(b.region_name))
+          temp.sort((a, b) => {
+            let posA = JSON.stringify(a.list_style);
+            let posB = JSON.stringify(b.list_style);
+            if (posA === '{}' && posB !== '{}') {
+              return -1;
+            } else if (posA !== '{}' && posB === '{}') {
+              return 1;
+            } else {
+              return 0;
+            }
+          })
+          // console.log('排序', temp.map(x => JSON.stringify(x.position)))
+          data[i].children = temp;
+          result.push(data[i]);
         }
       }
       return result
@@ -868,18 +880,20 @@ class UserManagement extends Component {
         // Model.showModel(this.state.polygonId, false);
         Model.removeGid(this.state.polygonId);
       }
-      const _this = this;
-      _this.setState({polygonId: item.position.gid, isEdit: false});
-      setTimeout(() => {
-        // Model.showModel(this.state.polygonId, true)
-        Model.createPolygon(item.position.points, (msg) => {
-          this.setState({
-            polygonId: JSON.parse(msg).gid
+      if (item.position.gid) { // 判断是否绘制可视区域
+        const _this = this;
+        _this.setState({polygonId: item.position.gid, isEdit: false});
+        setTimeout(() => {
+          // Model.showModel(this.state.polygonId, true)
+          Model.createPolygon(item.position.points, (msg) => {
+            this.setState({
+              polygonId: JSON.parse(msg).gid
+            })
           })
-        })
-      }, 100);
+        }, 100);
+      }
+
       UserManagement.this.shrinkageBtn(e, item.indoor);
-      // console.log('click camera: ', item)
       Model.setObjectHighlight(item);
       helperShapeUtil.updateHelperShapePos(item.list_style ? item.list_style : item.center);
     } else {
@@ -1162,12 +1176,11 @@ class UserManagement extends Component {
           <p>设备类别</p>
           <ul>
             {list.map((item, i) => (
-                <li key={i} className={flagText === item.id ? 'ative' : null} onClick={() => this.btnListXz(item)}>
-                  <img src={item.img} alt=""/>
-                  <span>{item.category_name}</span>
-                </li>
-              )
-            )}
+              <li key={i} className={flagText === item.id ? 'ative' : null} onClick={() => this.btnListXz(item)}>
+                <img src={item.img} alt=""/>
+                <span>{item.category_name}</span>
+              </li>
+            ))}
           </ul>
         </div>
         <div className="listTree">
