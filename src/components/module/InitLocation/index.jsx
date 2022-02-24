@@ -59,6 +59,8 @@ class InitLocation extends Component {
         })
     }
     GetCurrentPosition = () => {
+        //先全屏
+        
         createMap.getCurrent(res => {
             console.log(res, "当前视角")
             this.setState({

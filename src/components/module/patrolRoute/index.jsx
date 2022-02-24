@@ -1,10 +1,10 @@
 /**
  * 巡逻路线
  */
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import $ from "jquery"
-import {Checkbox, message} from "antd"
-import {Build, createMap, Model} from "../../../map3D/map3d"
+import { Checkbox, message } from "antd"
+import { Build, createMap, Model } from "../../../map3D/map3d"
 import {
   getBuildList,
   getFloorList,
@@ -72,12 +72,12 @@ class PatrolRoute extends Component {
   }
   // 巡逻路线编辑查看
   editView = (ev, item) => {
-    console.log('显示路线', ev, item)
+
     $(ev.currentTarget).parent("li").siblings("li").removeClass("tr-color-btn-active");
     $(ev.currentTarget).parent("li").addClass("tr-color-btn-active");
 
     let floorId = item.floor_id
-    let baseRouteZ = window.$config.baseRouteZ;
+    let baseRouteZ = 450
 
     // 根据路线所在楼层，计算一下 Z 值
     if (floorId) {
@@ -87,6 +87,7 @@ class PatrolRoute extends Component {
     }
 
     getPatrolLineAll({id: item.id}).then(res => {
+
       PatrolRoute.this.setState({
         cameraPosition: res.data,
         routeName: res.data.line_name,
@@ -94,7 +95,7 @@ class PatrolRoute extends Component {
         flagNum: 1
       });
       PatrolRoute.this.setOperatingArea(true);
-      let postion = [];
+      let postion = []
       res.data?.patrol_line_subsection?.forEach((msg, index) => {
         console.log('线坐标', msg)
         for (let index = 0; index < msg.options.length; index++) {
@@ -232,74 +233,15 @@ class PatrolRoute extends Component {
       flag_tab: false
     });
 
-    // if(handleKeyDown) {
-    //   window.removeEventListener('keydown', handleKeyDown)
-    // }
-    //
-    // handleKeyDown = (e) => {
-    //     console.log(e)
-    //     // 按下键盘
-    //     if(e.keyCode == 17) {
-    //         keydownLock = true
-    //     }
-    // }
-
-    // window.addEventListener('keydown', handleKeyDown)
-
     Model.drawLine(res => {
-      console.log('end edit', res)
-
+      console.log('打印回调',res)
       let positions = [];
-      Model.endEditing();
+      // Model.endEditing();
       this.setState({
         geom: res.points,
-        routeGid: res.gid,
+        routeGid: res.gid
       })
 
-      // for (let i = 0; i < res.points.length - 1; i++) {
-      //   let arr = []
-      //   let points = res.points[i];
-      //   let points2 = res.points[i + 1];
-      // let mian = this.getLinePoy(points, points2, "+");
-      // let mian2 = this.getLinePoy(points, points2, "-");
-      // arr = [
-      //   {
-      //     index: i,
-      //     NoodlesLineZ: 0,
-      //     line: [points.x, points.y],
-      //     noodles: [mian, mian2],
-      //     orientation: false
-      //   }
-      // ];
-      // positions.push(arr);
-
-      // }
-      // positions.forEach(element => {
-      //   element[0].noodles.forEach(element2 => {
-      //     let newArr = []
-      //     newArr.push({
-      //       x: element2[0],
-      //       y: element2[1],
-      //       z: 380
-      //     })
-      //     newArr.push({
-      //       x: element2[2],
-      //       y: element2[3],
-      //       z: 380
-      //     })
-      //     newArr.push({
-      //       x: element2[4],
-      //       y: element2[5],
-      //       z: 380
-      //     })
-      //     newArr.push({
-      //       x: element2[6],
-      //       y: element2[7],
-      //       z: 380
-      //     })
-      //     Model.createPolygon(newArr)
-      //   });
-      // });
       this.getLineSelectCamera(res.points);
     })
   }
@@ -486,7 +428,7 @@ class PatrolRoute extends Component {
 
   changeBool = (item, type, flag) => {
     flag = !flag;
-    let {cameraList} = this.state;
+    let { cameraList } = this.state;
     item[type] = flag;
     this.setState({
       cameraList: cameraList
@@ -498,8 +440,8 @@ class PatrolRoute extends Component {
     /**
      * 分析一下逻辑
      * //item拿到了当前项，where代表调整的方向
-     *
-     *
+     * 
+     * 
      */
     console.log('向哪里', where, item)
 
@@ -675,9 +617,8 @@ class PatrolRoute extends Component {
                     style={{marginLeft: "10px"}}
                   />
                   <select
-                    disabled={!indoor}
                     className="sleAll"
-                    style={{marginLeft: "10px", width: '180px'}}
+                    style={{marginLeft: "10px"}}
                     onChange={(e) => this.GetFloorList(e.target.value)}
                   >
                     {buildList.map(item => {
@@ -687,9 +628,8 @@ class PatrolRoute extends Component {
                     })}
                   </select>
                   <select
-                    disabled={!indoor}
                     className="sleAll"
-                    style={{marginLeft: "10px", width: '100px'}}
+                    style={{marginLeft: "10px"}}
                     onChange={this.handleFloorChange}
                   >
                     {floorList.map(item => {
@@ -730,18 +670,18 @@ class PatrolRoute extends Component {
                           </div>
                           <div className="table-tr-item-camera-list">
                             {item.patrol_camera.length > 0 ? item.patrol_camera.map((item2, index2) => {
-                                return (
-                                  <div className="table-tr-item-camera" key={index2}>
-                                    <div className="table-tr-item-camera-item" title={item2.camera_name}>
-                                      {item2.camera_name}
-                                    </div>
-                                    <div className="table-tr-item tr-color-btn">
+                              return (
+                                <div className="table-tr-item-camera" key={index2}>
+                                  <div className="table-tr-item-camera-item" title={item2.camera_name}>
+                                    {item2.camera_name}
+                                  </div>
+                                  <div className="table-tr-item tr-color-btn">
                                     <span className='tr-color-btn-active' onClick={() => this.changeBool(item2, "enable", item2.enable)}>
                                       {item2.enable ? '是' : '否'}
                                     </span>
-                                    </div>
-                                    <div className="table-tr-item tr-color-btn">
-                                      <span onClick={() => this.towhere('top', item2)}>向上</span>
+                                  </div>
+                                  <div className="table-tr-item tr-color-btn">
+                                    <span onClick={() => this.towhere('top', item2)}>向上</span>
                                     </div>
                                   </div>
                                 )

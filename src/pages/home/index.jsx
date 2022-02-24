@@ -1,15 +1,15 @@
-import React, {useState, useEffect, Suspense, lazy, Fragment} from 'react';
+import React, { useState, useEffect, Suspense, lazy, Fragment } from 'react';
 import './style.scss';
 import $ from "jquery";
 import HomeLeft from '../../components/homeLeft'
 import HomeHeader from '../../components/homeHeader'
 import axios from 'axios';
-import {message} from 'antd';
-import {createMap, Model} from '../../map3D/map3d';
-import {useDispatch, useMappedState} from 'redux-react-hook';
-import {getFigureLabel, getBuildLabel} from "../../api/mainApi";
-import {Redirect} from 'react-router';
-import {configData2 as MapUrl, configData3 as projectId, configData4 as token} from '../../api/address';
+import { message } from 'antd';
+import { createMap, Model } from '../../map3D/map3d';
+import { useDispatch, useMappedState } from 'redux-react-hook';
+import { getFigureLabel, getBuildLabel } from "../../api/mainApi";
+import { Redirect } from 'react-router';
+import { configData2 as MapUrl, configData3 as projectId, configData4 as token } from '../../api/address';
 import helperShapeUtil from "../../map3D/helperShapeUtil";
 
 const Home = () => {
@@ -23,9 +23,6 @@ const Home = () => {
   const [DynamicModule, setDynamicModule] = useState("div");
   const [moudleId, setMoudleId] = useState('')
   const [openFlag, setopenFlag] = useState(false)
-
-  const [panelFadeOut, setPanelFadeOut] = useState(false)
-
   useEffect(() => {
     if (!isLogin || isLogin === "false") {
       return;
@@ -35,27 +32,41 @@ const Home = () => {
         const result = res.data;
         if (result.msg === "success") {
           if (result.data.length > 0) {
-            var view3d = createMap.createMap({
+            createMap.createMap({
               id: "mapv3dContainer",
               url: MapUrl,
               projectId: projectId,
               token: token
             }, () => {
-              console.clear()
-              console.dir(view3d)
-
               helperShapeUtil.createHelperShape();
               message.success("地图加载成功")
-
-              createMap.enableKeyboard();
-
-              axios.post(global.Url + "/device/camera/listS").then((res) => {
+              // 去掉键盘控制先。不然点位上图输入都会被影响
+              // createMap.eanbleKeyboard();
+              axios.post(global.Url + "/device/camera/listS",{
+                indoor:false
+              }).then((res) => {
+                console.log('88888');
                 const result = res.data;
                 const data = res.data.data
                 // console.log(res, "ddawjdaw")
                 if (result.msg === "success") {
+                  //递归有毒
                   if (data.length > 0) {
-                    // var objModel = {};
+                    for (let index = 0; index < data.length; index++) {
+                      if (data[index] && data[index].model_name !== undefined && data[index].model_name !== null) {
+                        const obj = {
+                          gid: data[index].model_url,
+                          filename: data[index].model_name,//box,capsule,cone,cube,cylinder,pipe,pyramid,sphere,capsule
+                          location: data[index].list_style ? data[index].list_style : data[index].center,
+                          attr: data[index]
+                        };
+                        Model.modelLoading(obj, msg => {
+                          GetBuildLabel();
+                        })
+                      }
+                    }
+
+                    var objModel = {};
                     // (function loop(index) {
                     //   if (data[index] && data[index].model_name !== undefined && data[index].model_name !== null) {
                     //     const obj = {
@@ -65,19 +76,16 @@ const Home = () => {
                     //       attr: data[index]
                     //     };
                     //     Model.modelLoading(obj, msg => {
+                    //       console.log('比较', ++index, data.length)
                     //       if (++index < data.length) {
+                    //         console.log('我是创建的', msg);
                     //         setTimeout(() => {
-                    //           objModel[msg.attr?.id] = {
-                    //             ...msg,
-                    //             device_code: msg.attr?.device_code
-                    //           };
+                    //           objModel[msg.attr?.id] = { ...msg, device_code: msg.attr?.device_code };
                     //           loop(index)
                     //         }, 0)
                     //       } else {
-                    //         dispatch({
-                    //           type: "model_list",
-                    //           model_list: {...objModel}
-                    //         });
+                    //         console.log("全部执行完毕");
+                    //         dispatch({ type: "model_list", model_list: { ...objModel } });
                     //         GetBuildLabel();
                     //       }
                     //     })
@@ -88,35 +96,12 @@ const Home = () => {
                     //       }, 0)
                     //     } else {
                     //       console.log("全部执行完毕");
-                    //       dispatch({
-                    //         type: "model_list",
-                    //         model_list: {...objModel}
-                    //       });
+                    //       dispatch({ type: "model_list", model_list: { ...objModel } });
                     //       GetBuildLabel();
                     //     }
                     //   }
-                    //
+
                     // })(0);
-                    let objs = []
-                    for (const da of data) {
-                      if (da && da.model_name !== undefined && da.model_name !== null) {
-                        objs.push({
-                          gid: da.model_url,
-                          type: "model",
-                          scale: 1,
-                          filename: da.model_name,//box,capsule,cone,cube,cylinder,pipe,pyramid,sphere,capsule
-                          location: da.list_style ? da.list_style : da.center,
-                          attr: da,
-                        })
-                      }
-                    }
-                    let hide = message.loading('加载模型中...', 0)
-                    Model.batchedAddModel(view3d, objs, 40, (start, end) => {
-                      console.log('添加成功', start, end)
-                    }, () => {
-                      hide();
-                      GetBuildLabel();
-                    })
                   } else {
                     GetBuildLabel();
                   }
@@ -135,7 +120,6 @@ const Home = () => {
       })
       setopenFlag(true)
     }
-
     const GetBuildLabel = () => {
       getBuildLabel().then(result => {
         const Label = result.data;
@@ -144,20 +128,14 @@ const Home = () => {
             var buildLabel = {};
             (function loop2(index2) {
               if (Label[index2].children) {
-                const obj2 = {
-                  ...Label[index2].children[0].position,
-                  attr: {buildId: Label[index2].build_id}
-                };
+                const obj2 = { ...Label[index2].children[0].position, attr: { buildId: Label[index2].build_id } };
 
                 Model.labelLoading(obj2, msg => {
                   if (++index2 < Label.length) {
-                    buildLabel[Label[index2].id] = {...msg};
+                    buildLabel[Label[index2].id] = { ...msg };
                     loop2(index2);
                   } else {
-                    dispatch({
-                      type: "buildLabel_list",
-                      buildLabel_list: {...buildLabel}
-                    });
+                    dispatch({ type: "buildLabel_list", buildLabel_list: { ...buildLabel } });
                     GetFigureLabel();
                   }
                 })
@@ -165,10 +143,7 @@ const Home = () => {
                 if (++index2 < Label.length) {
                   loop2(index2);
                 } else {
-                  dispatch({
-                    type: "buildLabel_list",
-                    buildLabel_list: {...buildLabel}
-                  });
+                  dispatch({ type: "buildLabel_list", buildLabel_list: { ...buildLabel } });
                   GetFigureLabel();
                 }
               }
@@ -194,28 +169,19 @@ const Home = () => {
                     loop2(index2);
                   }, 0)
                 } else {
-                  dispatch({
-                    type: "textLabel_list",
-                    textLabel_list: {...textLabel}
-                  });
+                  dispatch({ type: "textLabel_list", textLabel_list: { ...textLabel } });
                 }
                 return;
               }
-              const obj2 = {
-                ...JSON.parse(Label[index2].label_style.model),
-                attr: {center: Label[index2].label_style.center}
-              };
+              const obj2 = { ...JSON.parse(Label[index2].label_style.model), attr: { center: Label[index2].label_style.center } };
               Model.labelLoading(obj2, msg => {
                 if (++index2 < Label.length) {
-                  textLabel[Label[index2].id] = {...msg};
+                  textLabel[Label[index2].id] = { ...msg };
                   setTimeout(() => {
                     loop2(index2);
                   }, 0)
                 } else {
-                  dispatch({
-                    type: "textLabel_list",
-                    textLabel_list: {...textLabel}
-                  });
+                  dispatch({ type: "textLabel_list", textLabel_list: { ...textLabel } });
                 }
               })
             })(0);
@@ -230,7 +196,6 @@ const Home = () => {
         lazy(() => import(`../../components/module/${moudleId}`))
       );
     }
-
   }, [isLogin, moudleId, openFlag, dispatch]);
 
   // 接受点击事件
@@ -249,31 +214,21 @@ const Home = () => {
   }, [])
 
   const setModel = (value) => {
-    setPanelFadeOut(true)
+    $('.mapright').addClass("animate__fadeOutRight");
     setTimeout(() => {
       setMoudleId(value)
-      setPanelFadeOut(false)
     }, 800)
-    dispatch({
-      type: "check_left",
-      title_left_check: -1
-    })
+    dispatch({ type: "check_left", title_left_check: -1 })
   }
   const stPageModel = (value) => {
-    // 点击重复的左侧标签，不做处理
-    if (value === moudleId) {
-      return
-    }
     if (moudleId !== "") {
-      setPanelFadeOut(true)
-
+      $('.mapright').addClass("animate__fadeOutRight");
       setTimeout(() => {
-        // setMoudleId("");
+        setMoudleId("");
         setMoudleId(value)
-        setPanelFadeOut(false)
       }, 800)
     } else {
-      // setMoudleId("");
+      setMoudleId("");
       setMoudleId(value)
     }
 
@@ -286,32 +241,24 @@ const Home = () => {
   return (
     <Fragment>
       {
-        (!isLogin || isLogin === "false") ? <Redirect to="/login"/> :
+        (!isLogin || isLogin === "false") ? <Redirect to='/login' /> :
           <div id="Home_all" className="">
-            <HomeLeft setMoudleId={stPageModel} value="-1"/>
+            <HomeLeft setMoudleId={stPageModel} value="-1" />
             <div className="homRight">
-              <HomeHeader setMoudleId2={stPageModel}/>
-              <div id="mapv3dContainer" className="map"/>
+              <HomeHeader setMoudleId2={stPageModel} />
+              <div id="mapv3dContainer" className="map" />
 
               {/* <div className="home_content"></div> */}
               {`${moudleId}` !== "" &&
-              <div
-                className={`mapright animate__animated animate__fadeInRight ${panelFadeOut ? 'animate__fadeOutRight' : ''}`}
-                style={{width: `${moudleId}` === "" || `${moudleId}` === "layoutStyle" ? "0" : "450px"}}
-              >
-                <Suspense fallback={<div>"loading"</div>}>
-                  {DynamicModule === 'div'
-                    ? ''
-                    :
-                    <DynamicModule
-                      setMoudleId={setModel}
-                      modellist={modelList}
-                      buildlabel={buildLabelList}
-                      textlabel={textLabelList}
-                    />
-                  }
-                </Suspense>
-              </div>}
+                <div className="mapright animate__animated animate__fadeInRight" style={{ width: `${moudleId}` === "" || `${moudleId}` === "layoutStyle" ? "0" : "450px" }}>
+                  <Suspense fallback={<div>"loading"</div>}>
+                    {DynamicModule === 'div'
+                      ? ''
+                      :
+                      <DynamicModule setMoudleId={setModel} modellist={modelList} buildlabel={buildLabelList} textlabel={textLabelList} />
+                    }
+                  </Suspense>
+                </div>}
             </div>
           </div>
       }
