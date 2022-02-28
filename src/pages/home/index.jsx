@@ -41,10 +41,6 @@ const Home = () => {
               projectId: projectId,
               token: token
             }, () => {
-
-              console.clear()
-              console.dir(view3d)
-
               helperShapeUtil.createHelperShape();
               message.success("地图加载成功")
 

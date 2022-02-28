@@ -1165,6 +1165,7 @@ class UserManagement extends Component {
       buildId,
       floorId
     } = this.state
+    console.log('list: ', list)
     return (
       <div className="EquipmentAbove">
         {/* <FloorList></FloorList> */}

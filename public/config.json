@@ -1,6 +1,6 @@
 {
-    "Url": "http://192.168.0.178:8096/LHMapW5.5",
-    "map_url": "http://192.168.0.178:19901/aimapvision3d",
-    "projectId": "aa5097959603438f8d7e00dae624cf20",
-    "token": "38b56b60d7538e242518e7a32b9be88c"
+    "Url": "http://192.168.0.19:8096/MapW5.5",
+    "map_url": "http://192.168.0.19:19901/aimapvision3d",
+    "projectId": "546af9d2c563455b9cc7f7581aebe7de",
+    "token": "db52598939c493e14691900048a26020"
 }

@@ -97,16 +97,17 @@ class PerPosition extends Component {
   }
   // 楼层全部展示
   showFloorAll = () => {
-    const {
-      floorList,
-      oldbuildId
-    } = this.state;
-    let floor = [];
-    floorList.forEach(res => {
-      let floor_id = res.floor_id.split("#")[1];
-      floor.push(floor_id);
-    })
-    Build.showFloor(oldbuildId, "all", floor);
+    // const {
+    //   floorList,
+    //   oldbuildId
+    // } = this.state;
+    // let floor = [];
+    // floorList.forEach(res => {
+    //   let floor_id = res.floor_id.split("#")[1];
+    //   floor.push(floor_id);
+    // })
+    // Build.showFloor(oldbuildId, "all", floor);
+    Build.showAllBuilding()
   }
   // 楼层掀层
   showFloor = () => {
