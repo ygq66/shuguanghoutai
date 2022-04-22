@@ -1,15 +1,15 @@
-import React, { useState, useEffect, Suspense, lazy, Fragment } from 'react';
+import React, {useState, useEffect, Suspense, lazy, Fragment} from 'react';
 import './style.scss';
 import $ from "jquery";
 import HomeLeft from '../../components/homeLeft'
 import HomeHeader from '../../components/homeHeader'
 import axios from 'axios';
-import { message } from 'antd';
-import { createMap, Model } from '../../map3D/map3d';
-import { useDispatch, useMappedState } from 'redux-react-hook';
-import { getFigureLabel, getBuildLabel } from "../../api/mainApi";
-import { Redirect } from 'react-router';
-import { configData2 as MapUrl, configData3 as projectId, configData4 as token } from '../../api/address';
+import {message} from 'antd';
+import {createMap, Model} from '../../map3D/map3d';
+import {useDispatch, useMappedState} from 'redux-react-hook';
+import {getFigureLabel, getBuildLabel} from "../../api/mainApi";
+import {Redirect} from 'react-router';
+import {configData2 as MapUrl, configData3 as projectId, configData4 as token} from '../../api/address';
 import helperShapeUtil from "../../map3D/helperShapeUtil";
 
 const Home = () => {
@@ -36,14 +36,15 @@ const Home = () => {
               id: "mapv3dContainer",
               url: MapUrl,
               projectId: projectId,
-              token: token
+              token: token,
+              mapkey: window.$config.mapkey,
             }, () => {
               helperShapeUtil.createHelperShape();
               message.success("地图加载成功")
               // 去掉键盘控制先。不然点位上图输入都会被影响
               // createMap.eanbleKeyboard();
-              axios.post(global.Url + "/device/camera/listS",{
-                indoor:false
+              axios.post(global.Url + "/device/camera/listS", {
+                indoor: false
               }).then((res) => {
                 console.log('88888');
                 const result = res.data;
@@ -128,14 +129,14 @@ const Home = () => {
             var buildLabel = {};
             (function loop2(index2) {
               if (Label[index2].children) {
-                const obj2 = { ...Label[index2].children[0].position, attr: { buildId: Label[index2].build_id } };
+                const obj2 = {...Label[index2].children[0].position, attr: {buildId: Label[index2].build_id}};
 
                 Model.labelLoading(obj2, msg => {
                   if (++index2 < Label.length) {
-                    buildLabel[Label[index2].id] = { ...msg };
+                    buildLabel[Label[index2].id] = {...msg};
                     loop2(index2);
                   } else {
-                    dispatch({ type: "buildLabel_list", buildLabel_list: { ...buildLabel } });
+                    dispatch({type: "buildLabel_list", buildLabel_list: {...buildLabel}});
                     GetFigureLabel();
                   }
                 })
@@ -143,7 +144,7 @@ const Home = () => {
                 if (++index2 < Label.length) {
                   loop2(index2);
                 } else {
-                  dispatch({ type: "buildLabel_list", buildLabel_list: { ...buildLabel } });
+                  dispatch({type: "buildLabel_list", buildLabel_list: {...buildLabel}});
                   GetFigureLabel();
                 }
               }
@@ -169,19 +170,19 @@ const Home = () => {
                     loop2(index2);
                   }, 0)
                 } else {
-                  dispatch({ type: "textLabel_list", textLabel_list: { ...textLabel } });
+                  dispatch({type: "textLabel_list", textLabel_list: {...textLabel}});
                 }
                 return;
               }
-              const obj2 = { ...JSON.parse(Label[index2].label_style.model), attr: { center: Label[index2].label_style.center } };
+              const obj2 = {...JSON.parse(Label[index2].label_style.model), attr: {center: Label[index2].label_style.center}};
               Model.labelLoading(obj2, msg => {
                 if (++index2 < Label.length) {
-                  textLabel[Label[index2].id] = { ...msg };
+                  textLabel[Label[index2].id] = {...msg};
                   setTimeout(() => {
                     loop2(index2);
                   }, 0)
                 } else {
-                  dispatch({ type: "textLabel_list", textLabel_list: { ...textLabel } });
+                  dispatch({type: "textLabel_list", textLabel_list: {...textLabel}});
                 }
               })
             })(0);
@@ -218,7 +219,7 @@ const Home = () => {
     setTimeout(() => {
       setMoudleId(value)
     }, 800)
-    dispatch({ type: "check_left", title_left_check: -1 })
+    dispatch({type: "check_left", title_left_check: -1})
   }
   const stPageModel = (value) => {
     if (moudleId !== "") {
@@ -241,24 +242,24 @@ const Home = () => {
   return (
     <Fragment>
       {
-        (!isLogin || isLogin === "false") ? <Redirect to='/login' /> :
+        (!isLogin || isLogin === "false") ? <Redirect to='/login'/> :
           <div id="Home_all" className="">
-            <HomeLeft setMoudleId={stPageModel} value="-1" />
+            <HomeLeft setMoudleId={stPageModel} value="-1"/>
             <div className="homRight">
-              <HomeHeader setMoudleId2={stPageModel} />
-              <div id="mapv3dContainer" className="map" />
+              <HomeHeader setMoudleId2={stPageModel}/>
+              <div id="mapv3dContainer" className="map"/>
 
               {/* <div className="home_content"></div> */}
               {`${moudleId}` !== "" &&
-                <div className="mapright animate__animated animate__fadeInRight" style={{ width: `${moudleId}` === "" || `${moudleId}` === "layoutStyle" ? "0" : "450px" }}>
-                  <Suspense fallback={<div>"loading"</div>}>
-                    {DynamicModule === 'div'
-                      ? ''
-                      :
-                      <DynamicModule setMoudleId={setModel} modellist={modelList} buildlabel={buildLabelList} textlabel={textLabelList} />
-                    }
-                  </Suspense>
-                </div>}
+              <div className="mapright animate__animated animate__fadeInRight" style={{width: `${moudleId}` === "" || `${moudleId}` === "layoutStyle" ? "0" : "450px"}}>
+                <Suspense fallback={<div>"loading"</div>}>
+                  {DynamicModule === 'div'
+                    ? ''
+                    :
+                    <DynamicModule setMoudleId={setModel} modellist={modelList} buildlabel={buildLabelList} textlabel={textLabelList}/>
+                  }
+                </Suspense>
+              </div>}
             </div>
           </div>
       }

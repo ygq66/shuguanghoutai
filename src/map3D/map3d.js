@@ -1,6 +1,7 @@
 import helperShapeUtil from "./helperShapeUtil";
 import eventUtil from "./eventUtil";
-import { message } from 'antd';
+import {message} from 'antd';
+
 var view3d;
 var createObj = null;
 var Polygon = null;
@@ -8,16 +9,18 @@ var allBuildModelObj = {};
 //创建地图类
 export const createMap = {
   createMap(options, callback) {
-    //创建实例
-    /* global MapVision */
-    view3d = new MapVision.View3d({
+    let obj = {
       id: options.id,
       url: options.url,
       projectId: options.projectId,
       token: options.token,
-    });
+      mapkey: options.mapkey,
+    }
+    //创建实例
+    /* global MapVision */
+    view3d = new MapVision.View3d(obj);
     view3d.Open((res) => {
-      console.log("MapVision View3d " + res);
+      console.log("MapVision View3d ", res);
       view3d.OverLayerRemoveAll();
       createObj = null;
       view3d.OverLayerStopEdit();
@@ -486,7 +489,7 @@ export const Model = {
       }
       let data = {};
       if (res.typename === "model") {
-        data = { switchName: "model", Personnel: res };
+        data = {switchName: "model", Personnel: res};
         helperShapeUtil.updateHelperShapePos(res.location); // 创建标注
       } else if (res.gid && res.gid.split("_")[0] === "MP") {
         let buildarr = res.gid.split("_");
@@ -583,7 +586,7 @@ export const Model = {
   },
   // 格式化坐标点
   formatPos(pos) {
-    let posNew = { ...pos };
+    let posNew = {...pos};
     posNew.x = parseFloat(posNew.x.toString());
     posNew.y = parseFloat(posNew.y.toString());
     posNew.z = parseFloat(posNew.z.toString());
@@ -604,9 +607,9 @@ export const Build = {
 
   getBuild(callback) {
     view3d &&
-      view3d.GetBuildingNames((res) => {
-        callback && callback(JSON.stringify(res));
-      });
+    view3d.GetBuildingNames((res) => {
+      callback && callback(JSON.stringify(res));
+    });
   },
   getFloor(buildingName, callback) {
     view3d.GetFloorNames(buildingName, (res) => {
@@ -648,9 +651,9 @@ export const Build = {
     view3d.SetBuildingVisible(buildId, true);
 
     Array.isArray(floorList) &&
-      floorList.forEach((floorName) => {
-        view3d.SetFloorVisible(buildId, floorName, true);
-      });
+    floorList.forEach((floorName) => {
+      view3d.SetFloorVisible(buildId, floorName, true);
+    });
   },
 
   // 楼层显示隐藏
@@ -661,7 +664,7 @@ export const Build = {
 
     let floorNum = Build.getFloorNumberByName(floorName);
     let isCurrentFloorUnderground = floorName.startsWith("B");
-    let isJiaCeng =floorName.startsWith("M");
+    let isJiaCeng = floorName.startsWith("M");
     if (isCurrentFloorUnderground) {
       // 显示地下的情况时,把地面隐藏掉
       Build.showDM(false, view3d);
@@ -675,20 +678,21 @@ export const Build = {
     if (!floor) {
       return;
     }
+
     function floorLessEq(f1, f2) {
       let arr = ['B', 'W', 'F']
       let floorFlag1 = f1.substr(0, 1)
       let floorFlag2 = f2.substr(0, 1)
-  
+
       let floorNum1 = Number(f1.substr(1))
       let floorNum2 = Number(f2.substr(1))
-  
+
       let floorFlagTmp1 = floorFlag1 === 'M' ? 'F' : floorFlag1
       let floorFlagTmp2 = floorFlag2 === 'M' ? 'F' : floorFlag2
-  
+
       let floorFlagIdx1 = arr.indexOf(floorFlagTmp1)
       let floorFlagIdx2 = arr.indexOf(floorFlagTmp2)
-  
+
       if (floorFlagIdx1 !== floorFlagIdx2) {
         return floorFlagIdx1 < floorFlagIdx2
       } else { // 同是地上,地下
@@ -707,9 +711,10 @@ export const Build = {
         }
       }
     }
+
     floor.forEach((item, index) => {
       // let FNum = Build.getFloorNumberByName(item);
-      
+
       // let floorVisible = true;
       // if (FNum > floorNum) {
       //   floorVisible = false;
@@ -725,8 +730,6 @@ export const Build = {
       }
     });
   },
-
-
 
 
   showAllBuilding() {
