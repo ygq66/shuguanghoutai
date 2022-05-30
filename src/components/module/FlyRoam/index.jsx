@@ -68,10 +68,13 @@ class FlyRoam extends Component {
         })
     }
     // 绘制飞行漫游路线
+    //这里因为SDK更新需要修改
+
     creatLine = () => {
+        console.log('飞行漫游跑这里')
         message.warning("鼠标右键结束绘制");
         Model.drawLine(res => {
-            Model.endEditing();
+            // Model.endEditing();
             if (res) {
                 FlyRoam.this.setState({
                     lineModel: res,

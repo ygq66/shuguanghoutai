@@ -233,75 +233,15 @@ class PatrolRoute extends Component {
       flag_tab: false
     });
 
-    // if(handleKeyDown) {
-    //   window.removeEventListener('keydown', handleKeyDown)
-    // }
-    //
-    // handleKeyDown = (e) => {
-    //     console.log(e)
-    //     // 按下键盘
-    //     if(e.keyCode == 17) {
-    //         keydownLock = true
-    //     }
-    // }
-
-    // window.addEventListener('keydown', handleKeyDown)
-
     Model.drawLine(res => {
-      // console.log('end edit.....')
-      // window.removeEventListener('keydown', handleKeyDown)
-
+      console.log('打印回调',res)
       let positions = [];
-      Model.endEditing();
+      // Model.endEditing();
       this.setState({
         geom: res.points,
         routeGid: res.gid
       })
 
-      // for (let i = 0; i < res.points.length - 1; i++) {
-      //   let arr = []
-      //   let points = res.points[i];
-      //   let points2 = res.points[i + 1];
-      // let mian = this.getLinePoy(points, points2, "+");
-      // let mian2 = this.getLinePoy(points, points2, "-");
-      // arr = [
-      //   {
-      //     index: i,
-      //     NoodlesLineZ: 0,
-      //     line: [points.x, points.y],
-      //     noodles: [mian, mian2],
-      //     orientation: false
-      //   }
-      // ];
-      // positions.push(arr);
-
-      // }
-      // positions.forEach(element => {
-      //   element[0].noodles.forEach(element2 => {
-      //     let newArr = []
-      //     newArr.push({
-      //       x: element2[0],
-      //       y: element2[1],
-      //       z: 380
-      //     })
-      //     newArr.push({
-      //       x: element2[2],
-      //       y: element2[3],
-      //       z: 380
-      //     })
-      //     newArr.push({
-      //       x: element2[4],
-      //       y: element2[5],
-      //       z: 380
-      //     })
-      //     newArr.push({
-      //       x: element2[6],
-      //       y: element2[7],
-      //       z: 380
-      //     })
-      //     Model.createPolygon(newArr)
-      //   });
-      // });
       this.getLineSelectCamera(res.points);
     })
   }

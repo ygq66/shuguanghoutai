@@ -1,4 +1,4 @@
-import { configData1 as ApiUrl } from './address';
+import { configData1 as ApiUrl } from "./address";
 
 // 接口集合
 const constant = {
@@ -24,7 +24,6 @@ const constant = {
   userList: `${ApiUrl}/sys/user/list`,
   //module 用户管理 根据用户id删除用户
   userDelete: `${ApiUrl}/sys/user/delete`,
-
 
   // 设备配置
   deviceType: `${ApiUrl}/device/category/list`,
@@ -108,7 +107,6 @@ const constant = {
   // 网格信息修改
   wgUpdata: `${ApiUrl}/grid/info/touchin`,
 
-
   // 获取图层组列表信息
   getMapGroup: `${ApiUrl}/map/group/list`,
   // 添加/修改图层组列表信息
@@ -144,7 +142,6 @@ const constant = {
   // 删除建筑标注
   delBuildLabel: `${ApiUrl}/build/label/delete`,
 
-
   // 获取巡逻路线
   getPatrolLine: `${ApiUrl}/patrol/line/list`,
   // 获取对应id路线相机点位列表
@@ -178,7 +175,6 @@ const constant = {
   //删除房间信息
   delBedRoom: `${ApiUrl}/bed/room/delete`,
 
-
   // 获取人员定位信息
   getPeopleLocation: `${ApiUrl}/people/location/list`,
   // 添加or修改人员定位信息
@@ -188,13 +184,14 @@ const constant = {
 
   labelList: `${ApiUrl}/figure/label/listId`,
 
-
   // 添加飞行漫游
   setRoamFly: `${ApiUrl}/roam/fly/add`,
   // 获取飞行漫游
   getRoamlist: `${ApiUrl}/roam/fly/list`,
   // 删除飞行漫游
   delRoamlist: `${ApiUrl}/roam/fly/destroy`,
-}
+  //新加的根据设备查网格面的
+  deviceRegion: `${ApiUrl}/device/region`,
+};
 
 export default constant;

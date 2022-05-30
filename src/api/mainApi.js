@@ -715,3 +715,11 @@ export function delRoamlist(ParamsData) {
         data: ParamsData
     })
 }
+//根据点位查网格面的
+export function deviceRegion(ParamsData) {
+    return request({
+        url: constant.deviceRegion,
+        method: 'post',
+        data: ParamsData
+    })
+}

@@ -18,6 +18,7 @@ $.ajax({
         MapUrl = response.map_url;
         projectId = response.projectId;
         token = response.token;
+        window.$config = response
     }
 })
 

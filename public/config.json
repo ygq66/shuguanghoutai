@@ -1,6 +1,7 @@
 {
-    "Url": "http://192.168.0.19:8096/MapW5.5",
-    "map_url": "http://192.168.0.19:19901/aimapvision3d",
-    "projectId": "546af9d2c563455b9cc7f7581aebe7de",
-    "token": "db52598939c493e14691900048a26020"
+    "Url": "http://192.168.0.149:8096/MapW5.5",
+    "map_url": "http://localhost:19901/aimapvision3d",
+    "projectId": "93aa19efbc0a4bd0b7f4099150818ecc",
+    "token": "85718a41ed32423972eb0347c019f809",
+    "mapkey": "85718a41ed32423972eb0347c019f809"
 }

@@ -38,6 +38,7 @@ const HomeLeft = (props) => {
     props.setMoudleId(item.page)
   };
   const clickchieldren = (e, key, page) => {
+    console.log('进值',e,key,page);
     e.stopPropagation();
     setcurrentChildren(key);
     props.setMoudleId(page)

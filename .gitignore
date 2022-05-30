@@ -38,3 +38,4 @@ package-json.lock
 yarn.lock
 
 *.7z
+*.zip

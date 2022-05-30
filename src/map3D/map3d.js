@@ -1,5 +1,6 @@
 import helperShapeUtil from "./helperShapeUtil";
 import eventUtil from "./eventUtil";
+import {message} from 'antd';
 
 var view3d;
 var createObj = null;
@@ -8,16 +9,18 @@ var allBuildModelObj = {};
 //创建地图类
 export const createMap = {
   createMap(options, callback) {
-    //创建实例
-    /* global MapVision */
-    view3d = new MapVision.View3d({
+    let obj = {
       id: options.id,
       url: options.url,
       projectId: options.projectId,
       token: options.token,
-    });
+      mapkey: options.mapkey,
+    }
+    //创建实例
+    /* global MapVision */
+    view3d = new MapVision.View3d(obj);
     view3d.Open((res) => {
-      console.log("MapVision View3d " + res);
+      console.log("MapVision View3d ", res);
       view3d.OverLayerRemoveAll();
       createObj = null;
       view3d.OverLayerStopEdit();
@@ -37,11 +40,13 @@ export const createMap = {
       SetResolution(options, view3d);
       Build.getBuild((res) => {
         let buildObj = JSON.parse(res);
+        console.log("我是这个值", buildObj);
         if (buildObj.length > 0) {
           (function loopBuild(index) {
             Build.getFloor(buildObj[index].id, (msg2) => {
               // console.log(buildObj, index)
               // 处理一下index越界的可能
+              console.log("我执行了吗");
               if (index < buildObj.length) {
                 allBuildModelObj[buildObj[index].id] = JSON.parse(msg2);
                 if (++index < buildObj.length) {
@@ -72,10 +77,6 @@ export const createMap = {
       }
       if (event.code === "F5") {
         window.location.reload();
-      }
-      if (event.code === "F10") {
-        console.log("重新布局");
-        SetResolution({ id: "mapv3dContainer" }, view3d);
       }
     };
     return view3d;
@@ -131,6 +132,7 @@ export const createMap = {
     //     yaw : 0,   // 偏航角 0-360度
     //     roll : 0     // 翻滚角
     // };
+    console.log("复位传过来的数据", pos);
     view3d.FlyToPosition(pos);
   },
   SetPosition(pos) {
@@ -138,26 +140,33 @@ export const createMap = {
     view3d.SetPosition(pos);
   },
   // 计算相对位置
-  flyTo(pos, distance = 300, isBefore = true) {
+  flyTo(pos) {
+    // const pos = {
+    //   x: location.x,
+    //   y: location.y,
+    //   z: location.z,
+    //   pitch: 0, // 俯仰角 0——90度
+    //   yaw: location.yaw, // 偏航角 0-360度
+    //   roll: 0, // 翻滚角
+    // };
+    //
+    // view3d.FlyToPosition(pos);
     if (pos.x && pos.y && pos.z) {
       let posNew = Model.formatPos(pos);
       console.log("定位", posNew);
 
-      if (isBefore) {
-        posNew.yaw = (posNew.yaw + 180) % 360;
-      }
-
       // 定位到相对位置
+      let distance = 500;
+      posNew.z += distance;
       posNew.pitch = 45;
+      posNew.yaw += 180;
       posNew.x -= Math.cos((posNew.yaw / 180) * Math.PI) * distance;
       posNew.y -= Math.sin((posNew.yaw / 180) * Math.PI) * distance;
-      posNew.z += distance;
       console.log("定位计算后的相对位置", posNew);
 
       view3d.FlyToPosition(posNew);
     } else {
-      console.error("设备未上图", pos);
-      window.$message.error(`设备未上图 pos:${JSON.stringify(pos)}`);
+      console.error("定位格式错误", pos);
     }
   },
   // 根据id飞到位置点
@@ -263,6 +272,36 @@ export const Model = {
     createObj = null;
     view3d.OverLayerStopEdit();
   },
+  //加载点
+  imageLable(objx, objy, objz, color) {
+    const obj = {
+      // gid: 'CUSTOM_ID', 		// 自定义gid，可以设置自定义前缀，用于点选匹配不同的对象
+      type: "imagelabel", // 10102  或  image
+      iconstyle: "default.png", // 资源图片里面是否有这个文件
+      text: "点位", // 文本内容
+      fontcolor: color, // 文本颜色
+      fontbg: "blue", // 文本背景颜色
+      fontsize: 500.0, // 文本大小
+      style: "white", // 立柱的颜色样式
+      pwidth: 2, // 立柱的宽度
+      pheight: 100.0, // 立柱的高度
+      scale: 1, // 整个对象的缩放比例
+      location: {
+        x: objx,
+        y: objy,
+        z: objz,
+        pitch: 0, // 俯仰角 0——90度
+        yaw: 0, // 偏航角 0-360度
+        roll: 0, // 翻滚角
+      },
+    };
+    view3d.OverLayerCreateObject(obj, (res) => {
+      createObj = res;
+      var strObj = JSON.stringify(createObj);
+      console.log(strObj);
+      alert(strObj);
+    });
+  },
   //加载模型
   modelLoading(strObj, callback) {
     var obj = {
@@ -362,8 +401,15 @@ export const Model = {
     view3d.OverLayerStartEdit(obj, (res) => {
       var strObj = JSON.stringify(res);
       Polygon = res;
-      view3d.OverLayerStopEdit();
+      // view3d.OverLayerStopEdit();
       callback(strObj);
+    });
+    window.addEventListener("mousedown", function rightClick(e) {
+      if (e.button === 2) {
+        message.success("绘制成功");
+        view3d.OverLayerStopEdit();
+        window.removeEventListener("mousedown", rightClick);
+      }
     });
   },
   //创建面
@@ -418,7 +464,7 @@ export const Model = {
     selObj = null;
   },
   removeGid(gid) {
-    view3d && view3d.OverLayerRemoveObjectById(gid);
+    view3d.OverLayerRemoveObjectById(gid);
   },
   // 显示隐藏模型
   showModel(id, flag) {
@@ -443,12 +489,9 @@ export const Model = {
       }
       let data = {};
       if (res.typename === "model") {
-        data = {
-          switchName: "model",
-          Personnel: res,
-        };
+        data = {switchName: "model", Personnel: res};
         helperShapeUtil.updateHelperShapePos(res.location); // 创建标注
-      } else if (res.gid.split("_")[0] === "MP") {
+      } else if (res.gid && res.gid.split("_")[0] === "MP") {
         let buildarr = res.gid.split("_");
         buildarr.shift();
         let buildId = buildarr.join("_");
@@ -481,15 +524,23 @@ export const Model = {
   },
   // 绘制折线
   drawLine(callback) {
+    console.log("执行这个了吧");
     const obj = {
       type: "linestring",
       color: "#ff0f00",
       points: [],
     };
     view3d.OverLayerStartEdit(obj, (res) => {
-      console.log(res);
+      console.log("画了几个点哈", res);
       if (callback) {
         callback(res);
+      }
+    });
+    window.addEventListener("mousedown", function rightClick(e) {
+      if (e.button === 2) {
+        message.success("绘制成功");
+        view3d.OverLayerStopEdit();
+        window.removeEventListener("mousedown", rightClick);
       }
     });
   },
@@ -533,12 +584,9 @@ export const Model = {
       }, 10);
     }
   },
-  clearObjectHighlight(view3d) {
-    view3d.ClearHighlight();
-  },
   // 格式化坐标点
   formatPos(pos) {
-    let posNew = { ...pos };
+    let posNew = {...pos};
     posNew.x = parseFloat(posNew.x.toString());
     posNew.y = parseFloat(posNew.y.toString());
     posNew.z = parseFloat(posNew.z.toString());
@@ -559,9 +607,9 @@ export const Build = {
 
   getBuild(callback) {
     view3d &&
-      view3d.GetBuildingNames((res) => {
-        callback && callback(JSON.stringify(res));
-      });
+    view3d.GetBuildingNames((res) => {
+      callback && callback(JSON.stringify(res));
+    });
   },
   getFloor(buildingName, callback) {
     view3d.GetFloorNames(buildingName, (res) => {
@@ -603,18 +651,13 @@ export const Build = {
     view3d.SetBuildingVisible(buildId, true);
 
     Array.isArray(floorList) &&
-      floorList.forEach((floorName) => {
-        view3d.SetFloorVisible(buildId, floorName, true);
-      });
+    floorList.forEach((floorName) => {
+      view3d.SetFloorVisible(buildId, floorName, true);
+    });
   },
 
   // 楼层显示隐藏
   showFloor(buildingName, floorName, floor) {
-    // let floorNum =
-    //   Number(floorName.substring(floorName.length - 2)) >= 10
-    //     ? Number(floorName.substring(floorName.length - 2))
-    //     : Number(floorName.slice(-1));
-    // var FLOOR = floorName.substr(0, 1);
     // floorName 的格式为：B001，F001之类的
     // V001_JZ0001#F001 => F001
     if (floorName.indexOf('#') !== -1) {
@@ -623,7 +666,7 @@ export const Build = {
 
     let floorNum = Build.getFloorNumberByName(floorName);
     let isCurrentFloorUnderground = floorName.startsWith("B");
-
+    let isJiaCeng = floorName.startsWith("M");
     if (isCurrentFloorUnderground) {
       // 显示地下的情况时,把地面隐藏掉
       Build.showDM(false, view3d);
@@ -638,15 +681,48 @@ export const Build = {
       return;
     }
 
-    floor.forEach((item, index) => {
-      let FNum = Build.getFloorNumberByName(item);
+    function floorLessEq(f1, f2) {
+      let arr = ['B', 'W', 'F']
+      let floorFlag1 = f1.substr(0, 1)
+      let floorFlag2 = f2.substr(0, 1)
 
-      let floorVisible = true;
-      if (FNum > floorNum) {
-        floorVisible = false;
+      let floorNum1 = Number(f1.substr(1))
+      let floorNum2 = Number(f2.substr(1))
+
+      let floorFlagTmp1 = floorFlag1 === 'M' ? 'F' : floorFlag1
+      let floorFlagTmp2 = floorFlag2 === 'M' ? 'F' : floorFlag2
+
+      let floorFlagIdx1 = arr.indexOf(floorFlagTmp1)
+      let floorFlagIdx2 = arr.indexOf(floorFlagTmp2)
+
+      if (floorFlagIdx1 !== floorFlagIdx2) {
+        return floorFlagIdx1 < floorFlagIdx2
+      } else { // 同是地上,地下
+        if (floorFlagTmp1 !== 'F') { // 同是地下B, 地面
+          return floorNum1 >= floorNum2
+        } else { // 同是地上
+          if (floorNum1 !== floorNum2) { // 地上楼层不相等
+            return floorNum1 < floorNum2
+          } else { // 地上楼层相等
+            if (floorFlag1 === floorFlag2) { // 完全相等
+              return true
+            } else {
+              return floorFlag1 !== 'M';
+            }
+          }
+        }
       }
+    }
 
-      view3d.SetFloorVisible(buildingName, item, floorVisible);
+    floor.forEach((item, index) => {
+      // let FNum = Build.getFloorNumberByName(item);
+
+      // let floorVisible = true;
+      // if (FNum > floorNum) {
+      //   floorVisible = false;
+      // }
+
+      view3d.SetFloorVisible(buildingName, item, floorLessEq(item, floorName));
 
       if (index === floor.length - 1) {
         console.log("call get model");
@@ -655,9 +731,8 @@ export const Build = {
         }, 1000);
       }
     });
-    //猜测是这里
-    // Model.getModel(view3d);
   },
+
 
   showAllBuilding() {
     if (view3d) {

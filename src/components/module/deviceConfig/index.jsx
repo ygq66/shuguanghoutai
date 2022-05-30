@@ -85,6 +85,7 @@ export default class DeviceConfig extends React.Component {
         })
     }
     onMenuClicked = (e, item) => {
+        console.log('定位了面是哇', e, item);
         if (item.node_type === "details") {
             const { wg_gid } = this.state;
             Model.removeGid(wg_gid);

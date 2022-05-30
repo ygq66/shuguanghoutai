@@ -6,7 +6,7 @@ import {
 
 // 创建axios实例
 const service = axios.create({
-  timeout: 60 * 1000 // 请求超时时间
+  timeout: 300 * 1000 // 请求超时时间
 })
 // 添加请求拦截器)
 service.interceptors.request.use(
