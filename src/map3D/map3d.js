@@ -664,8 +664,10 @@ export const Build = {
   // 楼层显示隐藏
   showFloor(buildingName, floorName, floor) {
     // floorName 的格式为：B001，F001之类的
-    console.log("楼层名字", buildingName, floorName, floor);
-    floorName = floorName.split("#")[1];
+    // V001_JZ0001#F001 => F001
+    if (floorName.indexOf('#') !== -1) {
+      floorName = floorName.split("#")[1];
+    }
 
     let floorNum = Build.getFloorNumberByName(floorName);
     let isCurrentFloorUnderground = floorName.startsWith("B");

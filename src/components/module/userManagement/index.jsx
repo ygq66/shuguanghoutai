@@ -1533,6 +1533,7 @@ class UserManagement extends Component {
       changeMianData,
       f6
     } = this.state
+    console.log('list: ', list)
     return (
       <div className="EquipmentAbove">
         {/* <FloorList></FloorList> */}
