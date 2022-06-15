@@ -1,13 +1,15 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import './style.scss';
-import { Build, createMap, Model } from '../../../map3D/map3d';
+import {Build, createMap, Model} from '../../../map3D/map3d';
 import $ from "jquery";
-import { message, Checkbox, Select } from 'antd';
+import {message, Checkbox, Select} from 'antd';
 import axios from 'axios';
-import { getMapBulid, getMapFloor, savaGridRegionList, savaGridInfoList, deviceRegion } from "../../../api/mainApi";
+import {getMapBulid, getMapFloor, savaGridRegionList, savaGridInfoList, deviceRegion} from "../../../api/mainApi";
 import helperShapeUtil from "../../../map3D/helperShapeUtil";
 import eventUtil from "../../../map3D/eventUtil";
-const { Option } = Select;
+
+const {Option} = Select;
+
 // import FloorList from "../floorList/index"
 class UserManagement extends Component {
   constructor(props) {
@@ -64,8 +66,8 @@ class UserManagement extends Component {
       checkbox: false,
       gid: "",
       polygonId: "",
-      buildList: [],//建筑列表
-      floorList: [],//楼层列表
+      buildList: [],// 建筑列表
+      floorList: [],// 楼层列表
       modelList: this.props.modellist,
       typeName: "",
       modelName: "",
@@ -79,7 +81,7 @@ class UserManagement extends Component {
 
       floorId: '', // 楼层ID
       buildId: '',  // 楼层ID
-      whereData: [{ key: '室内', value: '室内' }, { key: '室外', value: '室外' }],
+      whereData: [{key: '室内', value: '室内'}, {key: '室外', value: '室外'}],
       floorNum: [],//楼层
       mianData: [],
       useData: [],
@@ -156,7 +158,7 @@ class UserManagement extends Component {
       "yaw": yawValue,
       "roll": 0
     }
-    let model = { ...modelObj };
+    let model = {...modelObj};
     model.location = location;
     model.filename = modelName
     Model.modify(model);
@@ -184,7 +186,7 @@ class UserManagement extends Component {
       "yaw": yawValue,
       "roll": 0
     }
-    let model = { ...modelObj };
+    let model = {...modelObj};
     model.location = location;
     model.filename = modelName
     Model.modify(model);
@@ -212,7 +214,7 @@ class UserManagement extends Component {
       "yaw": yawValue,
       "roll": 0
     }
-    let model = { ...modelObj };
+    let model = {...modelObj};
     model.location = location;
     model.filename = modelName
     Model.modify(model);
@@ -240,7 +242,7 @@ class UserManagement extends Component {
       "yaw": e.target.value,
       "roll": 0
     }
-    let model = { ...modelObj };
+    let model = {...modelObj};
     model.location = location;
     model.filename = modelName
     Model.modify(model);
@@ -353,8 +355,9 @@ class UserManagement extends Component {
   // 选择模型
   selsctChange(e) {
     console.log('切换')
-    const { modelObj } = this.state
+    const {modelObj} = this.state
     console.log('属性', modelObj)
+    if (!modelObj) return
     const videoType = e.target.value
     const typeName = $(e.currentTarget).find("option:selected").text()
     const modelName = $(e.currentTarget).find("option:selected").attr("model")
@@ -379,7 +382,6 @@ class UserManagement extends Component {
         filename: modelCopy.model_name
       });
     }
-
   }
 
   nameChange(e) {
@@ -460,7 +462,6 @@ class UserManagement extends Component {
       })
 
 
-
     } else {
       message.warning("相机名称和相机编码或相机类型未填写")
     }
@@ -509,48 +510,51 @@ class UserManagement extends Component {
   // 点击设备类别
   btnListXz = (obj) => {
     console.log('点击设备类别', obj)
-    this.setState({ flagText: obj.id, title: obj.category_name })
+    this.setState({flagText: obj.id, title: obj.category_name})
     this.onloadtree(obj.id);
     this.isload(obj.id)
   }
 
-  // 获取树状图
+  /**
+   * @description 获取树状图
+   * @param id
+   */
   onloadtree(id) {
     console.log('生成树状列表', id)
-    const data = { category_id: id }
+    const data = {category_id: id}
     var list = []
     axios.post(global.Url + "/device/region/list", data).then((res) => {
-      console.log('获取设备列表', res)
+      console.log('获取设备区域列表', res)
       const result = res.data;
       const data2 = res.data.data;
       if (result.msg === "success") {
         // console.log(data2, "data2")
-        this.setState({ selectTree: data2 })
+        this.setState({selectTree: data2})
         data2.forEach(element => { list.push(element); });
         if (list.length > 0) {
-          axios.post(global.Url + "/device/camera/listS",data).then((res1) => {
+          axios.post(global.Url + "/device/camera/listS", data).then((res1) => {
             const result1 = res1.data;
             const data1 = res1.data.data
             if (result1.msg === "success") {
               data1.forEach(element => {
                 var arr =
-                {
-                  id: element.id,
-                  pid: element.region_id,
-                  region_name: element.device_name,
-                  node_type: "details",
-                  category_id: element.category_id,
-                  type_id: element.type_id,
-                  center: element.center,
-                  device_code: element.device_code,
-                  gid: element.model_url,
-                  position: element.position,
-                  indoor: element.indoor,
-                  build_id: element.build_id,
-                  floor_id: element.floor_id,
-                  model_name: element.model_name,
-                  list_style: element.list_style
-                }
+                  {
+                    id: element.id,
+                    pid: element.region_id,
+                    region_name: element.device_name,
+                    node_type: "details",
+                    category_id: element.category_id,
+                    type_id: element.type_id,
+                    center: element.center,
+                    device_code: element.device_code,
+                    gid: element.model_url,
+                    position: element.position,
+                    indoor: element.indoor,
+                    build_id: element.build_id,
+                    floor_id: element.floor_id,
+                    model_name: element.model_name,
+                    list_style: element.list_style
+                  }
                 list.push(arr);
               });
               this.setState({
@@ -563,7 +567,7 @@ class UserManagement extends Component {
             }
           })
         } else {
-          this.setState({ treelist: [] })
+          this.setState({treelist: []})
         }
 
       } else {
@@ -582,7 +586,7 @@ class UserManagement extends Component {
   }
 
   playPolygon() {
-    const { xValue } = this.state
+    const {xValue} = this.state
     const _this = this
     if (xValue !== "") {
       message.warning("右键结束绘制");
@@ -698,7 +702,7 @@ class UserManagement extends Component {
     let menuObj = data
     for (let i = 0; i < menuObj.length; i++) {
       const tiem = menuObj[i];
-      let obj = { num: 0 }
+      let obj = {num: 0}
       this.count(tiem, obj)
     }
     let vdom = [];
@@ -716,24 +720,25 @@ class UserManagement extends Component {
       // console.log(menuObj)
       vdom.push(
         <li key={menuObj.id} className="addAlert" id={'addAlert' + menuObj.id}
-          onContextMenu={(e) => this.onContextMenu(e, menuObj.node_type)}>
+            onContextMenu={(e) => this.onContextMenu(e, menuObj.node_type)}>
           <h2 onClick={(e) => this.onMenuClicked(e, menuObj)} title={menuObj.region_name}>
-            <img src={this.getMenuIcon(menuObj)} alt="" />&nbsp;
+            <img src={this.getMenuIcon(menuObj)} alt=""/>&nbsp;
             {/* 未上图标记灰色 */}
-            <span style={{ color: this.isObjNoPosition(menuObj) ? 'gray' : '' }}>{menuObj.region_name}</span>
+            <span style={{color: this.isObjNoPosition(menuObj) ? 'gray' : ''}}>{menuObj.region_name}</span>
             {menuObj.node_type !== "details" && <span className="geshu">({menuObj.count ? menuObj.count : 0})</span>}
           </h2>
           {/* <input type='text' style={{ 'display': 'none' }} defaultValue={menuObj.region_name} onFocus={(e) => e.stopPropagation()} onChange={(e) => this.listName(e)} /> */}
           {this.generateMenu(menuObj.children)}
-          <div className="Alert" id={'Alert' + menuObj.id} style={{ display: "none" }}>
+          <div className="Alert" id={'Alert' + menuObj.id} style={{display: "none"}}>
             {menuObj.node_type === "group" && <p onClick={(e) => this.addXinxi(e, menuObj.id, true)}>添加</p>}
             {(menuObj.node_type === "group" || menuObj.node_type === "grid") &&
-              <p onClick={(e) => this.addXinxi(e, menuObj.id, false, menuObj.region_name)}>修改</p>}
+            <p onClick={(e) => this.addXinxi(e, menuObj.id, false, menuObj.region_name)}>修改</p>}
             {(menuObj.node_type === "group" && JSON.stringify(menuObj.children) === "[]") &&
-              <p onClick={(e) => this.wgzjDel(e, menuObj.id)}>删除</p>}
+            <p onClick={(e) => this.wgzjDel(e, menuObj.id)}>删除</p>}
+            {/*设备修改*/}
             {(menuObj.node_type === "details") && <p onClick={(e) => this.gridaddXinxi(e, menuObj)}>修改</p>}
             {(menuObj.node_type === "details" && JSON.stringify(menuObj.children) === "[]") &&
-              <p onClick={(ev) => this.gridwgzjDel(ev, menuObj)}>删除</p>}
+            <p onClick={(ev) => this.gridwgzjDel(ev, menuObj)}>删除</p>}
           </div>
         </li>
       );
@@ -769,10 +774,14 @@ class UserManagement extends Component {
     this.closeBtn();
   }
 
-  // 右键修改树形菜单的叶子节点
+  /**
+   * @description 右键修改树形菜单的叶子节点
+   */
   gridaddXinxi = (ev, menuObj) => {
     console.log('修改的叶子节点：', menuObj)
-    const { modelList } = this.state;
+    let _this = this;
+    const {modelList} = this.state;
+    let pos = menuObj.list_style ? menuObj.list_style : menuObj.center
     Model.removeGid(this.state.polygonId);
     createMap.flyTo(menuObj.list_style ? menuObj.list_style : menuObj.center)
     helperShapeUtil.updateHelperShapePos(menuObj.list_style ? menuObj.list_style : menuObj.center)
@@ -786,69 +795,80 @@ class UserManagement extends Component {
     }
     $(ev.currentTarget).parents(".EquipmentAbove").find(".ContractionArea").slideDown();
     let gid = this.state.modelList[menuObj.id] ? this.state.modelList[menuObj.id].gid : menuObj.gid;
+
     // console.log(menuObj,modelList[menuObj.id],"modelList[menuObj.id]")
 
-    // 查找当前修改对象所属的组织
-    let treeRootNode = menuObj
-    const regionListData = this.state.selectTree
-    while (Number(treeRootNode.pid) !== 0) {
-      treeRootNode = regionListData.find((region) => region.id === treeRootNode.pid)
-      // 避免死循环
-      if (!treeRootNode) {
-        break
+    function func(res) {
+      // 查找当前修改对象所属的组织
+      let treeRootNode = menuObj
+      const regionListData = _this.state.selectTree
+      while (Number(treeRootNode.pid) !== 0) {
+        treeRootNode = regionListData.find((region) => region.id === treeRootNode.pid)
+        // 避免死循环
+        if (!treeRootNode) {
+          break
+        }
       }
+
+      _this.setState({
+        isEdit: true,
+        thisId: menuObj.id,
+        xValue: pos ? pos.x : "",
+        yValue: pos ? pos.y : "",
+        zValue: pos ? pos.z : "",
+        pitchValue: pos ? pos.pitch : "",
+        yawValue: pos ? pos.yaw : "",
+        rollValue: pos ? pos.roll : "",
+        name: menuObj.region_name,
+        modelName: menuObj.model_name,
+        code: menuObj.device_code,
+        videoType: menuObj.type_id,
+        selectId: menuObj.pid,
+        playvideo: true,
+        keshi: menuObj.position,
+        checkbox: menuObj.indoor,
+        gid: gid,
+        // modelObj: modelList[menuObj.id],
+        modelObj: res,
+
+        // 所选组织，为当前叶子节点的根节点
+        selectname: treeRootNode.region_name
+      }, () => {
+        if (menuObj.indoor) {
+          _this.GetMapBulid()
+          setTimeout(() => {
+            // $("#buildId").val(menuObj.build_id)
+            // $("#floorId").val(menuObj.floor_id)
+            // console.log('当前楼层：', $("#floorId").val(), menuObj.floor_id)
+            _this.setState({
+              floorId: menuObj.floor_id,
+              buildId: menuObj.build_id
+            }, () => {
+              UserManagement.this.GetMapFloor(menuObj.build_id)
+            })
+          }, 200)
+        }
+      })
+
+      _this.closeBtn();
     }
 
-    this.setState({
-      isEdit: true,
-      thisId: menuObj.id,
-      xValue: menuObj.list_style ? menuObj.list_style.x : menuObj.center.x,
-      yValue: menuObj.list_style ? menuObj.list_style.y : menuObj.center.y,
-      zValue: menuObj.list_style ? menuObj.list_style.z : menuObj.center.z,
-      pitchValue: menuObj.list_style ? menuObj.list_style.pitch : menuObj.center.pitch,
-      yawValue: menuObj.list_style ? menuObj.list_style.yaw : menuObj.center.yaw,
-      rollValue: menuObj.list_style ? menuObj.list_style.roll : menuObj.center.roll,
-      name: menuObj.region_name,
-      modelName: menuObj.model_name,
-      code: menuObj.device_code,
-      videoType: menuObj.type_id,
-      selectId: menuObj.pid,
-      playvideo: true,
-      keshi: menuObj.position,
-      checkbox: menuObj.indoor,
-      gid: gid,
-      modelObj: modelList[menuObj.id],
+    if (!pos) {
+      func()
+    } else {
+      window.$view3d.FindObjectById(menuObj.gid, res => {
+        func(res)
+      })
+    }
 
-      // 所选组织，为当前叶子节点的根节点
-      selectname: treeRootNode.region_name
-    }, () => {
-      if (menuObj.indoor) {
-        this.GetMapBulid()
-
-        setTimeout(() => {
-          // $("#buildId").val(menuObj.build_id)
-          // $("#floorId").val(menuObj.floor_id)
-          // console.log('当前楼层：', $("#floorId").val(), menuObj.floor_id)
-          this.setState({
-            floorId: menuObj.floor_id,
-            buildId: menuObj.build_id
-          }, () => {
-            UserManagement.this.GetMapFloor(menuObj.build_id)
-          })
-        }, 200)
-      }
-    })
-
-    this.closeBtn();
   }
 
   // 树结构生成
   AnalyticFormat(vdom) {
-    // debugger
     let menuObj = vdom;
     menuObj.sort((a, b) => a.region_name.localeCompare(b.region_name))
 
-    //转成树
+    // 转成树
     function getTree(data, Pid) {
       let result = [];
       let temp;
@@ -867,7 +887,7 @@ class UserManagement extends Component {
 
   wgzjDel(e, id) {
     e.stopPropagation();
-    const { flagText } = this.state
+    const {flagText} = this.state
     const data = {
       id: id
     }
@@ -896,6 +916,7 @@ class UserManagement extends Component {
     this.shrinkageBtn();
     this.closeBtn();
   }
+
   closeBtn = () => {
     $(".Alert").hide();
   }
@@ -992,7 +1013,7 @@ class UserManagement extends Component {
         Model.removeGid(this.state.polygonId);
       }
       const _this = this;
-      _this.setState({ polygonId: item.position.gid, isEdit: false });
+      _this.setState({polygonId: item.position.gid, isEdit: false});
       setTimeout(() => {
         // Model.showModel(this.state.polygonId, true)
         Model.createPolygon(item.position.points, (msg) => {
@@ -1170,7 +1191,7 @@ class UserManagement extends Component {
   GetMapFloor = (id) => {
     console.log('获取楼层', id)
     UserManagement.this.showFloorAll();
-    getMapFloor({ build_id: id }).then(res => {
+    getMapFloor({build_id: id}).then(res => {
       console.log('获取楼层响应', res)
       if (res.msg === "success") {
         this.setState({
@@ -1471,6 +1492,7 @@ class UserManagement extends Component {
       showF5: false
     })
   }
+
   render() {
     const {
       buildList,
@@ -1517,52 +1539,52 @@ class UserManagement extends Component {
         <div className="RightTitle">
           <span>设备点位上图</span>
           <img src={require("../../../assets/images/closeWhite.png").default} onClick={() => this.closeChuang()}
-            alt="" />
+               alt=""/>
         </div>
         <div className="EquipmentCategory">
           <p>设备类别</p>
           <ul>
             {list.map((item, i) => (
-              <li key={i} className={flagText === item.id ? 'ative' : null} onClick={() => this.btnListXz(item)}>
-                <img src={item.img} alt="" />
-                <span>{item.category_name}</span>
-              </li>
-            )
+                <li key={i} className={flagText === item.id ? 'ative' : null} onClick={() => this.btnListXz(item)}>
+                  <img src={item.img} alt=""/>
+                  <span>{item.category_name}</span>
+                </li>
+              )
             )}
           </ul>
         </div>
         <div className="listTree">
           {flagText !== "" && <div className="buttonTitle">
             {treelist.length === 0 &&
-              <button className="ConfirmButton" onClick={() => this.hanldeinputflag()}>添加组织结构</button>}
+            <button className="ConfirmButton" onClick={() => this.hanldeinputflag()}>添加组织结构</button>}
             <button className="ConfirmButton" onClick={(ev) => this.handeaddModel(ev)}>添加设备</button>
           </div>}
           {inputflag && <div className="TextWb Gridinput">
             <span>名称：</span>
             <input type="text" className="inputAll" id="wgName" value={nameValue}
-              onChange={(e) => this.nameValueChange(e)} />
+                   onChange={(e) => this.nameValueChange(e)}/>
             <button className="ConfirmButton" onClick={() => this.addGridRegion()}>保存</button>
             <button className="ConfirmButton" onClick={() => this.closeWgname()}>取消</button>
           </div>}
-          <div className="TreeList" style={{ 'height': '300px' }}>
+          <div className="TreeList" style={{'height': '300px'}}>
             {this.generateMenu(this.state.deviceTreeStructureData)}
           </div>
         </div>
         <div className="ContractionArea">
           <div className="shrinkage">
             <p onClick={(e) => this.shrinkageBtn(e)}>
-              <img src={require("../../../assets/images/shousuojt.png").default} alt="" />
+              <img src={require("../../../assets/images/shousuojt.png").default} alt=""/>
             </p>
           </div>
           <div className="EquipmentOperation">
             <p>{title}</p>
             <div className="Operation_div">
               <span>名称：</span>
-              <input type="text" value={name} onChange={(e) => this.nameChange(e)} />
+              <input type="text" value={name} onChange={(e) => this.nameChange(e)}/>
             </div>
             <div className="Operation_div">
               <span>编码：</span>
-              <input type="text" value={code} onChange={(e) => this.codeChange(e)} />
+              <input type="text" value={code} onChange={(e) => this.codeChange(e)}/>
             </div>
             <div className="Operation_div">
               <span>模型：</span>
@@ -1583,37 +1605,37 @@ class UserManagement extends Component {
                 onBlur={this.handleOrganizationInputBlur}
               />
               {(Focus || onMouse) &&
-                <div
-                  className="option_thisdix"
-                  style={checkbox ? { top: "49.5%" } : { top: "55%" }}
-                  onMouseEnter={() => this.onMouthin()}
-                  onMouseLeave={() => this.onMouseLeave()}
-                >
-                  {this.generateMenu2(this.AnalyticFormat(selectTree))}
-                </div>
+              <div
+                className="option_thisdix"
+                style={checkbox ? {top: "49.5%"} : {top: "55%"}}
+                onMouseEnter={() => this.onMouthin()}
+                onMouseLeave={() => this.onMouseLeave()}
+              >
+                {this.generateMenu2(this.AnalyticFormat(selectTree))}
+              </div>
               }
             </div>
             <div className="Operation_div2">
-              <span style={{ width: "68px" }}>室内：</span>
-              <Checkbox checked={checkbox} onChange={(e) => this.handlecheck(e)} />
+              <span style={{width: "68px"}}>室内：</span>
+              <Checkbox checked={checkbox} onChange={(e) => this.handlecheck(e)}/>
             </div>
             <div className="Operation">
               {checkbox &&
-                <div className="Operation_div">
-                  <span>楼：</span>
-                  <select
-                    className="Operation_sle"
-                    id="buildId"
-                    onChange={(e) => this.GetMapFloor(e.target.value)}
-                    value={buildId}
-                  >
-                    {buildList.map(item => {
-                      return (
-                        <option key={item.build_id} value={item.build_id}>{item.build_name}</option>
-                      )
-                    })}
-                  </select>
-                </div>
+              <div className="Operation_div">
+                <span>楼：</span>
+                <select
+                  className="Operation_sle"
+                  id="buildId"
+                  onChange={(e) => this.GetMapFloor(e.target.value)}
+                  value={buildId}
+                >
+                  {buildList.map(item => {
+                    return (
+                      <option key={item.build_id} value={item.build_id}>{item.build_name}</option>
+                    )
+                  })}
+                </select>
+              </div>
               }
               {
                 checkbox &&
@@ -1636,19 +1658,20 @@ class UserManagement extends Component {
               <div className="Operation_div">
                 <span>网格面：</span>
                 {/* <span className='spanName spanMian' onClick={() => this.showF5Now()}>{f5}</span> */}
-                {changeMianData && changeMianData.length > 0 ? <select className="sleAll" value={f6} style={{ width: 280 }} onChange={(e) => this.handleChange6(e)}>
-                  {changeMianData.map(item => {
-                    return (
-                      <option key={item.id} value={JSON.stringify(item)}>{item.grid_name}</option>
-                    )
-                  })}
-                </select> : ''}
+                {changeMianData && changeMianData.length > 0 ?
+                  <select className="sleAll" value={f6} style={{width: 280}} onChange={(e) => this.handleChange6(e)}>
+                    {changeMianData.map(item => {
+                      return (
+                        <option key={item.id} value={JSON.stringify(item)}>{item.grid_name}</option>
+                      )
+                    })}
+                  </select> : ''}
               </div>
               {showF5 ? <div className="TreeList666">
                 <div className='selectBox'>
                   <span className="keyname keyclose" onClick={() => this.closeF5()}>X</span>
                   <span className="keyname">请选择室内外 : </span>
-                  <Select allowClear onClear={this.clear('f1')} value={f1} style={{ width: 280 }} onChange={(e) => this.handleChange(e)}>
+                  <Select allowClear onClear={this.clear('f1')} value={f1} style={{width: 280}} onChange={(e) => this.handleChange(e)}>
                     {whereData.map(item => {
                       return (
                         <Option key={item.value} value={item.value}>{item.key}</Option>
@@ -1658,7 +1681,7 @@ class UserManagement extends Component {
                 </div>
                 {floorNum && floorNum.length > 0 ? <div className='selectBox'>
                   <span className="keyname">请选择建筑 : </span>
-                  <Select allowClear onClear={this.clear('f2')} value={f2} style={{ width: 280 }} onChange={(e) => this.handleChange2(e)}>
+                  <Select allowClear onClear={this.clear('f2')} value={f2} style={{width: 280}} onChange={(e) => this.handleChange2(e)}>
                     {floorNum.map(item => {
                       return (
                         <Option key={item.region_name} value={item.id + '-' + item.region_name}>{item.region_name}</Option>
@@ -1668,7 +1691,7 @@ class UserManagement extends Component {
                 </div> : ''}
                 {mianData && mianData.length > 0 ? <div className='selectBox'>
                   <span className="keyname">请选择楼层 : </span>
-                  <Select allowClear onClear={this.clear('f3')} value={f3} style={{ width: 280 }} onChange={(e) => this.handleChange3(e)}>
+                  <Select allowClear onClear={this.clear('f3')} value={f3} style={{width: 280}} onChange={(e) => this.handleChange3(e)}>
                     {mianData.map(item => {
                       return (
                         <Option key={item.region_name} value={item.id + '-' + item.region_name}>{item.region_name}</Option>
@@ -1678,7 +1701,7 @@ class UserManagement extends Component {
                 </div> : ''}
                 {useData && useData.length > 0 ? <div className='selectBox'>
                   <span className="keyname">请选择网格面 : </span>
-                  <Select allowClear onClear={this.clear('f4')} value={f4} style={{ width: 280 }} onChange={(e) => this.handleChange4(e)}>
+                  <Select allowClear onClear={this.clear('f4')} value={f4} style={{width: 280}} onChange={(e) => this.handleChange4(e)}>
                     {useData.map(item => {
                       return (
                         <Option key={item.grid_name} value={JSON.stringify(item)}>{item.grid_name}</Option>
@@ -1737,7 +1760,7 @@ class UserManagement extends Component {
                 : <button className="ConfirmButton" onClick={() => this.handleCreate()}>上图</button>
             }
             <button className="ConfirmButton"
-              onClick={() => this.baocun()}>{this.state.thisId === "" ? "保存" : "修改"}</button>
+                    onClick={() => this.baocun()}>{this.state.thisId === "" ? "保存" : "修改"}</button>
           </div>
         </div>
       </div>

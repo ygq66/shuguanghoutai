@@ -46,7 +46,7 @@ export const createMap = {
             Build.getFloor(buildObj[index].id, (msg2) => {
               // console.log(buildObj, index)
               // 处理一下index越界的可能
-              console.log("我执行了吗");
+              console.log("获取建筑列表", msg2);
               if (index < buildObj.length) {
                 allBuildModelObj[buildObj[index].id] = JSON.parse(msg2);
                 if (++index < buildObj.length) {
@@ -151,6 +151,7 @@ export const createMap = {
     // };
     //
     // view3d.FlyToPosition(pos);
+    if (!pos) return;
     if (pos.x && pos.y && pos.z) {
       let posNew = Model.formatPos(pos);
       console.log("定位", posNew);
@@ -304,6 +305,10 @@ export const Model = {
   },
   //加载模型
   modelLoading(strObj, callback) {
+    if (!strObj.location) {
+      callback();
+      return;
+    }
     var obj = {
       gid: strObj.gid,
       type: "model",
@@ -330,7 +335,7 @@ export const Model = {
       // alert(strObj);
     });
   },
-  //加载标注
+  // 加载标注
   labelLoading(strObj, callback) {
     const obj = {
       gid: strObj.gid,
@@ -524,14 +529,14 @@ export const Model = {
   },
   // 绘制折线
   drawLine(callback) {
-    console.log("执行这个了吧");
+    console.log("drawLine");
     const obj = {
       type: "linestring",
       color: "#ff0f00",
       points: [],
     };
     view3d.OverLayerStartEdit(obj, (res) => {
-      console.log("画了几个点哈", res);
+      console.log("绘制点", res);
       if (callback) {
         callback(res);
       }

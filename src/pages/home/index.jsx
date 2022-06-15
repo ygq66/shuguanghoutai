@@ -46,12 +46,12 @@ const Home = () => {
               axios.post(global.Url + "/device/camera/listS", {
                 indoor: false
               }).then((res) => {
-                console.log('88888');
+                console.log('查询相机列表', res.data);
                 const result = res.data;
                 const data = res.data.data
                 // console.log(res, "ddawjdaw")
                 if (result.msg === "success") {
-                  //递归有毒
+                  // 递归有毒
                   if (data.length > 0) {
                     for (let index = 0; index < data.length; index++) {
                       if (data[index] && data[index].model_name !== undefined && data[index].model_name !== null) {
@@ -61,6 +61,7 @@ const Home = () => {
                           location: data[index].list_style ? data[index].list_style : data[index].center,
                           attr: data[index]
                         };
+                        console.log('创建设备')
                         Model.modelLoading(obj, msg => {
                           GetBuildLabel();
                         })
@@ -111,7 +112,6 @@ const Home = () => {
                 }
               })
             });
-
           } else {
             message.warning('未找到地图数据');
           }
