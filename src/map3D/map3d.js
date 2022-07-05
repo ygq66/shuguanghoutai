@@ -38,27 +38,27 @@ export const createMap = {
         });
       });
       SetResolution(options, view3d);
-      Build.getBuild((res) => {
-        let buildObj = JSON.parse(res);
-        console.log("我是这个值", buildObj);
-        if (buildObj.length > 0) {
-          (function loopBuild(index) {
-            Build.getFloor(buildObj[index].id, (msg2) => {
-              // console.log(buildObj, index)
-              // 处理一下index越界的可能
-              console.log("获取建筑列表", msg2);
-              if (index < buildObj.length) {
-                allBuildModelObj[buildObj[index].id] = JSON.parse(msg2);
-                if (++index < buildObj.length) {
-                  loopBuild(index);
-                } else {
-                  // console.log(allBuildModelObj, "所有建筑楼层数据")
-                }
-              }
-            });
-          })(0);
-        }
-      });
+      // Build.getBuild((res) => {
+      //   let buildObj = JSON.parse(res);
+      //   console.log("我是这个值", buildObj);
+      //   if (buildObj.length > 0) {
+      //     (function loopBuild(index) {
+      //       Build.getFloor(buildObj[index].id, (msg2) => {
+      //         // console.log(buildObj, index)
+      //         // 处理一下index越界的可能
+      //         console.log("获取建筑列表", msg2);
+      //         if (index < buildObj.length) {
+      //           allBuildModelObj[buildObj[index].id] = JSON.parse(msg2);
+      //           if (++index < buildObj.length) {
+      //             loopBuild(index);
+      //           } else {
+      //             // console.log(allBuildModelObj, "所有建筑楼层数据")
+      //           }
+      //         }
+      //       });
+      //     })(0);
+      //   }
+      // });
 
       // 点击时, 设置鼠标事件
       // eventUtil.setMousedown();
