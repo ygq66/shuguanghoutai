@@ -39,6 +39,7 @@ const Login = () => {
       user_name: values.username,
       user_pwd: values.password
     }).then(res => {
+      console.log(res,"登陆okkk")
       dispatch({type: "userData", userData: res.data})
       if (res.msg === "success") {
         if (res.data === "账号或密码错误") {

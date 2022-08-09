@@ -176,9 +176,10 @@ const constant = {
   delBedRoom: `${ApiUrl}/bed/room/delete`,
 
   // 获取人员定位信息
-  getPeopleLocation: `${ApiUrl}/people/location/list`,
+  getPeopleLocation: `${ApiUrl}/area/GetAll`,
   // 添加or修改人员定位信息
-  setPeopleLocation: `${ApiUrl}/people/location/touchin`,
+  // setPeopleLocation: `${ApiUrl}/people/location/touchin`,
+  setPeopleLocation:`${ApiUrl}/area/TouchIncamera`,
   //删除人员定位信息
   delPeopleLocation: `${ApiUrl}/people/location/delete`,
 

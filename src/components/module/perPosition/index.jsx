@@ -24,6 +24,7 @@ class PerPosition extends Component {
       name: "",//区域名称
       buildId: "",//建筑id
       floorId: "",//楼层id
+      center:null,
       oldbuildId: "",//上一个建筑id
       buildList: [],//建筑列表
       floorList: [],//楼层列表
@@ -55,7 +56,10 @@ class PerPosition extends Component {
   // 获取床位信息
   getPeopleLocation = () => {
     getPeopleLocation().then(res => {
+      console.log(res,"查询到了啥");
       let item = res.data;
+      // debugger
+      console.log(item,"item有什么");
       PerPosition.this.setState({
         perList: item
       })
@@ -90,6 +94,7 @@ class PerPosition extends Component {
   }
   // 楼层切换事件
   floorQiehuan = (e) => {
+    debugger
     this.setState({floorId: e.target.value});
     setTimeout(() => {
       PerPosition.this.showFloor();
@@ -128,11 +133,13 @@ class PerPosition extends Component {
   }
   // 左键点击事件
   onSelect = (item, index) => {
+    debugger
+    console.log(item,"111");
     const {ModelPolygon} = this.state;
     if (ModelPolygon) {
       Model.removeGid(ModelPolygon.gid)
     }
-    PerPosition.this.showPolygon(item.positions)
+    PerPosition.this.showPolygon(item)
     this.setState({
       flag_Node: false,
       NodeTreeItem: item,
@@ -141,7 +148,16 @@ class PerPosition extends Component {
   }
   // 展示面
   showPolygon = (item) => {
+    debugger
+    console.log(item,"面item")
+    // this.setState({floorId: item.floorid});
     const {ModelPolygon} = this.state;
+    debugger
+    // Build.showFloor(item.build_id, item.floor_id, item.floorid);
+    this.setState({floorId: item.floorid});
+    setTimeout(() => {
+      PerPosition.this.showFloor();
+    }, 0)
     if (ModelPolygon) {
       Model.removeGid(ModelPolygon.gid);
     }
@@ -153,8 +169,16 @@ class PerPosition extends Component {
     //   yaw: 0,   // 偏航角 0-360度
     //   roll: 0     // 翻滚角
     // };
-    createMap.FlyToPosition(item.center)
-    Model.createPolygon(item.points, res => {
+    createMap.FlyToPosition({
+      distance: 100,
+      pitch: 74.98384857177734,
+      roll: 0,
+      x: -675.12451171875,
+      y: 6571.580078125,
+      yaw: 94.12491607666016,
+      z: 13819.7255859375
+    })
+    Model.createPolygon(item.content, res => {
       PerPosition.this.setState({
         ModelPolygon: JSON.parse(res)
       });
@@ -222,7 +246,8 @@ class PerPosition extends Component {
   }
   // 修改房间/床位
   editBtn = (item) => {
-    this.showPolygon(item.positions);
+    this.showPolygon(item);
+    console.log(item,"修改床位");
     this.setState({
       name: item.location_name,
       flag_edit: false
@@ -287,7 +312,8 @@ class PerPosition extends Component {
       floorId,
       ModelPolygon,
       NodeTreeItem,
-      perList
+      perList,
+
     } = this.state;
     if (name === "") {
       message.error("请先填写区域名称");
@@ -302,6 +328,7 @@ class PerPosition extends Component {
         build_id: buildId,
         floor_id: floorId,
         order: perList.length,
+
         positions: {
           ...ModelPolygon,
           center: JSON.parse(msg)
@@ -313,8 +340,15 @@ class PerPosition extends Component {
       if (oldName === name) {
         return;
       }
-      console.log(json)
-      setPeopleLocation(json).then(res => {
+      console.log(json,"json")
+      setPeopleLocation({
+        indoor:true,
+        floorid:json.floor_id,
+        buildid:json.build_id,
+        name:json.location_name,
+        content:json.positions.points,
+
+      }).then(res => {
         message.success(flag ? "添加成功" : "修改成功");
         PerPosition.this.getPeopleLocation();
         PerPosition.this.setOperatingArea(false);
@@ -359,7 +393,7 @@ class PerPosition extends Component {
     return (
       <div className="PerPosition">
         <div className="RightTitle">
-          <span>人员定位</span>
+          <span>区域定位</span>
           <img src={require("../../../assets/images/closeWhite.png").default} onClick={() => this.setMoudleId()} alt=""/>
         </div>
         <div className="CreateLayer_button">
@@ -368,12 +402,13 @@ class PerPosition extends Component {
         <div className="domtree2">
           <ul ref={this.listContainerRef}>
             {perList.map((item, index) => {
+              
               return (
                 <li key={index}>
                   <span
                     className={listNum === index ? "active" : ""}
                     onContextMenu={(e) => this.onRightClick(e, item, index)}
-                    onClick={() => this.onSelect(item, index)}>{index + 1}.&nbsp;&nbsp;&nbsp;{item.location_name}
+                    onClick={() => this.onSelect(item, index)}>{index + 1}.&nbsp;&nbsp;&nbsp;{item.name}
                   </span>
                 </li>
               )

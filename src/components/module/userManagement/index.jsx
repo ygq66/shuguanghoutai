@@ -310,6 +310,7 @@ class UserManagement extends Component {
             grid_info: grid_info,
             grid_id: grid_id
           }
+
           if (thisId !== "") {
             data['id'] = thisId
           }
@@ -591,11 +592,26 @@ class UserManagement extends Component {
     if (xValue !== "") {
       message.warning("右键结束绘制");
       Model.playPolygon(function (obj) {
-        // console.log(JSON.parse(obj));
+       
+        console.log(obj,"可视区域")
+        console.log(JSON.parse(obj));
+
+        const jSONobj = JSON.parse(obj)
+        const objNew = {...jSONobj}
+
+        const points = jSONobj.points[0]
+
+        jSONobj.points.push(points)
+        // objNew.points = {...objNew.points,points}
+        // const objnew = objNew.points
+        console.log(jSONobj,"jSONobj");
+        // console.log(objNew,"可视区域objnew");
+
         _this.setState({
-          keshi: JSON.parse(obj),
+          keshi: jSONobj,
           polygonId: JSON.parse(obj).gid
         })
+        // console.log("可视",keshi)
       })
     } else {
       message.warning("未添加模型");
@@ -658,7 +674,9 @@ class UserManagement extends Component {
       data["pid"] = pid;
     }
     axios.post(global.Url + "/device/region/touchin", data).then((res) => {
+
       const result = res.data;
+      console.log(result,"保存")
       if (result.msg === "success") {
         this.onloadtree(flagText)
         this.setState({

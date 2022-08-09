@@ -1,7 +1,8 @@
 {
-    "Url": "http://192.168.0.149:8096/MapW5.5",
-    "map_url": "http://localhost:19901/aimapvision3d",
-    "projectId": "93aa19efbc0a4bd0b7f4099150818ecc",
-    "token": "85718a41ed32423972eb0347c019f809",
-    "mapkey": "85718a41ed32423972eb0347c019f809"
+    
+    "Url": "http://192.168.0.27:8096/shsg_MapW5.5",
+    "map_url": "http://192.168.0.27:10041/aimapvision3d",
+    "projectId": "d1d056775e244d358c84fa28468b46ab",
+    "token": "e72ed8c73e7fb59a1a7d561a23723378",
+    "mapkey": "e72ed8c73e7fb59a1a7d561a23723378"
 }

@@ -2,7 +2,7 @@
   "name": "ty_admin",
   "version": "0.1.0",
   "private": true,
-  "homepage": "./",
+  "homepage": "http://./",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -61,5 +61,14 @@
     "react-app-rewired": "^2.1.8",
     "sass-loader": "^10.1.1",
     "sass-resources-loader": "^2.1.1"
-  }
+  },
+  "description": "<<<<<<< HEAD\r ## ty_admin",
+  "main": "config-overrides.js",
+  "repository": {
+    "type": "git",
+    "url": "http://192.168.0.228/sincejuly/map_admin"
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "./"
 }

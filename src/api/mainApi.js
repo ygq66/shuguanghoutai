@@ -663,7 +663,7 @@ export function delBedRoom(ParamsData) {
 export function getPeopleLocation(ParamsData) {
     return request({
         url: constant.getPeopleLocation,
-        method: 'get',
+        method: 'post',
         data: ParamsData
     })
 }

@@ -400,7 +400,7 @@ export const Model = {
   playPolygon(callback) {
     const obj = {
       type: "polygon",
-      color: "#00ff00",
+      color: "#f00",
       points: [],
     };
     view3d.OverLayerStartEdit(obj, (res) => {
